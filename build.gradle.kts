@@ -2,6 +2,7 @@ plugins {
 	java
 	id("org.springframework.boot") version "3.1.4"
 	id("io.spring.dependency-management") version "1.1.3"
+	id("org.springdoc.openapi-gradle-plugin") version "1.8.0"
 }
 
 group = "wagwagt.community"
@@ -28,6 +29,7 @@ dependencies {
 	runtimeOnly("com.mysql:mysql-connector-j")
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2")
 }
 
 tasks.withType<Test> {
