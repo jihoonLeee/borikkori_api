@@ -1,6 +1,5 @@
 package wagwagt.community.api.infrastructures.config;
 
-
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -20,4 +19,5 @@ public class SwaggerConfig {
                 .description("WAGWAGT 프로젝트 swagger api 문서 입니다.")
                 .version("1.0.0");
     }
+
 }

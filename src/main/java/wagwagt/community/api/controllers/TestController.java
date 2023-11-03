@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name="테스트 api", description = "Swagger 테스트용 API")
-@RestController
+@RequestMapping("test")
+@Controller
 public class TestController {
 
     @Operation(summary = "문자열 반복" , description = "파라미터로 받은 문자열 2번 반복")
@@ -21,6 +22,8 @@ public class TestController {
         return str + "\n" + str;
     }
 
+    @Operation(summary = "test" , description = "testtest")
+    @Parameter(name = "str",description = "test")
     @GetMapping("test")
     public String test(){
         return "테스트 API";

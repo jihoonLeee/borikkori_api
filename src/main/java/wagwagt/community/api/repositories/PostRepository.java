@@ -1,4 +1,7 @@
 package wagwagt.community.api.repositories;
 
-public interface PostRepository {
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class PostRepository {
 }

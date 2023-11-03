@@ -76,3 +76,5 @@ out/
 # .idea/modules
 # *.iml
 # *.ipr
+
+application.yml

@@ -1,7 +1,11 @@
 package wagwagt.community.api.controllers;
 
-import org.springframework.stereotype.Controller;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller("feeds")
+@Tag(name="feed_api", description = "FEED Apis")
+@RequestMapping("feeds")
+@RestController
 public class FeedController {
 }

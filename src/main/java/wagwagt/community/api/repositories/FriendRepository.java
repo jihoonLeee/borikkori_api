@@ -1,4 +1,8 @@
 package wagwagt.community.api.repositories;
 
-public interface FriendRepository {
+
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class FriendRepository {
 }
