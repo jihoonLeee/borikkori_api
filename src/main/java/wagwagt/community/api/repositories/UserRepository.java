@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import wagwagt.community.api.entities.User;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -26,10 +27,12 @@ public class UserRepository {
         return em.createQuery("select u from User u",User.class).getResultList();
     }
 
-    public List<User> findByEmail(String email){
-        return em.createQuery("select u from User u where u.email =:email",User.class)
-                .setParameter("email",email)
+
+    public Optional<User> findByEmail(String email){
+        List<User> users = em.createQuery("select u from User u where u.email =:email", User.class)
+                .setParameter("email", email)
                 .getResultList();
+        return users.isEmpty() ? Optional.empty() : Optional.ofNullable(users.get(0));
     }
 
     public void leave(User user){

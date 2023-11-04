@@ -1,5 +1,7 @@
 package wagwagt.community.api.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,14 +22,17 @@ public class UserController {
 
     private final EmailVerificationUsecase emailVerificationUsecase;
     private final UserUsecase userUsecase;
-
+    @Operation(summary = "이메일 전송" , description = "이메일 전송")
+    @Parameter(name = "joinDto",description = "2번 반복할 문자열")
     @PostMapping("/sendEmail")
-    public String sendEmail(JoinDto dto){
-        emailVerificationUsecase.sendEmail(dto.getEmail());
+    public String sendEmail(JoinDto joinDto){
+        emailVerificationUsecase.sendEmail(joinDto.getEmail());
 
         return "";
     }
-
+    
+    @Operation(summary = "회원가입" , description = "회원가입 요청")
+    @Parameter(name = "joinDto",description = "2번 반복할 문자열")
     @PostMapping("/join")
     public String join(@RequestBody JoinDto dto){
         if(emailVerificationUsecase.checkEmail(dto.getVerificationNumber(),dto.getEmail())){

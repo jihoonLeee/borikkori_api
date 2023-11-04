@@ -13,7 +13,8 @@ public interface UserUsecase {
     // 회원탈퇴
     
     //로그인
-    
+    String login(User user);
+
     // 로그아웃
     
     //비밀번호 변경
