@@ -21,7 +21,7 @@ spring:
     database: mysql
     show_sql: true
     hibernate:
-#      ddl-auto: update # ?? ????? update or create .. ??
+      ddl-auto: create # ?? ????? update or create .. ??
     properties:
       hibernate:
         show_sql: true
@@ -38,3 +38,9 @@ spring:
           auth: true
           starttls:
             enable: true
+
+# jwt.secret.key? ?? 256bit ????? ???.
+jwt:
+  secret:
+    key: trvvE5iDiMw8quLrrSi495DJ2MU9qmBy
+#https://acte.ltd/utils/randomkeygen
