@@ -9,6 +9,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,42 +21,62 @@ import wagwagt.community.api.usecases.JpaUserDetailService;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 
 
 @Component
 @RequiredArgsConstructor
+@PropertySource("classpath:jwt.yml")
 public class JwtTokenProvider {
-    @Value("${jwt.secret.key}")
+    @Value("${secret-key}")
     private String salt;
 
     private Key secretKey;
 
-    private final long exp = 1000L*60*60;// 1시간
+    @Value("${expiration-minutes}")
+    private long exp;
+
+    @Value("${refresh-expiration-hours}")
+    private long refreshExp;
 
     private final JpaUserDetailService userDetailsService;
 
     @PostConstruct
     protected void init(){
-        secretKey = Keys.hmacShaKeyFor(salt.getBytes(StandardCharsets.UTF_8));
+        secretKey = Keys.hmacShaKeyFor(salt.getBytes());
     }
 
     /**
      * 토큰 생성
      */
-    public String createToken(String account, List<Authority> roles){
+    public String createToken(String account, Authority role){
         Claims claims = Jwts.claims().setSubject(account);
-        claims.put("roles",roles);
+        claims.put("role",role);
         Date now= new Date();
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime()+exp))
+                .setExpiration(Date.from(Instant.now().plus(exp, ChronoUnit.MINUTES)))
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
-
+    /**
+     * 리프래시 토큰 생성
+     */
+    public String createRefreshToken(String account, Authority role){
+        Claims claims = Jwts.claims().setSubject(account);
+        claims.put("role",role);
+        Date now= new Date();
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(Date.from(Instant.now().plus(refreshExp, ChronoUnit.HOURS)))
+                .signWith(secretKey, SignatureAlgorithm.HS256)
+                .compact();
+    }
     /**
      * 권한 정보 획득
      */
@@ -75,7 +96,7 @@ public class JwtTokenProvider {
       * Authorization Header를 통해 인증
       * */
      public String resolveToken(HttpServletRequest request){
-         return request.getHeader("Authorization");
+         return request.getHeader("Authorization").substring(7);
      }
 
      /**
@@ -84,10 +105,10 @@ public class JwtTokenProvider {
      public boolean validateToken(String token){
          try{
              //Bearer검증
-             if (!token.substring(0, "BEARER ".length()).equalsIgnoreCase("BEARER ")) {
+             if (token.contains("BEARER")&&!token.substring(0, "BEARER ".length()).equalsIgnoreCase("BEARER ")) {
                  return false;
              }else{
-                 token = token.split(" ")[1].trim();
+                 token = token.split(" ")[0].trim();
              }
              Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
              // 만료되면 False

@@ -1,6 +1,11 @@
-package wagwagt.community.api.dtos;
+package wagwagt.community.api.requests;
 
-public class JwtDto {
+import lombok.Builder;
+import lombok.Getter;
+
+@Getter
+@Builder
+public class TokenRequest {
 
     private String grantType;  //JWT 대한 인증 타입 (Bearer)
     private String accessToken;
