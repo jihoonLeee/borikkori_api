@@ -4,6 +4,7 @@ package wagwagt.community.api.entities;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
@@ -32,13 +33,12 @@ public class User {
     /**
      * TODO:권한 추가
      * */
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @Builder.Default
-    private List<Authority> roles = new ArrayList<>();
+    @Setter
+    @OneToOne(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Authority auth;
 
-    public void setRoles(List<Authority> role){
-        this.roles=role;
-        role.forEach(r -> r.setUser(this));
+    public void setRole(Authority auth){
+        this.auth=auth;
     }
     
 //    private List<EmailVerification> emailVerifications = new ArrayList<>();

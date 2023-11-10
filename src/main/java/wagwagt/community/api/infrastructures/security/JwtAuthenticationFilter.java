@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Description;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
+import wagwagt.community.api.infrastructures.config.RedisConfig;
 
 import java.io.IOException;
 
@@ -17,15 +18,16 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException{
         String token = jwtTokenProvider.resolveToken(request);
         
         if(token != null && jwtTokenProvider.validateToken(token)){
-            // access토근 체크
+            // access 토큰 체크
+
             token = token.split(" ")[1].trim();
+
             Authentication auth= jwtTokenProvider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(auth);
         }

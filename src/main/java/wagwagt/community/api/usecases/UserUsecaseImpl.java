@@ -6,11 +6,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
+import wagwagt.community.api.entities.Authority;
 import wagwagt.community.api.entities.User;
 //import wagwagt.community.api.repositories.EmailVerificationRepository;
 import wagwagt.community.api.infrastructures.security.JwtTokenProvider;
+import wagwagt.community.api.repositories.AuthorityRepository;
 import wagwagt.community.api.repositories.UserRepository;
+import wagwagt.community.api.requests.LoginRequest;
+import wagwagt.community.api.responses.LoginResponse;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,7 +28,7 @@ public class UserUsecaseImpl implements UserUsecase{
 //    private final EmailVerificationUsecase emailVerificationUsecase;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
-
+    private final AuthorityRepository authorityRepository;
 
     /**
      * 회원가입
@@ -52,14 +57,35 @@ public class UserUsecaseImpl implements UserUsecase{
 //        if(ObjectUtils.isEmpty(find)) throw new IllegalStateException("이미 존재하는 회원");
     }
 
-    public String login(User user){
-        User user1 = userRepository.findByEmail(user.getEmail()).orElseThrow(
+    /***
+     * 로그인
+     * @param loginReq
+     * @return
+     */
+    public LoginResponse login(LoginRequest loginReq){
+        User user = userRepository.findByEmail(loginReq.getEmail()).orElseThrow(
                 () -> new BadCredentialsException("잘못된 계정 정보")
         );
-        if(!passwordEncoder.matches(user.getPassword(),user1.getPassword()))
+        if(!passwordEncoder.matches(loginReq.getPassword(),user.getPassword()))
         {
             throw  new BadCredentialsException("잘못된 비밀번호");
         }
-        return "OK";
+        String accessToken= jwtTokenProvider.createToken(user.getEmail(),authorityRepository.findOne(user.getId()));
+        String refreshToken=jwtTokenProvider.createRefreshToken(user.getEmail(),authorityRepository.findOne(user.getId()));
+
+        return LoginResponse.builder()
+                .email(user.getEmail())
+                .role(user.getAuth().getRole())
+                .accessToken(accessToken)
+                .refreshToken(refreshToken).build();
+    }
+
+    /****
+     * 로그아웃
+     * @param user
+     * @return
+     */
+    public String logout(User user){
+        return "ok";
     }
 }

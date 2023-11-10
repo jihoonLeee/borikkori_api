@@ -3,6 +3,7 @@ package wagwagt.community.api.entities;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
+import wagwagt.community.api.enums.Role;
 
 @Entity
 @Getter
@@ -13,10 +14,10 @@ public class Authority {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    private Role role;
 
     @JoinColumn(name = "user")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     private User user;
 
     public void setUser(User user) {

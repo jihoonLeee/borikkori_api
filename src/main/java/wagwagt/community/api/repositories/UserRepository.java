@@ -28,14 +28,18 @@ public class UserRepository {
     }
 
 
+
     public Optional<User> findByEmail(String email){
         List<User> users = em.createQuery("select u from User u where u.email =:email", User.class)
                 .setParameter("email", email)
                 .getResultList();
         return users.isEmpty() ? Optional.empty() : Optional.ofNullable(users.get(0));
     }
-
-    public void leave(User user){
+    
+    /**
+    * 탈퇴 (여기 있는게 맞는지 체크)
+    * */
+    public void leave(User user){  
 
     }
 
