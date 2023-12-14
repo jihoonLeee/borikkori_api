@@ -14,17 +14,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import wagwagt.community.api.entities.Authority;
-import wagwagt.community.api.usecases.CustomUserDetail;
-import wagwagt.community.api.usecases.JpaUserDetailService;
+import wagwagt.community.api.services.JpaUserDetailService;
 
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
-import java.util.List;
 
 
 @Component
@@ -66,9 +62,8 @@ public class JwtTokenProvider {
     /**
      * 리프래시 토큰 생성
      */
-    public String createRefreshToken(String account, Authority role){
+    public String createRefreshToken(String account){
         Claims claims = Jwts.claims().setSubject(account);
-        claims.put("role",role);
         Date now= new Date();
         return Jwts.builder()
                 .setClaims(claims)
@@ -96,7 +91,11 @@ public class JwtTokenProvider {
       * Authorization Header를 통해 인증
       * */
      public String resolveToken(HttpServletRequest request){
-         return request.getHeader("Authorization").substring(7);
+         String bearerToken = request.getHeader("Authorization");
+         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+             return bearerToken.substring(7);
+         }
+         return null;
      }
 
      /**
@@ -108,7 +107,7 @@ public class JwtTokenProvider {
              if (token.contains("BEARER")&&!token.substring(0, "BEARER ".length()).equalsIgnoreCase("BEARER ")) {
                  return false;
              }else{
-                 token = token.split(" ")[0].trim();
+                 token = token.split(" ")[0].trim();  // 테스트 제외 하면 1로 바꾸기
              }
              Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
              // 만료되면 False

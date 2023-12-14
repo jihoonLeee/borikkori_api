@@ -36,6 +36,7 @@ public class EmailVerificationUsecaseImpl implements EmailVerificationUsecase{
          /**
           * 이메일 전송하기 로직  TODO: 예외처리
           * */
+        System.out.println(email + "  :  " + code);
         emailSender.send(email,code);
 
         emailVerificationRepository.verification(emailVerification); // 전송 성공하면 저장

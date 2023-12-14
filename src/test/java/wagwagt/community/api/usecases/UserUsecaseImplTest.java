@@ -1,29 +1,18 @@
 package wagwagt.community.api.usecases;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 //import org.springframework.test.annotation.Rollback;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-import wagwagt.community.api.controllers.UserController;
 import wagwagt.community.api.entities.Authority;
 import wagwagt.community.api.entities.User;
 import wagwagt.community.api.enums.Role;
 import wagwagt.community.api.infrastructures.security.JwtTokenProvider;
 import wagwagt.community.api.repositories.UserRepository;
 import wagwagt.community.api.requests.LoginRequest;
-import wagwagt.community.api.responses.LoginResponse;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
