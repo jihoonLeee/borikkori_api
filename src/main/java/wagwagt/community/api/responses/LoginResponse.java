@@ -3,6 +3,7 @@ package wagwagt.community.api.responses;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 import wagwagt.community.api.enums.Role;
 
 @Builder
@@ -12,6 +13,6 @@ public class LoginResponse {
     String email;
     @Schema(description = "유저 유형",example = "NORMAL")
     Role role;
-    String accessToken;
-    String refreshToken;
+
+    HttpStatus httpStatus;
 }

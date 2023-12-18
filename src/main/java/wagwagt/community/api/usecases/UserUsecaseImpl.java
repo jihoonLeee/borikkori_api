@@ -1,6 +1,9 @@
 package wagwagt.community.api.usecases;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -66,7 +69,7 @@ public class UserUsecaseImpl implements UserUsecase{
      * @param loginReq
      * @return
      */
-    public LoginResponse login(LoginRequest loginReq){
+    public LoginResponse login(LoginRequest loginReq , HttpServletResponse response){
 
         User user = userRepository.findByEmail(loginReq.getEmail()).orElseThrow(
                 () -> new BadCredentialsException("잘못된 계정 정보")
@@ -77,12 +80,19 @@ public class UserUsecaseImpl implements UserUsecase{
         }
         String accessToken= jwtTokenProvider.createToken(user.getEmail(),authorityRepository.findOne(user.getId()));
         String refreshToken=jwtTokenProvider.createRefreshToken(user.getEmail());
+        //쿠키 저장
+        Cookie jwtCookie = new Cookie("access_token", accessToken);
+        jwtCookie.setHttpOnly(true);
+        jwtCookie.setSecure(true);
+        jwtCookie.setPath("/");
+        response.addCookie(jwtCookie);
+
 //        refreshTokenRepository.save(new RefreshToken(user.getId(),refreshToken,accessToken));
         return LoginResponse.builder()
                 .email(user.getEmail())
                 .role(user.getAuth().getRole())
-                .accessToken(accessToken)
-                .refreshToken(refreshToken).build();
+                .httpStatus(HttpStatus.OK)
+                .build();
     }
 
     /****
@@ -93,4 +103,6 @@ public class UserUsecaseImpl implements UserUsecase{
     public String logout(User user){
         return "ok";
     }
+
+
 }

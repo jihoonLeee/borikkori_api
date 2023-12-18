@@ -1,5 +1,6 @@
 package wagwagt.community.api.usecases;
 
+import jakarta.servlet.http.HttpServletResponse;
 import wagwagt.community.api.entities.User;
 import wagwagt.community.api.requests.LoginRequest;
 import wagwagt.community.api.responses.LoginResponse;
@@ -15,7 +16,7 @@ public interface UserUsecase {
     // 회원탈퇴
     
     //로그인
-    LoginResponse login(LoginRequest user);
+    LoginResponse login(LoginRequest user, HttpServletResponse response);
 
     // 로그아웃
 

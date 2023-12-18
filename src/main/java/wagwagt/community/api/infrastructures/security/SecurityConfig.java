@@ -30,10 +30,10 @@ public class SecurityConfig {
                         .requestMatchers(allowsUrls).permitAll()
                         .anyRequest().authenticated()
                 )
-//                .formLogin(formLogin -> formLogin
-//                        .loginPage("/view/users/login")
-//                        .permitAll()
-//                )
+                .formLogin(formLogin -> formLogin
+                        .loginPage("https://www.wagwagt.world")
+                        .permitAll()
+                )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .rememberMe(Customizer.withDefaults()).build();
     }
