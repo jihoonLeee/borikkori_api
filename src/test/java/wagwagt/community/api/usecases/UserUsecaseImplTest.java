@@ -71,7 +71,7 @@ class UserUsecaseImplTest {
         System.out.println("조인 성공 :  "+id);
 
         LoginRequest req =  new LoginRequest();
-        req.setEmail("jihoon2723@naver.co");
+        req.setEmail("jihoon2723@naver.com");
         req.setPassword(passwd);
         HttpServletResponse res = Mockito.mock(HttpServletResponse.class);
 

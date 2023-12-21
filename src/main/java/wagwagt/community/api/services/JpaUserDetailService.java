@@ -7,7 +7,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import wagwagt.community.api.entities.User;
 import wagwagt.community.api.repositories.UserRepository;
-import wagwagt.community.api.usecases.CustomUserDetail;
 
 @Service
 @RequiredArgsConstructor

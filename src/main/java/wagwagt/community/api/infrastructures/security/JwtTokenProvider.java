@@ -48,22 +48,22 @@ public class JwtTokenProvider {
     /**
      * 토큰 생성
      */
-    public String createToken(String account, Authority role){
-        Claims claims = Jwts.claims().setSubject(account);
+    public String createToken(String email, Authority role){
+        Claims claims = Jwts.claims().setSubject(email);
         claims.put("role",role);
         Date now= new Date();
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
-                .setExpiration(Date.from(Instant.now().plus(exp, ChronoUnit.MINUTES)))
+                .setExpiration(Date.from(Instant.now().plus(exp, ChronoUnit.SECONDS)))
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
     /**
      * 리프래시 토큰 생성
      */
-    public String createRefreshToken(String account){
-        Claims claims = Jwts.claims().setSubject(account);
+    public String createRefreshToken(String email){
+        Claims claims = Jwts.claims().setSubject(email);
         Date now= new Date();
         return Jwts.builder()
                 .setClaims(claims)
@@ -86,6 +86,13 @@ public class JwtTokenProvider {
      public String getAccount(String token){
          return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().getSubject();
      }
+
+    /**
+     * 토큰에 담겨있는 body(claims)정보 획득
+     */
+    public Claims getInfo(String token){
+        return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
+    }
 
      /**
       * Authorization Header를 통해 인증

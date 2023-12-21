@@ -20,10 +20,11 @@ import wagwagt.community.api.repositories.UserRepository;
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final String[] allowsUrls = {"/","/users/**","/swagger-ui/**"};
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtTokenProvider);
+        JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtTokenProvider,refreshTokenRepository);
 
         return http.csrf(csrf -> csrf.ignoringRequestMatchers(allowsUrls)) // CSRF 검증을 건너뛰는 경로 설정
                 .authorizeHttpRequests(authorize -> authorize
@@ -36,6 +37,7 @@ public class SecurityConfig {
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .rememberMe(Customizer.withDefaults()).build();
+
     }
 
 

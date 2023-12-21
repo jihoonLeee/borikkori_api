@@ -1,6 +1,7 @@
 package wagwagt.community.api.usecases;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -87,7 +88,8 @@ public class UserUsecaseImpl implements UserUsecase{
         jwtCookie.setPath("/");
         response.addCookie(jwtCookie);
 
-//        refreshTokenRepository.save(new RefreshToken(user.getId(),refreshToken,accessToken));
+        refreshTokenRepository.save(new RefreshToken(user.getEmail(),refreshToken,accessToken));
+
         return LoginResponse.builder()
                 .email(user.getEmail())
                 .role(user.getAuth().getRole())
