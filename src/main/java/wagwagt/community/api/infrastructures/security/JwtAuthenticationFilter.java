@@ -43,7 +43,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     Authentication auth = jwtTokenProvider.getAuthentication(token);
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }else{
-                     System.out.println(token + " 토큰 ");
                      Optional<RefreshToken> refreshTokenOptional = refreshTokenRepository.findByAccessToken(token);
                      if (refreshTokenOptional.isPresent()) {
                          RefreshToken refreshToken = refreshTokenOptional.get();
@@ -69,7 +68,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 }
             }else{
-                // 로그인 페이지로
+                response.sendRedirect(MAIN_URL);
             }
         } catch (Exception e) {
             log.error("Failed to process authentication", e);
