@@ -1,4 +1,4 @@
-package wagwagt.community.api.usecases;
+package wagwagt.community.api.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;

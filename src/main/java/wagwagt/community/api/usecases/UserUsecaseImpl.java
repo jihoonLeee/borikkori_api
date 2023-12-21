@@ -1,16 +1,22 @@
 package wagwagt.community.api.usecases;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
+import wagwagt.community.api.dto.RefreshToken;
 import wagwagt.community.api.entities.Authority;
 import wagwagt.community.api.entities.User;
 //import wagwagt.community.api.repositories.EmailVerificationRepository;
 import wagwagt.community.api.infrastructures.security.JwtTokenProvider;
 import wagwagt.community.api.repositories.AuthorityRepository;
+import wagwagt.community.api.repositories.RefreshTokenRepository;
 import wagwagt.community.api.repositories.UserRepository;
 import wagwagt.community.api.requests.LoginRequest;
 import wagwagt.community.api.responses.LoginResponse;
@@ -29,6 +35,7 @@ public class UserUsecaseImpl implements UserUsecase{
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
     private final AuthorityRepository authorityRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     /**
      * 회원가입
@@ -37,6 +44,7 @@ public class UserUsecaseImpl implements UserUsecase{
     @Override
     public Long join(User user){
         duplicateUser(user);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
         return user.getId();
     }
@@ -62,7 +70,8 @@ public class UserUsecaseImpl implements UserUsecase{
      * @param loginReq
      * @return
      */
-    public LoginResponse login(LoginRequest loginReq){
+    public LoginResponse login(LoginRequest loginReq , HttpServletResponse response){
+
         User user = userRepository.findByEmail(loginReq.getEmail()).orElseThrow(
                 () -> new BadCredentialsException("잘못된 계정 정보")
         );
@@ -71,13 +80,21 @@ public class UserUsecaseImpl implements UserUsecase{
             throw  new BadCredentialsException("잘못된 비밀번호");
         }
         String accessToken= jwtTokenProvider.createToken(user.getEmail(),authorityRepository.findOne(user.getId()));
-        String refreshToken=jwtTokenProvider.createRefreshToken(user.getEmail(),authorityRepository.findOne(user.getId()));
+        String refreshToken=jwtTokenProvider.createRefreshToken(user.getEmail());
+        //쿠키 저장
+        Cookie jwtCookie = new Cookie("access_token", accessToken);
+        jwtCookie.setHttpOnly(true);
+        jwtCookie.setSecure(true);
+        jwtCookie.setPath("/");
+        response.addCookie(jwtCookie);
+
+        refreshTokenRepository.save(new RefreshToken(user.getEmail(),refreshToken,accessToken));
 
         return LoginResponse.builder()
                 .email(user.getEmail())
                 .role(user.getAuth().getRole())
-                .accessToken(accessToken)
-                .refreshToken(refreshToken).build();
+                .httpStatus(HttpStatus.OK)
+                .build();
     }
 
     /****
@@ -88,4 +105,6 @@ public class UserUsecaseImpl implements UserUsecase{
     public String logout(User user){
         return "ok";
     }
+
+
 }

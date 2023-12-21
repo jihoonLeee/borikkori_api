@@ -27,7 +27,9 @@ public class UserRepository {
         return em.createQuery("select u from User u",User.class).getResultList();
     }
 
-
+    public User findById(Long id ){
+        return em.find(User.class,id);
+    }
 
     public Optional<User> findByEmail(String email){
         List<User> users = em.createQuery("select u from User u where u.email =:email", User.class)

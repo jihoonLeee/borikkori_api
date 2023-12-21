@@ -21,7 +21,7 @@ spring:
     database: mysql
     show_sql: true
     hibernate:
-      ddl-auto: create # ?? ????? update or create .. ??
+      ddl-auto: update # ?? ????? update or create .. ??
     properties:
       hibernate:
         show_sql: true
@@ -50,3 +50,9 @@ jwt:
     expiration-minutes: 30
     refresh-expiration-hours: 24
 #https://acte.ltd/utils/randomkeygen
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
