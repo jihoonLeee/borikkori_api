@@ -1,0 +1,58 @@
+spring:
+  doc-openapi:
+    packages-to-scan: com.colabear754.springdoc_example.controllers
+    default-consumes-media-type: application/json;charset=UTF-8
+    default-produces-media-type: application/json;charset=UTF-8
+
+    swagger-ui:
+      path: /
+      disable-swagger-default-url: true
+      display-request-duration: true
+      operations-sorter:  alpha
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/wagwagt?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&useSSL=true
+    username: ${DB_USER_NAME}
+    password: ${DB_PASSWORD}
+
+
+  jpa:
+    database: mysql
+    show_sql: true
+    hibernate:
+      ddl-auto: update # ?? ????? update or create .. ??
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+
+  mail:
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USER_NAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+
+# jwt.secret.key? ?? 256bit ????? ???.
+jwt:
+  secret:
+    key: ${JWT_KEY}
+    expiration-minutes: 30
+    refresh-expiration-hours: 24
+#https://acte.ltd/utils/randomkeygen
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
