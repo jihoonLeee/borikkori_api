@@ -28,7 +28,7 @@ spring:
         format_sql: true
 
   mail:
-    host: ${MAIL_HOST}
+    host: smtp.gmail.com
     port: ${MAIL_PORT}
     username: ${MAIL_USER_NAME}
     password: ${MAIL_PASSWORD}

@@ -45,7 +45,11 @@ dependencies {
 	implementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
 
 	//Redis
+	implementation("org.junit.jupiter:junit-jupiter-api:5.3.1")
 	implementation("org.springframework.boot:spring-boot-starter-data-redis")
+
+	// test
+	testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.3.1")
 }
 
 tasks.withType<Test> {
