@@ -7,7 +7,9 @@ on:
   pull_request:
     branches:
       - main  # Change to the default branch name of your repository
-
+env:
+  RESOURCE_PATH: ./Server/wagwagt.server/wagwagt.server/src/main/resources/application.yml
+  JWT_PATH: ./Server/wagwagt.server/wagwagt.server/src/main/resources/jwt.yml
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,7 +23,29 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
-      
+        
+    - name: Set yml file 
+      uses: microsoft/variable-substitution@v1
+      with:
+        files: ${{ env.RESOURCE_PATH }} 
+      env:
+        spring.datasource.url: ${{ secrets.DB_URL }} 
+        spring.datasource.username: ${{ secrets.DB_USERNAME }} 
+        spring.datasource.password: ${{ secrets.DB_PASSWORD }} 
+        spring.mail.host: ${{secrets.MAIL_HOST}}
+        spring.mail.port: ${{secrets.MAIL_PORT}}
+        spring.mail.username: ${{secrets.MAIL_USERNAME}}
+        spring.mail.password: ${{secrets.MAIL_PASSWORD}}
+        spring.data.redis.host: ${{secrets.REDIS_HOST}}
+        spring.data.redis.port: ${{secrets.REDIS_PORT}}
+        
+    - name: Set jwt yml file 
+      uses: microsoft/variable-substitution@v1
+      with:
+        files: ${{ env.JWT_PATH }} 
+      env:
+        jwt.key: ${{ secrets.JWT_KEY }}
+
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
       
