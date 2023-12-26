@@ -56,19 +56,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                              response.addCookie(jwtCookie);
                              refreshToken.setAccessToken(accessToken);
                              refreshTokenRepository.save(refreshToken);
-                         }else{
-                             // RefreshToken 유효하지 않음 (만료)
-                             // 다시 로그인
-                             response.sendRedirect(MAIN_URL);
                          }
-                     } else {
-                         // accesstoken과 맞는 refreshToken없음
-                         response.sendRedirect(MAIN_URL);
                      }
-
                 }
-            }else{
-                response.sendRedirect(MAIN_URL);
             }
         } catch (Exception e) {
             log.error("Failed to process authentication", e);

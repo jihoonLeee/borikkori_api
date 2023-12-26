@@ -12,8 +12,8 @@ public class RefreshTokenService {
     private final RefreshTokenRepository refreshTokenRepository;
 
     @Transactional
-    public void saveTokenInfo(String userEmail, String refreshToken,String accessToken){
-        refreshTokenRepository.save(new RefreshToken(userEmail,refreshToken,accessToken));
+    public void saveTokenInfo(Long userId, String refreshToken,String accessToken){
+        refreshTokenRepository.save(new RefreshToken(userId,refreshToken,accessToken));
     }
 
     @Transactional

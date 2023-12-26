@@ -12,7 +12,7 @@ import org.springframework.data.redis.core.index.Indexed;
 public class RefreshToken {
 
     @Id
-    private String email;
+    private Long id;
 
     private String refreshToken;
 

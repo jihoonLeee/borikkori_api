@@ -83,12 +83,14 @@ public class UserUsecaseImpl implements UserUsecase{
         String refreshToken=jwtTokenProvider.createRefreshToken(user.getEmail());
         //쿠키 저장
         Cookie jwtCookie = new Cookie("access_token", accessToken);
-        jwtCookie.setHttpOnly(true);
-        jwtCookie.setSecure(true);
+        jwtCookie.setHttpOnly(true); // javascript를 통한 쿠키 접근 방지
+        jwtCookie.setSecure(false);  // setSecure(true)면 https일때만 쿠키 저장됨
         jwtCookie.setPath("/");
+        jwtCookie.setMaxAge(60 * 30);
+
         response.addCookie(jwtCookie);
 
-        refreshTokenRepository.save(new RefreshToken(user.getEmail(),refreshToken,accessToken));
+        refreshTokenRepository.save(new RefreshToken(user.getId(),refreshToken,accessToken));
 
         return LoginResponse.builder()
                 .email(user.getEmail())
