@@ -8,8 +8,9 @@ on:
     branches:
       - main  # Change to the default branch name of your repository
 env:
-  RESOURCE_PATH: ./Server/wagwagt.server/wagwagt.server/src/main/resources/application.yml
-  JWT_PATH: ./Server/wagwagt.server/wagwagt.server/src/main/resources/jwt.yml
+  RESOURCE_PATH: /home/runner/work/wagwagt.server/wagwagt.server/src/main/resources/application.yml
+  JWT_PATH: /home/runner/work/wagwagt.server/wagwagt.server/src/main/resources/jwt.yml
+  
 jobs:
   build:
     runs-on: ubuntu-latest
