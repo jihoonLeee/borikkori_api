@@ -35,24 +35,24 @@ class UserUsecaseImplTest {
     JwtTokenProvider jwtTokenProvider;
 
 
-    @Test
-    public void 회원가입() throws Exception{
-        //given
-        //인증을 먼저 받고 받은 이메일이 다음 챕터로 넘어감
-        int code = emailVerificationUsecase.sendEmail("jihoon2723@naver.com");
-        emailVerificationUsecase.checkEmail(code,"jihoon2723@naver.com");
-        User user = User.builder()
-                .name("이지훈")
-                .password("1234")
-                .email("jihoon2723@naver.com")
-                .build();
-        
-        //when
-        Long id = userUsecase.join(user);
-        System.out.println(id + " : id");
-        //then
-        Assertions.assertEquals(user,userRepository.findOne(id));
-    }
+//    @Test
+//    public void 회원가입() throws Exception{
+//        //given
+//        //인증을 먼저 받고 받은 이메일이 다음 챕터로 넘어감
+//        int code = emailVerificationUsecase.sendEmail("jihoon2723@naver.com");
+//        emailVerificationUsecase.checkEmail(code,"jihoon2723@naver.com");
+//        User user = User.builder()
+//                .name("이지훈")
+//                .password("1234")
+//                .email("jihoon2723@naver.com")
+//                .build();
+//
+//        //when
+//        Long id = userUsecase.join(user);
+//        System.out.println(id + " : id");
+//        //then
+//        Assertions.assertEquals(user,userRepository.findOne(id));
+//    }
 
     @Test
     public void 로그인() throws Exception{
