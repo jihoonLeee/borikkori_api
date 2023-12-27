@@ -45,13 +45,16 @@ dependencies {
 	implementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
 
 	//Redis
-	implementation("org.junit.jupiter:junit-jupiter-api:5.3.1")
 	implementation("org.springframework.boot:spring-boot-starter-data-redis")
 
 	// test
+	testImplementation ("org.junit.jupiter:junit-jupiter-api:5.3.1")
 	testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.3.1")
 }
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+	systemProperty("spring.datasource.url", "jdbc:mysql://"+System.getenv("DB_URL")+"/wagwagt?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&useSSL=true")
+	systemProperty("spring.datasource.username", System.getenv("DB_USER_NAME"))
+	systemProperty("spring.datasource.password", System.getenv("DB_PASSWORD"))
 }
