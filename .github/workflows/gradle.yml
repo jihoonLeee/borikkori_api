@@ -70,3 +70,13 @@ jobs:
           
     - name: Build with Gradle
       run: ./gradlew build
+      env:
+        DB_URL: ${{ secrets.DB_URL }}
+        DB_USER_NAME: ${{ secrets.DB_USER_NAME }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        MAIL_PORT: ${{ secrets.MAIL_PORT }}
+        MAIL_USER_NAME: ${{ secrets.MAIL_USER_NAME }}
+        MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+        JWT_KEY: ${{ secrets.JWT_KEY }}
+        REDIS_HOST: ${{ secrets.REDIS_HOST }}
+        REDIS_PORT: ${{ secrets.REDIS_PORT }}
