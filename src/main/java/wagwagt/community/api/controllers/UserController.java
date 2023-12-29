@@ -1,14 +1,20 @@
 package wagwagt.community.api.controllers;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wagwagt.community.api.entities.Authority;
+import wagwagt.community.api.infrastructures.security.JwtTokenProvider;
 import wagwagt.community.api.requests.JoinRequest;
 import wagwagt.community.api.requests.LoginRequest;
 import wagwagt.community.api.entities.User;
@@ -26,6 +32,8 @@ public class UserController {
 
     private final EmailVerificationUsecase emailVerificationUsecase;
     private final UserUsecase userUsecase;
+    private final JwtTokenProvider jwtTokenProvider;
+
     @Operation(summary = "이메일 전송" , description = "이메일 전송")
     @Parameter(name = "joinDto",description = "2번 반복할 문자열")
     @PostMapping("/sendEmail")
@@ -64,4 +72,25 @@ public class UserController {
         return new ResponseEntity<>(res,res.getHttpStatus());
     }
 
+    @Operation(summary = "로그인 상태 체크" , description = "로그인 상태 체크")
+    @GetMapping("/userInfo")
+    public ResponseEntity<?> getUserInfo(HttpServletRequest request) {
+//        String token = jwtTokenProvider.resolveToken(request);
+        Cookie[] cookies = request.getCookies();
+        String token = null;
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("access_token")) {
+                    token = cookie.getValue();
+                    break;
+                }
+            }
+        }
+        if (token == null) {
+            return ResponseEntity.status(401).body("로그인하지 않았습니다.");
+        } else {
+            Claims claims = jwtTokenProvider.getInfo(token);
+            return ResponseEntity.ok(claims);
+        }
+    }
 }

@@ -36,7 +36,7 @@ class UserUsecaseImplTest {
 
 
 //    @Test
-//    public void 회원가입() throws Exception{
+//    public void join() throws Exception{
 //        //given
 //        //인증을 먼저 받고 받은 이메일이 다음 챕터로 넘어감
 //        int code = emailVerificationUsecase.sendEmail("jihoon2723@naver.com");
@@ -55,7 +55,8 @@ class UserUsecaseImplTest {
 //    }
 
     @Test
-    public void 로그인() throws Exception{
+
+    public void login() throws Exception{
         String passwd = "1234";
         String  encodePasswd = passwordEncoder.encode("1234");
         //given
