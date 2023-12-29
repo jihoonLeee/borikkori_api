@@ -43,12 +43,12 @@ spring:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
 
-# jwt.secret.key? ?? 256bit ????? ???.
-jwt:
-  secret:
-    key: ${JWT_KEY}
-    expiration-minutes: 30
-    refresh-expiration-hours: 24
+## jwt.secret.key? ?? 256bit ????? ???.
+#jwt:
+#  secret:
+#    key: ${JWT_KEY}
+#    expiration-minutes: 30
+#    refresh-expiration-hours: 24
 #https://acte.ltd/utils/randomkeygen
 
 logging:
@@ -56,3 +56,6 @@ logging:
     org:
       springframework:
         security: DEBUG
+cors:
+  allowed:
+    origins: ${CORS_ORIGIN}

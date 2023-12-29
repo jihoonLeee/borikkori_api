@@ -21,7 +21,6 @@ import java.net.URI;
 @Tag(name="user_api", description = "USER Apis")
 @RequestMapping("users")
 @RequiredArgsConstructor
-@CrossOrigin (origins = "http://localhost:3000")
 @RestController
 public class UserController {
 
