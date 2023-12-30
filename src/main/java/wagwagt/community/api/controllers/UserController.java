@@ -12,6 +12,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 import wagwagt.community.api.entities.Authority;
 import wagwagt.community.api.infrastructures.security.JwtTokenProvider;
@@ -72,10 +74,12 @@ public class UserController {
         return new ResponseEntity<>(res,res.getHttpStatus());
     }
 
+
     @Operation(summary = "로그인 상태 체크" , description = "로그인 상태 체크")
     @GetMapping("/userInfo")
     public ResponseEntity<?> getUserInfo(HttpServletRequest request) {
 //        String token = jwtTokenProvider.resolveToken(request);
+        System.out.println("체크");
         Cookie[] cookies = request.getCookies();
         String token = null;
         if (cookies != null) {
@@ -92,5 +96,21 @@ public class UserController {
             Claims claims = jwtTokenProvider.getInfo(token);
             return ResponseEntity.ok(claims);
         }
+    }
+
+//    @PostMapping("/logout")
+//    public void logout(HttpServletRequest request) {
+//        Cookie[] cookies = request.getCookies();
+//        if (cookies != null) {
+//            for (Cookie cookie : cookies) {
+//                System.out.println("Cookie name: " + cookie.getName() + ", value: " + cookie.getValue());
+//            }
+//        }
+//        // 로그아웃 처리 로직
+//    }
+
+    @GetMapping("/logout")
+    public ResponseEntity<String> handleLogout() {
+        return ResponseEntity.ok().body("Logout successful");
     }
 }
