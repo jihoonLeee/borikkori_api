@@ -18,9 +18,7 @@ public interface UserUsecase {
     //로그인
     LoginResponse login(LoginRequest user, HttpServletResponse response);
 
-    // 로그아웃
 
-    String logout(User user);
     //비밀번호 변경
     
     // 비밀번호 찾기

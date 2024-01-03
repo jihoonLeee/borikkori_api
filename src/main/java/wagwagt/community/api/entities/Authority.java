@@ -22,7 +22,7 @@ public class Authority {
     private Role role;
 
     @JsonIgnore
-    @JoinColumn(name = "user")
+    @JoinColumn(name = "auth")
     @OneToOne(fetch = FetchType.LAZY)
     private User user;
 

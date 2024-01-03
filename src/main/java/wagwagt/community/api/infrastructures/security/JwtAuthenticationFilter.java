@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Description;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -55,6 +56,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                              jwtCookie.setPath("/");
                              response.addCookie(jwtCookie);
                              refreshToken.setAccessToken(accessToken);
+//                             ResponseCookie cookie = ResponseCookie.from("access_token",accessToken)
+//                                     .path("/")
+//                                     .sameSite("None")
+//                                     .httpOnly(true)
+//                                     .secure(false)
+//                                     .domain("localhost")
+//                                     .maxAge(60*30)
+//                                     .build();
+//                             response.addHeader("Set-Cookie",cookie.toString());
                              refreshTokenRepository.save(refreshToken);
                          }
                      }

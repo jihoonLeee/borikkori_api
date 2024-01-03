@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,6 @@ import java.util.Optional;
 public class UserUsecaseImpl implements UserUsecase{
 
     private final UserRepository userRepository;
-//    private final EmailVerificationUsecase emailVerificationUsecase;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
     private final AuthorityRepository authorityRepository;
@@ -82,14 +82,21 @@ public class UserUsecaseImpl implements UserUsecase{
         String accessToken= jwtTokenProvider.createToken(user.getEmail(),authorityRepository.findOne(user.getId()));
         String refreshToken=jwtTokenProvider.createRefreshToken(user.getEmail());
         //쿠키 저장
-        Cookie jwtCookie = new Cookie("access_token", accessToken);
-        jwtCookie.setHttpOnly(true); // javascript를 통한 쿠키 접근 방지
-        jwtCookie.setSecure(false);  // setSecure(true)면 https일때만 쿠키 저장됨
-        jwtCookie.setPath("/");
-        jwtCookie.setMaxAge(60 * 30);
-
-        response.addCookie(jwtCookie);
-
+//        Cookie jwtCookie = new Cookie("access_token", accessToken);
+//        jwtCookie.setHttpOnly(true); // javascript를 통한 쿠키 접근 방지
+//        jwtCookie.setSecure(false);  // setSecure(true)면 https일때만 쿠키 저장됨
+//        jwtCookie.setPath("/");
+//        jwtCookie.setMaxAge(60 * 30);
+//        response.addCookie(jwtCookie);
+         ResponseCookie cookie = ResponseCookie.from("access_token",accessToken)
+                 .path("/")
+                 .sameSite("false")
+                 .httpOnly(true)
+                 .secure(false)
+                 .domain("wagwagt.iptime.org")
+                 .maxAge(60*30)
+                 .build();
+         response.addHeader("Set-Cookie",cookie.toString());
         refreshTokenRepository.save(new RefreshToken(user.getId(),refreshToken,accessToken));
 
         return LoginResponse.builder()
@@ -98,15 +105,5 @@ public class UserUsecaseImpl implements UserUsecase{
                 .httpStatus(HttpStatus.OK)
                 .build();
     }
-
-    /****
-     * 로그아웃
-     * @param user
-     * @return
-     */
-    public String logout(User user){
-        return "ok";
-    }
-
 
 }
