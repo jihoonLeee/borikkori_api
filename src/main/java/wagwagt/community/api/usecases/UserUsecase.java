@@ -18,6 +18,8 @@ public interface UserUsecase {
     //로그인
     LoginResponse login(LoginRequest user, HttpServletResponse response);
 
+    //로그인 정보
+     LoginResponse loginInfo (String token) throws Exception;
 
     //비밀번호 변경
     

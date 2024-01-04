@@ -34,7 +34,6 @@ public class UserController {
 
     private final EmailVerificationUsecase emailVerificationUsecase;
     private final UserUsecase userUsecase;
-    private final JwtTokenProvider jwtTokenProvider;
 
     @Operation(summary = "이메일 전송" , description = "이메일 전송")
     @Parameter(name = "joinDto",description = "2번 반복할 문자열")
@@ -77,7 +76,7 @@ public class UserController {
 
     @Operation(summary = "로그인 상태 체크" , description = "로그인 상태 체크")
     @PostMapping("/userInfo")
-    public ResponseEntity<?> getUserInfo(HttpServletRequest request) {
+    public ResponseEntity<?> getUserInfo(HttpServletRequest request) throws Exception {
         Cookie[] cookies = request.getCookies();
         String token = null;
         if (cookies != null) {
@@ -91,8 +90,8 @@ public class UserController {
         if (token == null) {
             return ResponseEntity.status(401).body("로그인하지 않았습니다.");
         } else {
-            Claims claims = jwtTokenProvider.getInfo(token);
-            return ResponseEntity.ok(claims);
+            LoginResponse response = userUsecase.loginInfo(token);
+            return ResponseEntity.ok(response);
         }
     }
 

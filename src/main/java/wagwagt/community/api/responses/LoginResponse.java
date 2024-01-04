@@ -10,7 +10,7 @@ import wagwagt.community.api.enums.Role;
 @Getter
 public class LoginResponse {
     @Schema(description = "유저 이메일",example = "jihoonn@gmail.com")
-    String email;
+    String nickName;
     @Schema(description = "유저 유형",example = "NORMAL")
     Role role;
 

@@ -3,6 +3,7 @@ package wagwagt.community.api.infrastructures.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -22,6 +23,7 @@ import java.util.Arrays;
 @Configuration
 @EnableWebSecurity  //spring security 활성화
 @RequiredArgsConstructor
+@EnableJpaAuditing
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
@@ -36,10 +38,6 @@ public class SecurityConfig {
                         .requestMatchers(allowsUrls).permitAll()
                         .anyRequest().authenticated()
                 )
-//                .formLogin(formLogin -> formLogin
-//                        .loginPage("https://www.wagwagt.world")
-//                        .permitAll()
-//                )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/users/logout")

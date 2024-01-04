@@ -16,13 +16,15 @@ import wagwagt.community.api.enums.Role;
 public class Authority {
 
     @Id
+    @Column(name="auth_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     private Role role;
 
     @JsonIgnore
-    @JoinColumn(name = "auth")
+    @JoinColumn(name = "user_id")
     @OneToOne(fetch = FetchType.LAZY)
     private User user;
 

@@ -1,5 +1,6 @@
 package wagwagt.community.api.usecases;
 
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -82,28 +83,42 @@ public class UserUsecaseImpl implements UserUsecase{
         String accessToken= jwtTokenProvider.createToken(user.getEmail(),authorityRepository.findOne(user.getId()));
         String refreshToken=jwtTokenProvider.createRefreshToken(user.getEmail());
         //쿠키 저장
-//        Cookie jwtCookie = new Cookie("access_token", accessToken);
-//        jwtCookie.setHttpOnly(true); // javascript를 통한 쿠키 접근 방지
-//        jwtCookie.setSecure(false);  // setSecure(true)면 https일때만 쿠키 저장됨
-//        jwtCookie.setPath("/");
-//        jwtCookie.setMaxAge(60 * 30);
-//        response.addCookie(jwtCookie);
          ResponseCookie cookie = ResponseCookie.from("access_token",accessToken)
                  .path("/")
                  .sameSite("false")
                  .httpOnly(true)
                  .secure(false)
-                 .domain("wagwagt.iptime.org")
+                 .domain("localhost")
                  .maxAge(60*30)
                  .build();
          response.addHeader("Set-Cookie",cookie.toString());
         refreshTokenRepository.save(new RefreshToken(user.getId(),refreshToken,accessToken));
 
         return LoginResponse.builder()
-                .email(user.getEmail())
+                .nickName(user.getName())
                 .role(user.getAuth().getRole())
                 .httpStatus(HttpStatus.OK)
                 .build();
+    }
+
+
+    public LoginResponse loginInfo (String token) throws Exception {
+        Claims claims = jwtTokenProvider.getInfo(token);
+        String userEmail = claims.getSubject();
+
+        Optional<User> userOptional = userRepository.findByEmail(userEmail);
+
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+
+            return LoginResponse.builder()
+                    .nickName(user.getName())
+                    .role(user.getAuth().getRole())
+                    .httpStatus(HttpStatus.OK)
+                    .build();
+        } else {
+            throw new Exception();
+        }
     }
 
 }

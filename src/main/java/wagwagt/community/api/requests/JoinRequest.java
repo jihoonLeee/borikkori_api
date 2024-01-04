@@ -11,6 +11,6 @@ public class JoinRequest {
     private String name;
     private String email;
     private String password;
-    private final Role role = Role.NORMAL;
+    private final Role role = Role.DEFAULT;
     private int verificationNumber;
 }

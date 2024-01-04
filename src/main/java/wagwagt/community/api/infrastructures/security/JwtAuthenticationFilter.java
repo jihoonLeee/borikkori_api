@@ -38,7 +38,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException{
         try {
-            String token = jwtTokenProvider.resolveToken(request);
+            String token = getAccessTokenFromCookie(request);
             if (token != null){
                  if(jwtTokenProvider.validateToken(token)) {
                     Authentication auth = jwtTokenProvider.getAuthentication(token);
@@ -50,34 +50,44 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                          if(jwtTokenProvider.validateToken(refreshToken.getRefreshToken())){
                              Claims userAuth = jwtTokenProvider.getInfo(token);
                              String accessToken= jwtTokenProvider.createToken(userAuth.getSubject(),(Authority) userAuth.get("role"));
-                             Cookie jwtCookie = new Cookie("access_token", accessToken);
-                             jwtCookie.setHttpOnly(true);
-                             jwtCookie.setSecure(true);
-                             jwtCookie.setPath("/");
-                             response.addCookie(jwtCookie);
-                             refreshToken.setAccessToken(accessToken);
-//                             ResponseCookie cookie = ResponseCookie.from("access_token",accessToken)
-//                                     .path("/")
-//                                     .sameSite("None")
-//                                     .httpOnly(true)
-//                                     .secure(false)
-//                                     .domain("localhost")
-//                                     .maxAge(60*30)
-//                                     .build();
-//                             response.addHeader("Set-Cookie",cookie.toString());
                              refreshTokenRepository.save(refreshToken);
+                             ResponseCookie cookie = ResponseCookie.from("access_token",accessToken)
+                                     .path("/")
+                                     .sameSite("false")
+                                     .httpOnly(true)
+                                     .secure(false)
+                                     .domain("localhost")
+                                     .maxAge(60*30)
+                                     .build();
+                             response.addHeader("Set-Cookie",cookie.toString());
                          }
                      }
                 }
             }
         } catch (Exception e) {
             log.error("Failed to process authentication", e);
+
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication Failed");
+            return;
         }
 
         filterChain.doFilter(request, response);
 
     }
 
+    private String getAccessTokenFromCookie(HttpServletRequest request){
+        Cookie[] cookies = request.getCookies();
+        String token = null;
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("access_token")) {
+                    token = cookie.getValue();
+                    break;
+                }
+            }
+        }
+        return token;
+    }
 
 
 }

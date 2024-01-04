@@ -60,7 +60,7 @@ class UserUsecaseImplTest {
         String passwd = "1234";
         String  encodePasswd = passwordEncoder.encode("1234");
         //given
-        Authority auth = Authority.builder().role(Role.NORMAL).build();
+        Authority auth = Authority.builder().role(Role.DEFAULT).build();
         User joinuser = User.builder()
                 .name("이지훈")
                 .password(encodePasswd)
