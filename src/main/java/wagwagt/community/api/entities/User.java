@@ -21,7 +21,6 @@ import java.util.List;
 @EntityListeners(AuditingEntityListener.class)
 public class User {
 
-
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="user_id")
     private Long id;
@@ -34,7 +33,6 @@ public class User {
 
     @Column(name= "user_email",unique = true ,nullable = false)
     private String email;
-
 
     /**
      * TODO:권한 추가
@@ -63,9 +61,5 @@ public class User {
 //    @OneToMany(mappedBy = "user")
 //    private List<HospitalReview> hospitalReviews = new ArrayList<>();
 //
-//    @OneToMany(mappedBy = "user")
-//    private List<Post> posts = new ArrayList<>();
-
-
 
 }

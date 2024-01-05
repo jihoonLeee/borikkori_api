@@ -19,10 +19,6 @@ public class UserRepository {
         em.persist(user);
     }
 
-    public User findOne(Long id){
-        return em.find(User.class,id);
-    }
-
     public List<User> findAll(){
         return em.createQuery("select u from User u",User.class).getResultList();
     }

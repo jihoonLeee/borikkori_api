@@ -55,7 +55,7 @@ public class UserUsecaseImpl implements UserUsecase{
      * */
     @Override
     public User findOne(Long userId){
-        return userRepository.findOne(userId);
+        return userRepository.findById(userId);
     }
 
 
