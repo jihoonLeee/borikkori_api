@@ -36,7 +36,7 @@ public class UserController {
     private final UserUsecase userUsecase;
 
     @Operation(summary = "이메일 전송" , description = "이메일 전송")
-    @Parameter(name = "joinDto",description = "2번 반복할 문자열")
+    @Parameter(name = "JoinRequest",description = "2번 반복할 문자열")
     @PostMapping("/sendEmail")
     public ResponseEntity<String> sendEmail(@RequestBody JoinRequest joinDto){
         emailVerificationUsecase.sendEmail(joinDto.getEmail());
@@ -44,7 +44,7 @@ public class UserController {
     }
     
     @Operation(summary = "회원가입" , description = "회원가입 요청")
-    @Parameter(name = "JoinDto")
+    @Parameter(name = "JoinRequest")
     @PostMapping("/join")
     public ResponseEntity<Void> join(@RequestBody JoinRequest dto){
         if(emailVerificationUsecase.checkEmail(dto.getVerificationNumber(),dto.getEmail())){
@@ -66,11 +66,11 @@ public class UserController {
     }
 
     @Operation(summary = "로그인" , description = "로그인 요청")
-    @Parameter(name = "LoginDto")
+    @Parameter(name = "LoginRequest")
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request, HttpServletResponse response){
         LoginResponse res = userUsecase.login(request,response);
-        return new ResponseEntity<>(res,res.getHttpStatus());
+        return new ResponseEntity<>(res,HttpStatus.OK);
     }
 
 

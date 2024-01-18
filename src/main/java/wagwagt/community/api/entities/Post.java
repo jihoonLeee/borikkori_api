@@ -1,8 +1,10 @@
 package wagwagt.community.api.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.cglib.core.Local;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -14,6 +16,8 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 @Table(name="post")
+@NoArgsConstructor
+@AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class Post {
 
@@ -32,7 +36,7 @@ public class Post {
 
     private int visitCnt;
 
-    private int likeCount;
+    private int likeCnt;
 
     @CreatedDate
     @Column(updatable = false,nullable = false)

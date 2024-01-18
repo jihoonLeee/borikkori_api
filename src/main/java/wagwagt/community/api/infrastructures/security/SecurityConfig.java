@@ -28,7 +28,7 @@ public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
-    private final String[] allowsUrls = {"/","/users/**","/swagger-ui/**","/logout"};
+    private final String[] allowsUrls = {"/","/users/**","/swagger-ui/**","/logout","/posts/**"};
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtTokenProvider,refreshTokenRepository);

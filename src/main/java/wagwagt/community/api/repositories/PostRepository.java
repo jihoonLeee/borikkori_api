@@ -18,8 +18,15 @@ public class PostRepository {
         em.persist(post);
     }
 
-    public List<Post> findAll(){
-        return em.createQuery("select p from post p",Post.class).getResultList();
+    public List<Post> findAll(int page , int size){
+        return em.createQuery("select p from Post p order by p.id desc",Post.class)
+                .setFirstResult((page - 1)*size)
+                .setMaxResults(size)
+                .getResultList();
+    }
+    public long findPostCounts(){
+        return em.createQuery("select count(p) from Post p", Long.class)
+                .getSingleResult();
     }
 
     public Post findById(Long id ){

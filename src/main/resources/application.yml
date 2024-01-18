@@ -12,7 +12,7 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${DB_URL}/wagwagt?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&useSSL=true
+    url: jdbc:mysql://${DB_URL_LOCAL}/wagwagt?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&useSSL=true
     username: ${DB_USER_NAME}
     password: ${DB_PASSWORD}
 
@@ -21,7 +21,7 @@ spring:
     database: mysql
     show_sql: true
     hibernate:
-      ddl-auto: create # ?? ????? update or create .. ??
+      ddl-auto: update # ?? ????? update or create .. ??
     properties:
       hibernate:
         show_sql: true

@@ -58,12 +58,9 @@ public class UserUsecaseImpl implements UserUsecase{
         return userRepository.findById(userId);
     }
 
-
-
-    private void duplicateUser(User user){
-        Optional<User> find = userRepository.findByEmail(user.getEmail());
-        if(!find.isEmpty()) throw new IllegalStateException("이미 존재하는 회원");
-//        if(ObjectUtils.isEmpty(find)) throw new IllegalStateException("이미 존재하는 회원");
+    @Override
+    public Optional<User> findByEmail(String email){
+        return userRepository.findByEmail(email);
     }
 
     /***
@@ -71,6 +68,7 @@ public class UserUsecaseImpl implements UserUsecase{
      * @param loginReq
      * @return
      */
+    @Override
     public LoginResponse login(LoginRequest loginReq , HttpServletResponse response){
 
         User user = userRepository.findByEmail(loginReq.getEmail()).orElseThrow(
@@ -97,11 +95,11 @@ public class UserUsecaseImpl implements UserUsecase{
         return LoginResponse.builder()
                 .nickName(user.getName())
                 .role(user.getAuth().getRole())
-                .httpStatus(HttpStatus.OK)
                 .build();
     }
 
 
+    @Override
     public LoginResponse loginInfo (String token) throws Exception {
         Claims claims = jwtTokenProvider.getInfo(token);
         String userEmail = claims.getSubject();
@@ -110,15 +108,20 @@ public class UserUsecaseImpl implements UserUsecase{
 
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-
             return LoginResponse.builder()
                     .nickName(user.getName())
+                    .email(user.getEmail())
                     .role(user.getAuth().getRole())
-                    .httpStatus(HttpStatus.OK)
                     .build();
         } else {
             throw new Exception();
         }
+    }
+
+    private void duplicateUser(User user){
+        Optional<User> find = userRepository.findByEmail(user.getEmail());
+        if(!find.isEmpty()) throw new IllegalStateException("이미 존재하는 회원");
+//        if(ObjectUtils.isEmpty(find)) throw new IllegalStateException("이미 존재하는 회원");
     }
 
 }

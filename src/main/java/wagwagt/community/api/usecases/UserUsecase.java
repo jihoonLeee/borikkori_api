@@ -5,6 +5,8 @@ import wagwagt.community.api.entities.User;
 import wagwagt.community.api.requests.LoginRequest;
 import wagwagt.community.api.responses.LoginResponse;
 
+import java.util.Optional;
+
 public interface UserUsecase {
 
     // 회원가입
@@ -12,7 +14,7 @@ public interface UserUsecase {
     
     //회원 조회
     User findOne(Long userId);
-    
+    Optional<User> findByEmail(String email);
     // 회원탈퇴
     
     //로그인
