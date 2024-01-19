@@ -37,8 +37,10 @@ public class PostUsecaseImpl implements PostUsecase{
     }
 
     @Override
+    @Transactional
     public PostResponse getPost(Long id) {
         Post post = postRepository.findById(id);
+        post.setVisitCnt(post.getVisitCnt()+1);
         return PostResponse.builder()
                 .postId(id)
                 .title(post.getTitle())

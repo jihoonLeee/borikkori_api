@@ -47,5 +47,11 @@ public class Post {
     @Column(nullable = false)
     private LocalDateTime updDate;
 
+    public void setVisitCnt(int visitCnt) {
+        this.visitCnt = visitCnt;
+    }
 
+    public void setLikeCnt(int likeCnt) {
+        this.likeCnt = likeCnt;
+    }
 }
