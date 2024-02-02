@@ -9,13 +9,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wagwagt.community.api.entities.Post;
 import wagwagt.community.api.entities.User;
-import wagwagt.community.api.requests.PostRegisterRequest;
+import wagwagt.community.api.requests.PostLikeRequest;
+import wagwagt.community.api.requests.PostWriteRequest;
 import wagwagt.community.api.responses.PostListResponse;
 import wagwagt.community.api.responses.PostResponse;
 import wagwagt.community.api.usecases.PostUsecase;
 import wagwagt.community.api.usecases.UserUsecase;
 
 import java.net.URI;
+import java.util.Optional;
 
 @Tag(name="post_api", description = "POST Apis")
 @RequestMapping("posts")
@@ -27,18 +29,10 @@ public class PostController {
     private final UserUsecase userUsecase;
 
     @Operation(summary = "글작성" , description = "게시글 작성")
-    @Parameter(name = "PostRegisterRequest")
-    @PostMapping("/register")
-    public ResponseEntity<Void> posting(@RequestBody PostRegisterRequest req){
-        User user = userUsecase.findByEmail(req.getEmail()).get();
-        Post post = Post.builder()
-                .title(req.getTitle())
-                .contents(req.getContents())
-                .user(user)
-                .visitCnt(0)
-                .likeCnt(0)
-                .build();
-        return ResponseEntity.created(URI.create("/register/"+postUsecase.posting(post))).build();
+    @Parameter(name = "PostWriteRequest")
+    @PostMapping("/write")
+    public ResponseEntity<Void> posting(@RequestBody PostWriteRequest req){
+        return ResponseEntity.created(URI.create("/register/"+postUsecase.posting(req))).build();
     }
 
     @Operation(summary = "글 목록" , description = "게시글 목록")
@@ -55,4 +49,13 @@ public class PostController {
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
+    @Operation(summary = "따봉")
+    @PostMapping("/like")
+    public ResponseEntity<PostResponse> postLike(@RequestBody PostLikeRequest req){
+        Post post = postUsecase.findOne(req.getPostId());
+        Optional<User> user = userUsecase.findByEmail(req.getEmail());
+
+        PostResponse res = postUsecase.postLike(post,user.get());
+        return new ResponseEntity<>(res,HttpStatus.OK);
+    }
 }

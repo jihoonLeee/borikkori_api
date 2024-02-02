@@ -1,17 +1,19 @@
 package wagwagt.community.api.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import wagwagt.community.api.enums.CommentStatus;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Table(name="comment")
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor
 @Builder
 @EntityListeners(AuditingEntityListener.class)
 public class Comment {
@@ -29,12 +31,19 @@ public class Comment {
     @JoinColumn(name="user_id")
     private User user;
 
-    private String comment;
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.REMOVE)
+    @JoinColumn(name="parent_comment_id")
+    private Comment parentComment;
+
+    private String content;
+
+    private CommentStatus commentStatus;
+
+    private int likeCnt;
 
     @CreatedDate
     @Column(updatable = false,nullable = false)
     private LocalDateTime regDate;
-
 
     @LastModifiedDate
     @Column(nullable = false)

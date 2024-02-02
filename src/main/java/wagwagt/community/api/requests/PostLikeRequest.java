@@ -5,9 +5,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class PostRegisterRequest {
+public class PostLikeRequest {
 
-    private String title;
-    private String contents;
+    private Long postId;
     private String email;
 }

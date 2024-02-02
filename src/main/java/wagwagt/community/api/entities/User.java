@@ -16,7 +16,7 @@ import java.util.List;
 @Getter
 @Table(name="user")
 @NoArgsConstructor  // 기본 생성자 추가
-@AllArgsConstructor  // 모든 필드 값을 인자로 받는 생성자 추가
+@AllArgsConstructor(access = AccessLevel.PRIVATE)  // 모든 필드 값을 인자로 받는 생성자 추가
 @Builder
 @EntityListeners(AuditingEntityListener.class)
 public class User {

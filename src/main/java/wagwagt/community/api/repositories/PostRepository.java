@@ -4,6 +4,8 @@ import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import wagwagt.community.api.entities.Post;
+import wagwagt.community.api.entities.PostLike;
+import wagwagt.community.api.entities.PostLikeId;
 import wagwagt.community.api.entities.User;
 
 import java.util.List;
@@ -35,5 +37,15 @@ public class PostRepository {
 
     public Post findByUser(User user){
         return em.find(Post.class,user);
+    }
+
+    public void postLike(PostLike postLike){
+        em.persist(postLike);
+    }
+
+    public boolean likeDupleCheck(PostLikeId postLikeId){
+        PostLike postLike = em.find(PostLike.class,postLikeId);
+
+        return postLike == null ? true : false;
     }
 }
