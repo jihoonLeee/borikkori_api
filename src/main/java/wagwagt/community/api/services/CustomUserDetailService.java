@@ -10,17 +10,22 @@ import wagwagt.community.api.repositories.UserRepository;
 
 @Service
 @RequiredArgsConstructor
-public class JpaUserDetailService implements UserDetailsService {
+public class CustomUserDetailService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
-
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email).orElseThrow(
+        return userRepository.findByEmail(email)
+                .map(this::createUserDetails).orElseThrow(
                 () -> new UsernameNotFoundException("Invalid authentication!")
         );
-
-        return new CustomUserDetail(user);
+    }
+    public UserDetails createUserDetails(User user){
+        return org.springframework.security.core.userdetails.User.builder()
+                .username(user.getEmail())
+                .password(user.getPassword())
+                .roles(user.getAuth().getRole().getRole())
+                .build();
     }
 }

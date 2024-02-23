@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import wagwagt.community.api.enums.Role;
 import wagwagt.community.api.repositories.AuthorityRepository;
 import wagwagt.community.api.repositories.RefreshTokenRepository;
 import wagwagt.community.api.repositories.UserRepository;
@@ -28,16 +29,17 @@ public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
-    private final String[] allowsUrls = {"/","/users/**","/swagger-ui/**","/logout","/posts/**","/comments/**"};
+    private final String[] allowsUrls = {"/","/users/**","/swagger-ui/**","/logout"};
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtTokenProvider,refreshTokenRepository);
 
-        return http.cors(Customizer.withDefaults()).csrf(csrf -> csrf.ignoringRequestMatchers(allowsUrls)) // CSRF 검증을 건너뛰는 경로 설정
+        return http.cors(Customizer.withDefaults())
+                .csrf(csrf -> csrf.ignoringRequestMatchers(allowsUrls)) // CSRF 검증을 건너뛰는 경로 설정
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(allowsUrls).permitAll()
-                        .anyRequest().authenticated()
+                        .anyRequest().hasAnyAuthority(Role.USER.getRole(),Role.ADMIN.getRole())
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")

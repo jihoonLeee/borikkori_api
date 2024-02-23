@@ -1,13 +1,12 @@
 package wagwagt.community.api.infrastructures.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,7 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import wagwagt.community.api.entities.Authority;
-import wagwagt.community.api.services.JpaUserDetailService;
+import wagwagt.community.api.services.CustomUserDetailService;
 
 import java.security.Key;
 import java.time.Instant;
@@ -25,6 +24,7 @@ import java.util.Date;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 @PropertySource("classpath:jwt.yml")
 public class JwtTokenProvider {
     @Value("${secret-key}")
@@ -38,7 +38,7 @@ public class JwtTokenProvider {
     @Value("${refresh-expiration-hours}")
     private long refreshExp;
 
-    private final JpaUserDetailService userDetailsService;
+    private final CustomUserDetailService userDetailsService;
 
     @PostConstruct
     protected void init(){
@@ -48,9 +48,10 @@ public class JwtTokenProvider {
     /**
      * 토큰 생성
      */
-    public String createToken(String email, Authority role){
+    public String createToken(String email,String nickName, Authority role){
         Claims claims = Jwts.claims().setSubject(email);
         claims.put("role",role);
+        claims.put("nickName",nickName);
         Date now= new Date();
         return Jwts.builder()
                 .setClaims(claims)
@@ -95,15 +96,18 @@ public class JwtTokenProvider {
         return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
     }
 
-     /**
-      * Authorization Header를 통해 인증
-      * */
      public String resolveToken(HttpServletRequest request){
-         String bearerToken = request.getHeader("Authorization");
-         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-             return bearerToken.substring(7);
+         Cookie[] cookies = request.getCookies();
+         String token = null;
+         if (cookies != null) {
+             for (Cookie cookie : cookies) {
+                 if (cookie.getName().equals("access_token")) {
+                     token = cookie.getValue();
+                     break;
+                 }
+             }
          }
-         return null;
+         return token;
      }
 
      /**
@@ -111,18 +115,18 @@ public class JwtTokenProvider {
       * */
      public boolean validateToken(String token){
          try{
-             //Bearer검증
-             if (token.contains("BEARER")&&!token.substring(0, "BEARER ".length()).equalsIgnoreCase("BEARER ")) {
-                 return false;
-             }else{
-                 token = token.split(" ")[0].trim();  // 테스트 제외 하면 1로 바꾸기
-             }
-             Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
-             // 만료되면 False
-             return !claims.getBody().getExpiration().before(new Date());
-         }catch (Exception e){
-             return false;
+             Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
+             return true;
+         }catch (SecurityException | MalformedJwtException e){
+             log.info("잘못된 JWT 서명");
+         }catch (ExpiredJwtException e){
+             log.info("만료된 JWT 토큰");
+         }catch (UnsupportedJwtException e){
+             log.info("지원되지 않는 JWT 토큰");
+         }catch (IllegalArgumentException e){
+             log.info("JWT 토큰이 잘못됨");
          }
+         return false;
      }
 
 }

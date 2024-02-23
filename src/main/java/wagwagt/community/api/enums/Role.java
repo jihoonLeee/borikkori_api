@@ -7,7 +7,7 @@ import jakarta.persistence.Enumerated;
 
 public enum Role {
 
-    DEFAULT("DEFAULT"),
+    USER("USER"),
     ADMIN("ADMIN");
 
     private String role;

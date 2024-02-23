@@ -87,6 +87,7 @@ public class UserController {
                 }
             }
         }
+
         if (token == null) {
             return ResponseEntity.status(401).body("로그인하지 않았습니다.");
         } else {

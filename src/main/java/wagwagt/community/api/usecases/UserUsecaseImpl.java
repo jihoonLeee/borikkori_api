@@ -78,7 +78,7 @@ public class UserUsecaseImpl implements UserUsecase{
         {
             throw  new BadCredentialsException("잘못된 비밀번호");
         }
-        String accessToken= jwtTokenProvider.createToken(user.getEmail(),authorityRepository.findOne(user.getId()));
+        String accessToken= jwtTokenProvider.createToken(user.getEmail(),user.getName(),authorityRepository.findOne(user.getId()));
         String refreshToken=jwtTokenProvider.createRefreshToken(user.getEmail());
         //쿠키 저장
          ResponseCookie cookie = ResponseCookie.from("access_token",accessToken)

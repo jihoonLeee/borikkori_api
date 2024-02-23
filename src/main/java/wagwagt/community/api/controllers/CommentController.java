@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 import wagwagt.community.api.entities.Post;
 import wagwagt.community.api.entities.User;
@@ -26,7 +27,7 @@ public class CommentController {
     private final PostUsecase postUsecase;
     private final CommentUsecase commentUsecase;
     private final UserUsecase userUsecase;
-
+    
     @Operation(summary = "댓글 작성" , description = "댓글 작성")
     @PostMapping("/write")
     @Parameter(name = "CommentWriteRequest")
