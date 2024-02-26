@@ -20,6 +20,7 @@ import wagwagt.community.api.infrastructures.security.JwtTokenProvider;
 import wagwagt.community.api.repositories.AuthorityRepository;
 import wagwagt.community.api.repositories.RefreshTokenRepository;
 import wagwagt.community.api.repositories.UserRepository;
+import wagwagt.community.api.requests.JoinRequest;
 import wagwagt.community.api.requests.LoginRequest;
 import wagwagt.community.api.responses.LoginResponse;
 
@@ -43,7 +44,16 @@ public class UserUsecaseImpl implements UserUsecase{
      * */
     @Transactional
     @Override
-    public Long join(User user){
+    public Long join(JoinRequest req){
+        User user = User.builder()
+                .name(req.getName())
+                .email(req.getEmail())
+                .password(req.getPassword())
+                .build();
+        Authority auth = Authority.builder()
+                .role(req.getRole())
+                .build();
+        user.setAuth(auth);
         duplicateUser(user);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
@@ -65,16 +75,16 @@ public class UserUsecaseImpl implements UserUsecase{
 
     /***
      * 로그인
-     * @param loginReq
+     * @param req
      * @return
      */
     @Override
-    public LoginResponse login(LoginRequest loginReq , HttpServletResponse response){
+    public LoginResponse login(LoginRequest req, HttpServletResponse response){
 
-        User user = userRepository.findByEmail(loginReq.getEmail()).orElseThrow(
+        User user = userRepository.findByEmail(req.getEmail()).orElseThrow(
                 () -> new BadCredentialsException("잘못된 계정 정보")
         );
-        if(!passwordEncoder.matches(loginReq.getPassword(),user.getPassword()))
+        if(!passwordEncoder.matches(req.getPassword(),user.getPassword()))
         {
             throw  new BadCredentialsException("잘못된 비밀번호");
         }

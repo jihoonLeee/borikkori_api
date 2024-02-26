@@ -20,7 +20,7 @@ import wagwagt.community.api.usecases.UserUsecase;
 import java.net.URI;
 
 @Tag(name="comment_api", description = "COMMENT Apis")
-@RequestMapping("comments")
+@RequestMapping("comment")
 @RequiredArgsConstructor
 @RestController
 public class CommentController {
@@ -29,14 +29,14 @@ public class CommentController {
     private final UserUsecase userUsecase;
     
     @Operation(summary = "댓글 작성" , description = "댓글 작성")
-    @PostMapping("/write")
+    @PostMapping
     @Parameter(name = "CommentWriteRequest")
     public ResponseEntity<Void> write(@RequestBody CommentWriteRequest req){
         return ResponseEntity.created(URI.create("/write/"+commentUsecase.write(req))).build();
     }
 
-    @Operation(summary = "댓글 목록 작성" , description = "댓글 목록")
-    @GetMapping("/list")
+    @Operation(summary = "댓글 목록" , description = "댓글 목록")
+    @GetMapping()
     public ResponseEntity<CommentListResponse> commentList(@RequestParam Long id , @RequestParam int page){
         CommentListResponse res = commentUsecase.getCommentList(id,page,10);
         return new ResponseEntity<>(res, HttpStatus.OK);

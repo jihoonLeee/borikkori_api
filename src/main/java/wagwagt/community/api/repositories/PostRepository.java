@@ -35,10 +35,6 @@ public class PostRepository {
         return em.find(Post.class,id);
     }
 
-    public Post findByUser(User user){
-        return em.find(Post.class,user);
-    }
-
     public void postLike(PostLike postLike){
         em.persist(postLike);
     }

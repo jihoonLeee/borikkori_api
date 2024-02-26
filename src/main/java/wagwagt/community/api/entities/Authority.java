@@ -8,6 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import wagwagt.community.api.enums.Role;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor  // 기본 생성자 추가
@@ -23,12 +26,14 @@ public class Authority {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @JsonIgnore
-    @JoinColumn(name = "user_id")
-    @OneToOne(fetch = FetchType.LAZY)
-    private User user;
-
-    public void setUser(User user) {
-        this.user = user;
-    }
+//    @JsonIgnore
+//    @OneToMany(mappedBy = "auth", fetch = FetchType.LAZY)
+//    private List<User> users = new ArrayList<>();
+//
+//    //...
+//
+//    public void addUser(User user) {
+//        this.users.add(user);
+//        user.setAuth(this);
+//    }
 }

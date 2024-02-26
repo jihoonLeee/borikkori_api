@@ -7,6 +7,5 @@ import lombok.Setter;
 @Setter
 public class PostLikeRequest {
 
-    private Long postId;
     private String email;
 }

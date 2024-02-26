@@ -20,7 +20,7 @@ import java.net.URI;
 import java.util.Optional;
 
 @Tag(name="post_api", description = "POST Apis")
-@RequestMapping("posts")
+@RequestMapping("post")
 @RequiredArgsConstructor
 @RestController
 public class PostController {
@@ -30,29 +30,29 @@ public class PostController {
 
     @Operation(summary = "글작성" , description = "게시글 작성")
     @Parameter(name = "PostWriteRequest")
-    @PostMapping("/write")
-    public ResponseEntity<Void> posting(@RequestBody PostWriteRequest req){
+    @PostMapping
+    public ResponseEntity<Void> createPost(@RequestBody PostWriteRequest req){
         return ResponseEntity.created(URI.create("/register/"+postUsecase.posting(req))).build();
     }
 
     @Operation(summary = "글 목록" , description = "게시글 목록")
-    @GetMapping("/list")
-    public ResponseEntity<PostListResponse> allPostList(@RequestParam int page){
+    @GetMapping
+    public ResponseEntity<PostListResponse> getPosts(@RequestParam int page){
         PostListResponse res = postUsecase.getPostList(page,10);
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
     @Operation(summary = "게시글 조회" , description = "게시글 목록")
-    @GetMapping("/post")
-    public ResponseEntity<PostResponse> getPost(@RequestParam Long id){
-        PostResponse res = postUsecase.getPost(id);
+    @GetMapping("/{postId}")
+    public ResponseEntity<PostResponse> getPost(@PathVariable Long postId){
+        PostResponse res = postUsecase.getPost(postId);
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
     @Operation(summary = "따봉")
-    @PostMapping("/like")
-    public ResponseEntity<PostResponse> postLike(@RequestBody PostLikeRequest req){
-        Post post = postUsecase.findOne(req.getPostId());
+    @PostMapping("/{postId}/like")
+    public ResponseEntity<PostResponse> postLike(@RequestBody PostLikeRequest req,@PathVariable Long postId){
+        Post post = postUsecase.findOne(postId);
         Optional<User> user = userUsecase.findByEmail(req.getEmail());
 
         PostResponse res = postUsecase.postLike(post,user.get());

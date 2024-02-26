@@ -34,11 +34,9 @@ public class User {
     @Column(name= "user_email",unique = true ,nullable = false)
     private String email;
 
-    /**
-     * TODO:권한 추가
-     * */
     @Setter
-    @OneToOne(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name="auth_id")
     private Authority auth;
 
     @CreatedDate

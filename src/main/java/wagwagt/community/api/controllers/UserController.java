@@ -27,7 +27,7 @@ import wagwagt.community.api.usecases.UserUsecase;
 import java.net.URI;
 
 @Tag(name="user_api", description = "USER Apis")
-@RequestMapping("users")
+@RequestMapping("user")
 @RequiredArgsConstructor
 @RestController
 public class UserController {
@@ -38,28 +38,17 @@ public class UserController {
     @Operation(summary = "이메일 전송" , description = "이메일 전송")
     @Parameter(name = "JoinRequest",description = "2번 반복할 문자열")
     @PostMapping("/sendEmail")
-    public ResponseEntity<String> sendEmail(@RequestBody JoinRequest joinDto){
-        emailVerificationUsecase.sendEmail(joinDto.getEmail());
+    public ResponseEntity<String> sendEmail(@RequestBody JoinRequest req){
+        emailVerificationUsecase.sendEmail(req.getEmail());
         return new ResponseEntity<>(HttpStatus.OK);
     }
     
     @Operation(summary = "회원가입" , description = "회원가입 요청")
     @Parameter(name = "JoinRequest")
     @PostMapping("/join")
-    public ResponseEntity<Void> join(@RequestBody JoinRequest dto){
-        if(emailVerificationUsecase.checkEmail(dto.getVerificationNumber(),dto.getEmail())){
-            User user = User.builder()
-                    .name(dto.getName())
-                    .email(dto.getEmail())
-                    .password(dto.getPassword())
-                    .build();
-            Authority auth = Authority.builder()
-                    .user(user)
-                    .role(dto.getRole())
-                    .build();
-            user.setAuth(auth);
-            userUsecase.join(user);
-            return ResponseEntity.created(URI.create("/join/"+user.getId())).build();
+    public ResponseEntity<Void> join(@RequestBody JoinRequest req){
+        if(emailVerificationUsecase.checkEmail(req.getVerificationNumber(),req.getEmail())){
+            return ResponseEntity.created(URI.create("/join/"+ userUsecase.join(req))).build();
         }else{
             return ResponseEntity.badRequest().build();
         }
@@ -68,8 +57,8 @@ public class UserController {
     @Operation(summary = "로그인" , description = "로그인 요청")
     @Parameter(name = "LoginRequest")
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request, HttpServletResponse response){
-        LoginResponse res = userUsecase.login(request,response);
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest req, HttpServletResponse response){
+        LoginResponse res = userUsecase.login(req,response);
         return new ResponseEntity<>(res,HttpStatus.OK);
     }
 
@@ -95,7 +84,6 @@ public class UserController {
             return ResponseEntity.ok(response);
         }
     }
-
 
     @GetMapping("/logout")
     public ResponseEntity<String> handleLogout() {

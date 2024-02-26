@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -29,17 +30,20 @@ public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
-    private final String[] allowsUrls = {"/","/users/**","/swagger-ui/**","/logout"};
+//    private final String[] allowsUrls = {"/","/swagger-ui/**","/logout","/mbti","/post/**","/comment/**"};
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtTokenProvider,refreshTokenRepository);
 
         return http.cors(Customizer.withDefaults())
-                .csrf(csrf -> csrf.ignoringRequestMatchers(allowsUrls)) // CSRF 검증을 건너뛰는 경로 설정
+                .csrf(csrf -> csrf.disable())  // csfr 잠시 사용 안함
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(allowsUrls).permitAll()
-                        .anyRequest().hasAnyAuthority(Role.USER.getRole(),Role.ADMIN.getRole())
+                        .requestMatchers("/swagger-ui/**","/mbti").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/user/join","/user/login","/user/sendEmail").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/post/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/comment/**").permitAll()
+                        .anyRequest().hasAnyRole(Role.USER.getRole(),Role.ADMIN.getRole())
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
@@ -49,7 +53,6 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .rememberMe(Customizer.withDefaults()).build();
     }
-
 
     /**
      * 암호화 모듈
