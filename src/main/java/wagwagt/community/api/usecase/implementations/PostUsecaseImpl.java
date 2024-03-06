@@ -3,10 +3,8 @@ package wagwagt.community.api.usecase.implementations;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wagwagt.community.api.entities.domain.Post;
-import wagwagt.community.api.entities.domain.PostLike;
-import wagwagt.community.api.entities.domain.PostLikeId;
-import wagwagt.community.api.entities.domain.User;
+import wagwagt.community.api.common.service.LikeService;
+import wagwagt.community.api.entities.domain.*;
 import wagwagt.community.api.interfaces.controller.repositories.PostRepository;
 import wagwagt.community.api.interfaces.controller.repositories.UserRepository;
 import wagwagt.community.api.interfaces.controller.dto.requests.PostWriteRequest;
@@ -24,6 +22,8 @@ public class PostUsecaseImpl implements PostUsecase {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final LikeService likeService;
+
     @Override
     @Transactional
     public Long posting(PostWriteRequest req){
@@ -96,7 +96,7 @@ public class PostUsecaseImpl implements PostUsecase {
     @Transactional
     public PostResponse postLike(Post post , User user){
         PostLikeId postLikeId = new PostLikeId(post.getId(),user.getId());
-        boolean isEnabled = postRepository.likeDupleCheck(postLikeId);
+        boolean isEnabled = likeService.likeDupleCheck(PostLikeId.class,postLikeId);
 
         if(isEnabled){
             post.setLikeCnt(post.getLikeCnt()+1);

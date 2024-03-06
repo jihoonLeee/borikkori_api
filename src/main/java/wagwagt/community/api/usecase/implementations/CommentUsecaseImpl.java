@@ -3,6 +3,7 @@ package wagwagt.community.api.usecase.implementations;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wagwagt.community.api.common.service.LikeService;
 import wagwagt.community.api.entities.domain.*;
 import wagwagt.community.api.entities.domain.enums.CommentStatus;
 import wagwagt.community.api.interfaces.controller.repositories.CommentRepository;
@@ -26,6 +27,7 @@ public class CommentUsecaseImpl implements CommentUsecase {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final LikeService likeService;
 
     @Transactional
     @Override
@@ -87,8 +89,9 @@ public class CommentUsecaseImpl implements CommentUsecase {
     @Override
     @Transactional
     public CommentResponse commentLike(Comment comment , User user){
+
         CommentLikeId commentLikeId = new CommentLikeId(comment.getId(),user.getId());
-        boolean isEnabled = commentRepository.likeDupleCheck(commentLikeId);
+        boolean isEnabled = likeService.likeDupleCheck(CommentLikeId.class,commentLikeId);
 
         if(isEnabled){
             comment.setLikeCnt(comment.getLikeCnt()+1);

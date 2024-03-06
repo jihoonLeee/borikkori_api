@@ -45,8 +45,8 @@ public class CommentRepositoryImpl implements CommentRepository {
         em.persist(commentLike);
     }
 
-    public boolean likeDupleCheck(CommentLikeId commentLikeId){
-        CommentLike commentLike = em.find(CommentLike.class,commentLikeId);
-        return commentLike == null ? true : false;
-    }
+//    public boolean likeDupleCheck(CommentLikeId commentLikeId){
+//        CommentLike commentLike = em.find(CommentLike.class,commentLikeId);
+//        return commentLike == null ? true : false;
+//    }
 }

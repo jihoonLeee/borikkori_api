@@ -8,6 +8,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -44,10 +46,16 @@ public class User {
     @Column(nullable = false)
     private LocalDateTime updDate;
 
-    public void setRole(Authority auth){
+    public void setAuth(Authority auth){
         this.auth=auth;
     }
     public void setPassword(String password){this.password=password;}
+
+    //orphanRemoval = true -> 연관된 엔티티 간의 참조가 끊어질 때 삭제 됨
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL, orphanRemoval = true) 
+    private List<Friend> friends = new ArrayList<>();
+
+
 //    private List<EmailVerification> emailVerifications = new ArrayList<>();
     
 //    @OneToMany(mappedBy = "user")

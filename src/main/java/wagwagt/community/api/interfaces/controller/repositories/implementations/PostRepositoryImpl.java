@@ -39,9 +39,9 @@ public class PostRepositoryImpl implements PostRepository {
         em.persist(postLike);
     }
 
-    public boolean likeDupleCheck(PostLikeId postLikeId){
-        PostLike postLike = em.find(PostLike.class,postLikeId);
-
-        return postLike == null ? true : false;
-    }
+//    public boolean likeDupleCheck(PostLikeId postLikeId){
+//        PostLike postLike = em.find(PostLike.class,postLikeId);
+//
+//        return postLike == null ? true : false;
+//    }
 }

@@ -8,6 +8,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -24,7 +26,6 @@ public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
-//    private final String[] allowsUrls = {"/","/swagger-ui/**","/logout","/mbti","/post/**","/comment/**"};
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -33,11 +34,11 @@ public class SecurityConfig {
         return http.cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())  // csfr 잠시 사용 안함
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/swagger-ui/**","/mbti").permitAll()
+                        .requestMatchers("/swagger-ui/**","/mbti","/image/**").permitAll()
                         .requestMatchers(HttpMethod.POST,"/user/join","/user/login","/user/sendEmail").permitAll()
                         .requestMatchers(HttpMethod.GET,"/post/**").permitAll()
                         .requestMatchers(HttpMethod.GET,"/comment/**").permitAll()
-                        .anyRequest().hasAnyRole(Role.USER.getRole(),Role.ADMIN.getRole())
+                        .anyRequest().hasAnyAuthority(Role.USER.getRole(),Role.ADMIN.getRole())
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")

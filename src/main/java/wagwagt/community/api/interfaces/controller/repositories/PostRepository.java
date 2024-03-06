@@ -17,5 +17,4 @@ public interface PostRepository {
 
     void postLike(PostLike postLike);
 
-    boolean likeDupleCheck(PostLikeId postLikeId);
 }

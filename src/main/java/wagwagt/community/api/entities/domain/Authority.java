@@ -1,18 +1,23 @@
 package wagwagt.community.api.entities.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
 import wagwagt.community.api.entities.domain.enums.Role;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
-@NoArgsConstructor  // 기본 생성자 추가
-@AllArgsConstructor  // 모든 필드 값을 인자로 받는 생성자 추가
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class Authority {
+public class Authority implements GrantedAuthority {
 
     @Id
     @Column(name="auth_id")
@@ -22,14 +27,21 @@ public class Authority {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-//    @JsonIgnore
-//    @OneToMany(mappedBy = "auth", fetch = FetchType.LAZY)
-//    private List<User> users = new ArrayList<>();
-//
-//    //...
-//
+
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "auth", fetch = FetchType.LAZY)
+    private List<User> users = new ArrayList<>();
+
+
 //    public void addUser(User user) {
 //        this.users.add(user);
 //        user.setAuth(this);
 //    }
+
+    @Override
+    public String getAuthority() {
+        return this.role.getRole();
+    }
+
 }
