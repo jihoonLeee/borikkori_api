@@ -34,7 +34,7 @@ public class SecurityConfig {
         return http.cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())  // csfr 잠시 사용 안함
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/swagger-ui/**","/mbti","/image/**").permitAll()
+                        .requestMatchers("/swagger-ui/**","/mbti","/image/**","/**").permitAll()
                         .requestMatchers(HttpMethod.POST,"/user/join","/user/login","/user/sendEmail").permitAll()
                         .requestMatchers(HttpMethod.GET,"/post/**").permitAll()
                         .requestMatchers(HttpMethod.GET,"/comment/**").permitAll()

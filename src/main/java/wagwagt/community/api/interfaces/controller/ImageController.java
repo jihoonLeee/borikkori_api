@@ -42,10 +42,10 @@ public class ImageController {
 
     
         System.out.println(file.getOriginalFilename()+" 파일 : " + file.getSize() + " ?? "+ file.getContentType());
-//        File destination = new File("upload/images/" + file.getOriginalFilename());
-//        file.transferTo(destination);
-
-
+        File destination = new File("D:/upload/images/" , file.getOriginalFilename());
+        file.transferTo(destination);
+        // 우선 D드라이브에 저장..
+        // http://localhost:8080/images/~.png ~~ 이렇게 넘겨줄거임
         return ResponseEntity.created(URI.create("/path/to/file")).build();
     }
 
