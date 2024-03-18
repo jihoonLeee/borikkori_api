@@ -35,6 +35,7 @@ public class User {
 
     @Setter
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @Enumerated(EnumType.STRING)
     @JoinColumn(name="auth_id")
     private Authority auth;
 
@@ -52,7 +53,7 @@ public class User {
     public void setPassword(String password){this.password=password;}
 
     //orphanRemoval = true -> 연관된 엔티티 간의 참조가 끊어질 때 삭제 됨
-    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL, orphanRemoval = true) 
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Friend> friends = new ArrayList<>();
 
 

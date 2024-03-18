@@ -5,6 +5,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wagwagt.community.api.common.service.LikeService;
 import wagwagt.community.api.entities.domain.*;
+import wagwagt.community.api.entities.domain.enums.ImageStatus;
+import wagwagt.community.api.entities.domain.enums.PostStatus;
+import wagwagt.community.api.interfaces.controller.dto.responses.PostTempResponse;
+import wagwagt.community.api.interfaces.controller.repositories.FileRepository;
 import wagwagt.community.api.interfaces.controller.repositories.PostRepository;
 import wagwagt.community.api.interfaces.controller.repositories.UserRepository;
 import wagwagt.community.api.interfaces.controller.dto.requests.PostWriteRequest;
@@ -12,7 +16,9 @@ import wagwagt.community.api.interfaces.controller.dto.responses.PostListRespons
 import wagwagt.community.api.interfaces.controller.dto.responses.PostResponse;
 import wagwagt.community.api.usecase.PostUsecase;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,21 +27,18 @@ import java.util.stream.Collectors;
 public class PostUsecaseImpl implements PostUsecase {
 
     private final PostRepository postRepository;
-    private final UserRepository userRepository;
+    private final FileRepository fileRepository;
     private final LikeService likeService;
 
     @Override
     @Transactional
     public Long posting(PostWriteRequest req){
-        User user = userRepository.findByEmail(req.getEmail()).get();
-        Post post = Post.builder()
-                .title(req.getTitle())
-                .contents(req.getContents())
-                .user(user)
-                .visitCnt(0)
-                .likeCnt(0)
-                .build();
+        Post post = postRepository.findById(req.getPostId());
+        post.setContents(req.getContents());
+        post.setTitle(req.getTitle());
+        post.setRegDate(LocalDateTime.now());
         postRepository.save(post);
+        activeImage(post); // << 이미지 사용중으로 변경하는 메서드
         return post.getId();
     }
 
@@ -52,7 +55,7 @@ public class PostUsecaseImpl implements PostUsecase {
 
     @Override
     public void deletePost(Post post) {
-
+        postRepository.delete(post);
     }
 
     @Override
@@ -95,7 +98,7 @@ public class PostUsecaseImpl implements PostUsecase {
     @Override
     @Transactional
     public PostResponse postLike(Post post , User user){
-        PostLikeId postLikeId = new PostLikeId(post.getId(),user.getId());
+        PostLikeId postLikeId = new PostLikeId(post.getId(), user.getId());
         boolean isEnabled = likeService.likeDupleCheck(PostLikeId.class,postLikeId);
 
         if(isEnabled){
@@ -117,4 +120,25 @@ public class PostUsecaseImpl implements PostUsecase {
         }
     }
 
+    @Override
+    @Transactional
+    public PostTempResponse postTempCheck(User user) {
+        Optional<Post> optionalPost = postRepository.findTempByUser(user);
+        if(optionalPost.isPresent()){
+            Post post= optionalPost.get();
+            return PostTempResponse.builder().isTemp(true).postId(post.getId()).build();
+        }else{
+            Post tempPost = Post.builder().user(user).postStatus(PostStatus.DRAFT).build();
+            postRepository.save(tempPost);
+            return PostTempResponse.builder().isTemp(false).build();
+        }
+    }
+
+    private void activeImage(Post post){
+        List<Image> images = fileRepository.findByPost(post);
+        images.forEach(image -> {
+            image.setImageStatus(ImageStatus.PUBLISHED);
+            fileRepository.save(image);
+        });
+    }
 }

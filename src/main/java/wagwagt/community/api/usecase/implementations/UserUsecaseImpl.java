@@ -78,11 +78,11 @@ public class UserUsecaseImpl implements UserUsecase {
         User user = userRepository.findByEmail(req.getEmail()).orElseThrow(
                 () -> new BadCredentialsException("잘못된 계정 정보")
         );
-        if(!passwordEncoder.matches(req.getPassword(),user.getPassword()))
+        if(!passwordEncoder.matches(req.getPassword(), user.getPassword()))
         {
             throw  new BadCredentialsException("잘못된 비밀번호");
         }
-        String accessToken= jwtTokenProvider.createToken(user.getEmail(),user.getName(),authorityRepository.findOne(user.getId()));
+        String accessToken= jwtTokenProvider.createToken(user.getEmail(), user.getName(),authorityRepository.findOne(user.getId()));
         String refreshToken=jwtTokenProvider.createRefreshToken(user.getEmail());
         //쿠키 저장
          ResponseCookie cookie = ResponseCookie.from("access_token",accessToken)
@@ -99,6 +99,7 @@ public class UserUsecaseImpl implements UserUsecase {
         return LoginResponse.builder()
                 .nickName(user.getName())
                 .role(user.getAuth().getRole())
+                .email(user.getEmail())
                 .build();
     }
 

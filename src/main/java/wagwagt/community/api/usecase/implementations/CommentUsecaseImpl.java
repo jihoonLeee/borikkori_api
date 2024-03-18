@@ -90,7 +90,7 @@ public class CommentUsecaseImpl implements CommentUsecase {
     @Transactional
     public CommentResponse commentLike(Comment comment , User user){
 
-        CommentLikeId commentLikeId = new CommentLikeId(comment.getId(),user.getId());
+        CommentLikeId commentLikeId = new CommentLikeId(comment.getId(), user.getId());
         boolean isEnabled = likeService.likeDupleCheck(CommentLikeId.class,commentLikeId);
 
         if(isEnabled){

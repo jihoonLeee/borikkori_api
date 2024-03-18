@@ -5,6 +5,7 @@ import wagwagt.community.api.entities.domain.User;
 import wagwagt.community.api.interfaces.controller.dto.requests.PostWriteRequest;
 import wagwagt.community.api.interfaces.controller.dto.responses.PostListResponse;
 import wagwagt.community.api.interfaces.controller.dto.responses.PostResponse;
+import wagwagt.community.api.interfaces.controller.dto.responses.PostTempResponse;
 
 public interface PostUsecase {
 
@@ -19,4 +20,6 @@ public interface PostUsecase {
     PostResponse getPost(Long id);
 
     PostResponse postLike(Post post , User user);
+
+    PostTempResponse postTempCheck(User user);
 }

@@ -7,7 +7,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import wagwagt.community.api.entities.domain.Image;
+import wagwagt.community.api.entities.domain.Post;
+import wagwagt.community.api.entities.domain.enums.ImageStatus;
+import wagwagt.community.api.interfaces.controller.dto.requests.UploadRequest;
 import wagwagt.community.api.interfaces.controller.repositories.FileRepository;
+import wagwagt.community.api.interfaces.controller.repositories.PostRepository;
 import wagwagt.community.api.usecase.FileUseCase;
 
 import java.io.File;
@@ -23,12 +27,15 @@ import java.util.UUID;
 public class FileUseCaseImpl implements FileUseCase {
 
     private final FileRepository fileRepository;
+    private final PostRepository postRepository;
 
     private final String IMAGE_URL = "http://localhost:8080/images/";
     private static final long MAX_SIZE = 10*(1024*1024); // 총 10MB
     @Override
     @Transactional
-    public String upload(MultipartFile file) throws IOException {
+    public String upload(UploadRequest req) throws IOException {
+        Post post = postRepository.findById(req.getPostId());
+        MultipartFile file = req.getFile();
         String originalFilename = file.getOriginalFilename(); // 원본 파일 이름
 
         // 파일 확장자 검사
@@ -56,10 +63,11 @@ public class FileUseCaseImpl implements FileUseCase {
 
         Image image = Image.builder()
                 .originalName(originalFilename)
+                .post(post)
                 .savedName(savedFileName)
                 .extension(extension)
                 .savedUrl(imageUrl)
-                .isUsed(false)
+                .imageStatus(ImageStatus.DRAFT)
                 .imageSize(fileSize)
                 .build();
 

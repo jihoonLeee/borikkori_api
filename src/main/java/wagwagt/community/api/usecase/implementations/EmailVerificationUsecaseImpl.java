@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wagwagt.community.api.entities.domain.EmailVerification;
-import wagwagt.community.api.common.service.util.CodeGenerater;
+import wagwagt.community.api.common.service.util.RandomCodeGenerator;
 import wagwagt.community.api.common.service.EmailSender;
 import wagwagt.community.api.interfaces.controller.repositories.EmailVerificationRepository;
 import wagwagt.community.api.usecase.EmailVerificationUsecase;
@@ -24,7 +24,7 @@ public class EmailVerificationUsecaseImpl implements EmailVerificationUsecase {
     @Override
     @Transactional
     public int sendEmail(String email) {
-        int code = CodeGenerater.generate();
+        int code = RandomCodeGenerator.generate();
         EmailVerification emailVerification = EmailVerification.
                 builder()
                 .userEmail(email)

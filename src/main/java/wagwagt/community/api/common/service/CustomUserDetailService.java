@@ -16,16 +16,16 @@ public class CustomUserDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return userRepository.findByEmail(email)
-                .map(this::createUserDetails).orElseThrow(
+        User user =  userRepository.findByEmail(email).orElseThrow(
                 () -> new UsernameNotFoundException("Invalid authentication!")
         );
+        return  new CustomUserDetails(user);
     }
-    public UserDetails createUserDetails(User user){
-        return org.springframework.security.core.userdetails.User.builder()
-                .username(user.getEmail())
-                .password(user.getPassword())
-                .authorities(user.getAuth().getAuthority())
-                .build();
-    }
+//    public UserDetails createUserDetails(Member member){
+//        return User.builder()
+//                .username(member.getEmail())
+//                .password(member.getPassword())
+//                .authorities(member.getAuth().getAuthority())
+//                .build();
+//    }
 }

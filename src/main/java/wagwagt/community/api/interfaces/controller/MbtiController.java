@@ -4,7 +4,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import wagwagt.community.api.common.service.CustomUserDetails;
 import wagwagt.community.api.interfaces.controller.dto.requests.MbtiRequest;
 import wagwagt.community.api.interfaces.controller.dto.responses.MbtiResultResponse;
 import wagwagt.community.api.usecase.MbtiUseCase;
@@ -21,8 +23,8 @@ public class MbtiController {
     private static final int TOPTHREE = 3;
 
     @PostMapping
-    public ResponseEntity addMbtiResult(@RequestBody MbtiRequest req){
-        System.out.println(req.getResult() + "  :  " + req.getEmail() + "굿");
+    public ResponseEntity addMbtiResult(@AuthenticationPrincipal CustomUserDetails customUser, @RequestBody MbtiRequest req){
+        req.setEmail(customUser.getUser().getEmail());
         mbtiUseCase.addMbtiResult(req);
         return new ResponseEntity<>(HttpStatus.OK);
     }

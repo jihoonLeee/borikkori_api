@@ -8,8 +8,10 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import wagwagt.community.api.entities.domain.enums.ImageStatus;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -36,7 +38,8 @@ public class Image {
 
     private String savedUrl;
 
-    private boolean isUsed;
+    @Enumerated(EnumType.STRING)
+    private ImageStatus imageStatus;
 
     private long imageSize;
 
@@ -48,4 +51,8 @@ public class Image {
     @LastModifiedDate
     @Column(nullable = false)
     private LocalDateTime updDate;
+
+    public void setImageStatus(ImageStatus imageStatus) {
+        this.imageStatus = imageStatus;
+    }
 }
