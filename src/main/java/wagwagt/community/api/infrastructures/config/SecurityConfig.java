@@ -8,15 +8,13 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import wagwagt.community.api.entities.domain.enums.Role;
+import wagwagt.community.api.domain.user.entities.enums.Role;
 import wagwagt.community.api.infrastructures.provider.JwtTokenProvider;
-import wagwagt.community.api.interfaces.controller.repositories.RefreshTokenRepository;
+import wagwagt.community.api.domain.user.interfaces.repositories.RefreshTokenRepository;
 
 @Configuration
 @EnableWebSecurity  //spring security 활성화
@@ -34,7 +32,7 @@ public class SecurityConfig {
         return http.cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())  // csfr 잠시 사용 안함
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/swagger-ui/**","/mbti","/image/**","/**").permitAll()
+                        .requestMatchers("/swagger-ui/**","/mbti","/file/**","/images/**").permitAll()
                         .requestMatchers(HttpMethod.POST,"/user/join","/user/login","/user/sendEmail").permitAll()
                         .requestMatchers(HttpMethod.GET,"/post/**").permitAll()
                         .requestMatchers(HttpMethod.GET,"/comment/**").permitAll()

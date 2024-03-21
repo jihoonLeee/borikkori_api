@@ -11,7 +11,7 @@ import java.io.Serializable;
 @RequiredArgsConstructor
 public class LikeService {
 
-    private EntityManager em;
+    private final EntityManager em;
     public <T> boolean likeDupleCheck(Class<T> entityClass, Object  id) {
         T entity = em.find(entityClass, id);
         return entity == null;

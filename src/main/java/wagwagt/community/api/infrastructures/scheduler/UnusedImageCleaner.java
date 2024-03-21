@@ -4,11 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import wagwagt.community.api.entities.domain.Image;
-import wagwagt.community.api.usecase.FileUseCase;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import wagwagt.community.api.domain.file.usecases.FileUseCase;
 
 @Component
 @Slf4j

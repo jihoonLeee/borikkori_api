@@ -13,7 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import wagwagt.community.api.entities.domain.Authority;
+import wagwagt.community.api.domain.user.entities.Authority;
 import wagwagt.community.api.common.service.CustomUserDetailService;
 
 import java.security.Key;

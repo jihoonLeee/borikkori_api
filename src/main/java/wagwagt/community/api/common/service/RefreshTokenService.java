@@ -3,8 +3,8 @@ package wagwagt.community.api.common.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wagwagt.community.api.interfaces.controller.dto.RefreshToken;
-import wagwagt.community.api.interfaces.controller.repositories.RefreshTokenRepository;
+import wagwagt.community.api.domain.user.interfaces.dto.RefreshToken;
+import wagwagt.community.api.domain.user.interfaces.repositories.RefreshTokenRepository;
 
 @Service
 @RequiredArgsConstructor

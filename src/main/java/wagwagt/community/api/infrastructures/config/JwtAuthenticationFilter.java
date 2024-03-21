@@ -12,10 +12,10 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
-import wagwagt.community.api.interfaces.controller.dto.RefreshToken;
-import wagwagt.community.api.entities.domain.Authority;
+import wagwagt.community.api.domain.user.interfaces.dto.RefreshToken;
+import wagwagt.community.api.domain.user.entities.Authority;
 import wagwagt.community.api.infrastructures.provider.JwtTokenProvider;
-import wagwagt.community.api.interfaces.controller.repositories.RefreshTokenRepository;
+import wagwagt.community.api.domain.user.interfaces.repositories.RefreshTokenRepository;
 
 import java.io.IOException;
 import java.util.Optional;
