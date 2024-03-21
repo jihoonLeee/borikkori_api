@@ -34,8 +34,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/swagger-ui/**","/mbti","/file/**","/images/**").permitAll()
                         .requestMatchers(HttpMethod.POST,"/user/join","/user/login","/user/sendEmail").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/post/**").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/comment/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/post/**","/comment/**","/ws/chat/**").permitAll()
                         .anyRequest().hasAnyAuthority(Role.USER.getRole(),Role.ADMIN.getRole())
                 )
                 .logout(logout -> logout

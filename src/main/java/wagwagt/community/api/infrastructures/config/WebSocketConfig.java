@@ -1,23 +1,19 @@
 package wagwagt.community.api.infrastructures.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.messaging.simp.config.MessageBrokerRegistry;
-import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
-import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
-import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.config.annotation.*;
+import wagwagt.community.api.infrastructures.handler.WebSocketChatHandler;
 
 @Configuration
-@EnableWebSocketMessageBroker
-public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+@RequiredArgsConstructor
+@EnableWebSocket
+public class WebSocketConfig implements WebSocketConfigurer {
 
+    private final WebSocketChatHandler webSocketHandler;
     @Override
-    public void registerStompEndpoints(StompEndpointRegistry registry){
-        registry.addEndpoint("/chat").withSockJS();
-    }
-
-    @Override
-    public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/topic");
-        registry.setApplicationDestinationPrefixes("/app");
+    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+        // setAllowedOrigins(*) 모든 ip에서 접속 가능
+        registry.addHandler(webSocketHandler,"/ws/chat/message").setAllowedOrigins("*");
     }
 }
