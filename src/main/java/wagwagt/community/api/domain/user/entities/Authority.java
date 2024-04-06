@@ -25,17 +25,12 @@ public class Authority implements GrantedAuthority {
     private Long id;
 
     @Enumerated(EnumType.STRING)
+    @Column(unique = true)
     private Role role;
 
     @JsonIgnore
     @OneToMany(mappedBy = "auth", fetch = FetchType.LAZY)
     private List<User> users = new ArrayList<>();
-
-
-//    public void addUser(User user) {
-//        this.users.add(user);
-//        user.setAuth(this);
-//    }
 
     @Override
     public String getAuthority() {

@@ -1,6 +1,7 @@
 package wagwagt.community.api.domain.user.usecases;
 
 import jakarta.servlet.http.HttpServletResponse;
+import wagwagt.community.api.common.exeptions.NotExistAuthException;
 import wagwagt.community.api.domain.user.entities.User;
 import wagwagt.community.api.domain.user.interfaces.dto.request.JoinRequest;
 import wagwagt.community.api.domain.user.interfaces.dto.request.LoginRequest;
@@ -11,7 +12,7 @@ import java.util.Optional;
 public interface UserUsecase {
 
     // 회원가입
-    Long join(JoinRequest req);
+    Long join(JoinRequest req) throws NotExistAuthException;
     
     //회원 조회
     User findOne(Long userId);

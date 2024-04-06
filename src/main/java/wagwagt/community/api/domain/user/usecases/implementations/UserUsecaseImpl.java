@@ -8,6 +8,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wagwagt.community.api.common.exeptions.NotExistAuthException;
 import wagwagt.community.api.domain.user.interfaces.dto.RefreshToken;
 import wagwagt.community.api.domain.user.entities.Authority;
 import wagwagt.community.api.domain.user.entities.User;
@@ -20,6 +21,8 @@ import wagwagt.community.api.domain.user.interfaces.dto.request.LoginRequest;
 import wagwagt.community.api.domain.user.interfaces.dto.response.LoginResponse;
 import wagwagt.community.api.domain.user.usecases.UserUsecase;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -38,18 +41,20 @@ public class UserUsecaseImpl implements UserUsecase {
      * */
     @Transactional
     @Override
-    public Long join(JoinRequest req){
+    public Long join(JoinRequest req) {
+        duplicateUser(req.getEmail());
+        String encodedPw = passwordEncoder.encode(req.getPassword());
+
+        Authority auth = authorityRepository.findByRole(req.getRole()).orElseThrow(
+                () -> new NotExistAuthException(req.getRole() + " 권한이 존재하지 않습니다.")
+            );
         User user = User.builder()
                 .name(req.getName())
                 .email(req.getEmail())
-                .password(req.getPassword())
+                .password(encodedPw)
+                .auth(auth)
                 .build();
-        Authority auth = Authority.builder()
-                .role(req.getRole())
-                .build();
-        user.setAuth(auth);
-        duplicateUser(user);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
         userRepository.save(user);
         return user.getId();
     }
@@ -123,10 +128,9 @@ public class UserUsecaseImpl implements UserUsecase {
         }
     }
 
-    private void duplicateUser(User user){
-        Optional<User> find = userRepository.findByEmail(user.getEmail());
-        if(!find.isEmpty()) throw new IllegalStateException("이미 존재하는 회원");
-//        if(ObjectUtils.isEmpty(find)) throw new IllegalStateException("이미 존재하는 회원");
+    private void duplicateUser(String email){
+        Optional<User> find = userRepository.findByEmail(email);
+        if(!find.isEmpty()) throw new IllegalStateException("이미 존재하는 이메일");
     }
 
 }

@@ -8,9 +8,12 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-import wagwagt.community.api.domain.chat.entities.ChatMessage;
+import wagwagt.community.api.common.service.CustomUserDetails;
+import wagwagt.community.api.domain.chat.entities.ChatRoom;
 import wagwagt.community.api.domain.chat.entities.enums.MessageType;
 import wagwagt.community.api.domain.chat.interfaces.dto.ChatMessageDto;
+import wagwagt.community.api.domain.chat.interfaces.repositories.ChatRepository;
+import wagwagt.community.api.domain.user.entities.User;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -28,9 +31,8 @@ import java.util.Set;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class WebSocketChatHandler extends TextWebSocketHandler {
+public class ChatHandler extends TextWebSocketHandler {
     private final ObjectMapper mapper;
-
 
     // 현재 연결된 세션들
     private final Set<WebSocketSession> sessions = new HashSet<>();
@@ -49,15 +51,23 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String payload = message.getPayload();
         log.info("payload {}",payload);
-
+        Object auth = session.getAttributes().get("user");
         // payload(전송되는 데이터) -> chatMessageDto
+
         ChatMessageDto chatMessageDto = mapper.readValue(payload,ChatMessageDto.class);
+        if(!"anonymousUser".equals(auth) ){
+            CustomUserDetails customUserDetails = (CustomUserDetails)auth;
+            User user = customUserDetails.getUser();
+            chatMessageDto.setSender(user.getName());
+        }else{
+            chatMessageDto.setSender(auth.toString());
+        }
+
         log.info("session {}",chatMessageDto.toString());
 
         Long chatRoomId= chatMessageDto.getChatRoomId();
         // 메모리상에 채팅방에 대한 세션이 없으면 만들어줌
         if(!chatRoomSessionMap.containsKey(chatRoomId)){
-            System.out.println(chatRoomId + " ZZZ");
             chatRoomSessionMap.put(chatRoomId,new HashSet<>());
         }
         Set<WebSocketSession> chatRoomSession = chatRoomSessionMap.get(chatRoomId);
@@ -65,7 +75,6 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
         if(chatMessageDto.getMessageType().equals(MessageType.ENTER)){
             chatRoomSession.add(session);
         }
-
 
 //        if(chatRoomSession.size() >= 50){
 //            removeClosedSession(chatRoomSession);
@@ -85,15 +94,18 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
     }
 
     private void sendMessageToChatRoom(ChatMessageDto chatMessageDto, Set<WebSocketSession> chatRoomSession) {
-        chatRoomSession.parallelStream().forEach(session -> sendMessage(session, chatMessageDto));//2
+        chatRoomSession.removeIf(session -> !session.isOpen());
+        chatRoomSession.forEach(session -> sendMessage(session, chatMessageDto));
     }
 
     public <T> void sendMessage(WebSocketSession session, T message) {
         synchronized (session) {
             try {
-                session.sendMessage(new TextMessage(mapper.writeValueAsString(message)));
+                if (session.isOpen()) {
+                    session.sendMessage(new TextMessage(mapper.writeValueAsString(message)));
+                }
             } catch (IOException e) {
-                log.error(e.getMessage(), e);
+                log.error("메시지 전송 중 오류 발생", e);
             }
         }
     }

@@ -36,3 +36,4 @@ public class ChatMessage {
     @Column(updatable = false,nullable = false)
     private LocalDateTime regDate;
 }
+

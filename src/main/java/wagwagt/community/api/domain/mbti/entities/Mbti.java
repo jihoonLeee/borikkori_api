@@ -22,7 +22,7 @@ public class Mbti {
     @Column(name = "mbti_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id",nullable = true)
     private User user;
 
@@ -33,5 +33,6 @@ public class Mbti {
 
     @CreatedDate
     private LocalDateTime testDate;
+
 
 }

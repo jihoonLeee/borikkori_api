@@ -13,6 +13,5 @@ import wagwagt.community.api.common.enums.MbtiType;
 public class MbtiRequest {
 
     private String email;
-
     private MbtiType result;
 }

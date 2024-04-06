@@ -14,6 +14,10 @@ public class ChatMessageDto {
 
     private MessageType messageType;
     private Long chatRoomId;
-    private Long senderId;
+    private String sender;
     private String message;
+
+    public void setSender(String sender) {
+        this.sender = sender;
+    }
 }

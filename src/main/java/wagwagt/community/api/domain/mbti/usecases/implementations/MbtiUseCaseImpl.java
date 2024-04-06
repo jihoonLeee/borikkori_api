@@ -27,12 +27,18 @@ public class MbtiUseCaseImpl implements MbtiUseCase {
     @Transactional
     @Override
     public void addMbtiResult(MbtiRequest req) {
-        Optional<User> user = userRepository.findByEmail(req.getEmail());
+        Optional<User> optionalUser = userRepository.findByEmail(req.getEmail());
+
+        User user = optionalUser.orElse(null);
+
         Mbti mbti = Mbti.builder()
-                        .name(user.isPresent()?user.get().getName():"GUEST")
-                        .user(user.isPresent()?user.get():null)
-                        .result(req.getResult()).build();
+                .name(user != null ? user.getName() : "GUEST")
+                .user(user)
+                .result(req.getResult()).build();
         mbtiRepository.save(mbti);
+        user.setMbti(mbti);
+        userRepository.save(user);
+
         MbtiResult mbtiResult = mbtiRepository.findByResult(req.getResult());
         mbtiResult.setCount(mbtiResult.getCount()+1);
     }
