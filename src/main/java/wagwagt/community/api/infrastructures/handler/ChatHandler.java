@@ -9,10 +9,8 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import wagwagt.community.api.common.service.CustomUserDetails;
-import wagwagt.community.api.domain.chat.entities.ChatRoom;
-import wagwagt.community.api.domain.chat.entities.enums.MessageType;
+import wagwagt.community.api.common.enums.MessageType;
 import wagwagt.community.api.domain.chat.interfaces.dto.ChatMessageDto;
-import wagwagt.community.api.domain.chat.interfaces.repositories.ChatRepository;
 import wagwagt.community.api.domain.user.entities.User;
 
 import java.io.IOException;

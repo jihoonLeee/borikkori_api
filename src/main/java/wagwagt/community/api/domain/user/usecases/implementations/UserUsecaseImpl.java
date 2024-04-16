@@ -104,6 +104,7 @@ public class UserUsecaseImpl implements UserUsecase {
         return LoginResponse.builder()
                 .nickName(user.getName())
                 .role(user.getAuth().getRole())
+                .mbtiType(user.getMbti().getResult())
                 .email(user.getEmail())
                 .build();
     }
@@ -121,9 +122,10 @@ public class UserUsecaseImpl implements UserUsecase {
             return LoginResponse.builder()
                     .nickName(user.getName())
                     .email(user.getEmail())
+                    .mbtiType(user.getMbti() != null ?  user.getMbti().getResult() : null)
                     .role(user.getAuth().getRole())
                     .build();
-        } else {
+        }else {
             throw new Exception();
         }
     }

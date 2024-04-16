@@ -3,6 +3,7 @@ package wagwagt.community.api.domain.user.interfaces.dto.response;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
+import wagwagt.community.api.common.enums.MbtiType;
 import wagwagt.community.api.domain.user.entities.enums.Role;
 
 @Builder
@@ -17,4 +18,7 @@ public class LoginResponse {
     @Schema(description = "유저 이메일",example = "jihoonn@gmail.com")
     String email;
 
+
+    @Schema(description = "mbti 결과",example = "ISTJ")
+    MbtiType mbtiType;
 }

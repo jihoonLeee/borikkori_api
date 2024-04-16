@@ -3,9 +3,13 @@ package wagwagt.community.api.domain.chat.interfaces.controller;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+import wagwagt.community.api.common.service.CustomUserDetails;
+import wagwagt.community.api.domain.chat.interfaces.dto.request.MessageRequest;
+import wagwagt.community.api.domain.chat.interfaces.dto.response.ChatRoomListResponse;
 import wagwagt.community.api.domain.chat.usecases.ChatUseCase;
 
 @Tag(name="chat_api", description = "CHAT Apis")
@@ -17,17 +21,30 @@ public class ChatController {
 
     private final ChatUseCase chatUseCase;
 
-    @GetMapping("/message")
-    public void sendMessage(){
-        log.info("챗팅!");
+    /*
+    * TODO : 채팅방 입장할 때 -> 어떤 채팅방 인지? ->
+    *
+    * */
+
+    /*
+    * 채팅방 목록 보여주기
+    * */
+    @GetMapping("/rooms")
+    public ResponseEntity<ChatRoomListResponse> loadChatRooms(@AuthenticationPrincipal CustomUserDetails customUser){
+        ChatRoomListResponse res = chatUseCase.getChatRoomList(customUser);
+
+        return new ResponseEntity<>(res, HttpStatus.OK);
     }
+
+
     /**
      *  TODO :대화중인 채팅 내용 불러오기
      *  최근 대화 100개 불러오고
      *  위로 스크롤 할 때마다 100개씩 더 불러오기 ( 페이지네이션 느낌 )
      *  */
+    @GetMapping("/rooms/{roomId}/messages")
     public void loadMessageList(){
-
+        
     }
 
     /**
@@ -35,7 +52,11 @@ public class ChatController {
      * 채팅 입력 할 때마다 호출되는 api 
      * socket입력 시점에 할지 socket 메시지 전송 완료 시점에 할지 정하기
      */
-    public void saveMessage(){
+    @PostMapping("/rooms/{roomId}/messages")
+    public void saveMessage(@AuthenticationPrincipal CustomUserDetails customUser,@RequestBody MessageRequest req){
+
+        req.setEmail(customUser.getUser().getEmail());
+        req.setMbtiType(customUser.getUser().getMbti().getResult());
 
     }
 
@@ -52,6 +73,7 @@ public class ChatController {
     /**
      * TODO : 채팅 메시지 삭제하기
      */
+    @DeleteMapping("/messages/{messageId}")
     public void deleteMessage(){
 
     }

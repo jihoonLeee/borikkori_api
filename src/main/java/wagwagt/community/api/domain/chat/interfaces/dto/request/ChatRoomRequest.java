@@ -1,16 +1,16 @@
 package wagwagt.community.api.domain.chat.interfaces.dto.request;
 
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import wagwagt.community.api.common.enums.ChatRoomType;
 import wagwagt.community.api.common.enums.MbtiType;
 
+import java.util.List;
+
+@Builder
 @Getter
-@Setter
-public class MessageRequest {
+public class ChatRoomRequest {
 
-    private String message;
-    private String email;
+    private List<ChatRoomType> chatRoomTypes;
     private MbtiType mbtiType;
-
 }

@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import wagwagt.community.api.domain.chat.entities.enums.MessageType;
+import wagwagt.community.api.common.enums.MessageType;
 
 @Builder
 @Getter

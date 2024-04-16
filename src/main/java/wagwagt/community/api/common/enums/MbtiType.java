@@ -10,5 +10,9 @@ public enum MbtiType
     ENFJ,ENFP,ENTJ,ENTP,
     ESFJ,ESFP,ESTJ,ESTP;
 
+    @JsonValue
+    public String getType() {
+        return this.toString();
+    }
 
 }
