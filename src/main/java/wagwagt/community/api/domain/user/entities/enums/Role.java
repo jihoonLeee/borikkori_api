@@ -6,8 +6,24 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum Role {
 
     USER("USER"),
-    ADMIN("ADMIN");
+    ADMIN("ADMIN"),
 
+    MBTI_ISTJ("MBTI_ISTJ"),
+    MBTI_ISFJ("MBTI_ISFJ"),
+    MBTI_INFJ("MBTI_INFJ"),
+    MBTI_INTJ("MBTI_INTJ"),
+    MBTI_ISTP("MBTI_ISTP"),
+    MBTI_ISFP("MBTI_ISFP"),
+    MBTI_INFP("MBTI_INFP"),
+    MBTI_INTP("MBTI_INTP"),
+    MBTI_ESTP("MBTI_ESTP"),
+    MBTI_ESFP("MBTI_ESFP"),
+    MBTI_ENFP("MBTI_ENFP"),
+    MBTI_ENTP("MBTI_ENTP"),
+    MBTI_ESTJ("MBTI_ESTJ"),
+    MBTI_ESFJ("MBTI_ESFJ"),
+    MBTI_ENFJ("MBTI_ENFJ"),
+    MBTI_ENTJ("MBTI_ENTJ");
     private String role;
 
     Role(String role) {

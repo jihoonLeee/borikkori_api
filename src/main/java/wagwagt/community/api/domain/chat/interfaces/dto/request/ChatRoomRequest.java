@@ -11,6 +11,6 @@ import java.util.List;
 @Getter
 public class ChatRoomRequest {
 
-    private List<ChatRoomType> chatRoomTypes;
+    private ChatRoomType chatRoomType;
     private MbtiType mbtiType;
 }

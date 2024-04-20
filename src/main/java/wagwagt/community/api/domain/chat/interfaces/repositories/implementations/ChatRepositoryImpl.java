@@ -1,7 +1,6 @@
 package wagwagt.community.api.domain.chat.interfaces.repositories.implementations;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import wagwagt.community.api.common.enums.PostStatus;
@@ -40,24 +39,14 @@ public class ChatRepositoryImpl implements ChatRepository {
 
 
     /**
-     * TODO : name이 있을때(mbti타입이 있을떄)에만   MBTI_GROUP , name 둘다 있으면 그거 보여주고 ALL또는 GROUP 보여주기
+     * --TODO : name이 있을때(mbti타입이 있을떄)에만 [2024-04-20 완료]
+     * TODO : 채팅방 관리 좀 더 효율적인 방법 생각해서 바꾸기 (ex 권한 과 역할 이용)
      * */
     public List<ChatRoom> findChatRooms(ChatRoomRequest req) {
-         // 기본 쿼리 문자열
-        String queryString = "select r from ChatRoom r where r.type IN :types";
-
-        if (req.getMbtiType() != null ) {
-            queryString += " or r.name = :name";
-        }
-        queryString += " order by r.id desc";
-
-        Query query = em.createQuery(queryString, ChatRoom.class);
-        query.setParameter("types", req.getChatRoomTypes());
-        if (req.getMbtiType() != null) {
-            query.setParameter("name", req.getMbtiType().getType());
-        }
-
-        return query.getResultList();
+        return em.createQuery("select r from ChatRoom r where r.type = :type or r.name = :name order by r.id desc", ChatRoom.class)
+                .setParameter("type", req.getChatRoomType())
+                .setParameter("name",req.getMbtiType().getType())
+                .getResultList();
     }
 
 }

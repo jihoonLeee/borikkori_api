@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wagwagt.community.api.domain.mbti.entities.Mbti;
 import wagwagt.community.api.domain.mbti.entities.MbtiResult;
+import wagwagt.community.api.domain.user.entities.Authority;
 import wagwagt.community.api.domain.user.entities.User;
 import wagwagt.community.api.domain.mbti.interfaces.repositories.MbtiRepository;
 import wagwagt.community.api.domain.user.interfaces.repositories.UserRepository;
@@ -37,6 +38,7 @@ public class MbtiUseCaseImpl implements MbtiUseCase {
                 .result(req.getResult()).build();
         mbtiRepository.save(mbti);
         user.setMbti(mbti);
+
         userRepository.save(user);
 
         MbtiResult mbtiResult = mbtiRepository.findByResult(req.getResult());

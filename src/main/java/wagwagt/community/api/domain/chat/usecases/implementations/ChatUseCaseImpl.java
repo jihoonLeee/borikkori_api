@@ -19,6 +19,7 @@ import wagwagt.community.api.domain.user.entities.User;
 import wagwagt.community.api.domain.user.interfaces.repositories.UserRepository;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -35,19 +36,17 @@ public class ChatUseCaseImpl implements ChatUseCase {
     @Override
     public ChatRoomListResponse getChatRoomList(CustomUserDetails customUser) {
 
-        List<ChatRoomType> types = new ArrayList<>();
+        ChatRoomType type = null;
         MbtiType mbti = null;
         if (customUser == null) {
-            types.add(ChatRoomType.GUEST);
+            type = ChatRoomType.GUEST;
         } else {
-            types.add(ChatRoomType.ALL_GROUP);
+            type = ChatRoomType.ALL_GROUP;
             if (customUser.getUser().getMbti() != null) {
-                types.add(ChatRoomType.MBTI_GROUP);
                 mbti = customUser.getUser().getMbti().getResult();
             }
-            System.out.println(mbti + " 엠비");
         }
-        ChatRoomRequest req = ChatRoomRequest.builder().mbtiType(mbti).chatRoomTypes(types).build();
+        ChatRoomRequest req = ChatRoomRequest.builder().mbtiType(mbti).chatRoomType(type).build();
 
         List<ChatRoomResponse> chatRooms = chatRepository.findChatRooms(req).stream()
                 .map(chatRoom -> ChatRoomResponse.builder()

@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wagwagt.community.api.common.exeptions.NotExistAuthException;
+import wagwagt.community.api.domain.user.entities.enums.Role;
 import wagwagt.community.api.domain.user.interfaces.dto.RefreshToken;
 import wagwagt.community.api.domain.user.entities.Authority;
 import wagwagt.community.api.domain.user.entities.User;
@@ -22,6 +23,7 @@ import wagwagt.community.api.domain.user.interfaces.dto.response.LoginResponse;
 import wagwagt.community.api.domain.user.usecases.UserUsecase;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,15 +47,17 @@ public class UserUsecaseImpl implements UserUsecase {
         duplicateUser(req.getEmail());
         String encodedPw = passwordEncoder.encode(req.getPassword());
 
+        // 권한 조회 또는 생성
         Authority auth = authorityRepository.findByRole(req.getRole()).orElseThrow(
                 () -> new NotExistAuthException(req.getRole() + " 권한이 존재하지 않습니다.")
-            );
+        );
         User user = User.builder()
                 .name(req.getName())
                 .email(req.getEmail())
                 .password(encodedPw)
-                .auth(auth)
                 .build();
+
+        user.setAuth(Arrays.asList(auth));
 
         userRepository.save(user);
         return user.getId();
@@ -103,8 +107,6 @@ public class UserUsecaseImpl implements UserUsecase {
 
         return LoginResponse.builder()
                 .nickName(user.getName())
-                .role(user.getAuth().getRole())
-                .mbtiType(user.getMbti().getResult())
                 .email(user.getEmail())
                 .build();
     }
@@ -123,7 +125,7 @@ public class UserUsecaseImpl implements UserUsecase {
                     .nickName(user.getName())
                     .email(user.getEmail())
                     .mbtiType(user.getMbti() != null ?  user.getMbti().getResult() : null)
-                    .role(user.getAuth().getRole())
+                    .role(user.getAuth().get(0).getRole())
                     .build();
         }else {
             throw new Exception();

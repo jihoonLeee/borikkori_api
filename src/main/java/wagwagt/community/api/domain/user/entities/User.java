@@ -36,9 +36,13 @@ public class User {
     private String email;
 
     @Setter
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name="auth_id")
-    private Authority auth;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_auth",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "auth_id")
+    )
+    private List<Authority> auth = new ArrayList<>();
 
     @CreatedDate
     @Column(updatable = false,nullable = false)
@@ -55,9 +59,6 @@ public class User {
     @JoinColumn(name="mbti_id")
     private Mbti mbti;
 
-    public void setAuth(Authority auth){
-        this.auth=auth;
-    }
     public void setPassword(String password){this.password=password;}
 
     public void setMbti(Mbti mbti) {

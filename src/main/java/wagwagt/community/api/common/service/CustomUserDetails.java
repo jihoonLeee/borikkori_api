@@ -20,8 +20,13 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        GrantedAuthority authority = new SimpleGrantedAuthority(user.getAuth().getAuthority());
-        return Collections.singletonList(authority);
+        if (!user.getAuth().isEmpty()) {
+            GrantedAuthority authority = new SimpleGrantedAuthority(user.getAuth().get(0).getAuthority());
+            return Collections.singletonList(authority);
+        } else {
+            // 권한이 없는 경우 적절한 처리를 하세요. 예를 들어, 비어 있는 리스트 반환
+            return Collections.emptyList();
+        }
     }
 
     @Override

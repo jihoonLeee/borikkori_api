@@ -29,8 +29,9 @@ public class Authority implements GrantedAuthority {
     private Role role;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "auth", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "auth",fetch = FetchType.EAGER)
     private List<User> users = new ArrayList<>();
+
 
     @Override
     public String getAuthority() {
