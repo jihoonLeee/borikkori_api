@@ -22,7 +22,8 @@ public class Mbti {
     @Column(name = "mbti_id")
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @Setter
+    @OneToOne(mappedBy = "mbti",fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id",nullable = true)
     private User user;
 

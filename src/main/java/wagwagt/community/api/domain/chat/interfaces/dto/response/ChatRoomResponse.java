@@ -8,6 +8,7 @@ import wagwagt.community.api.common.enums.ChatRoomType;
 @Getter
 public class ChatRoomResponse {
 
+    private Long chatRoomId;
     private String name;
     private ChatRoomType type;
 }

@@ -56,7 +56,6 @@ public class UserUsecaseImpl implements UserUsecase {
                 .email(req.getEmail())
                 .password(encodedPw)
                 .build();
-
         user.setAuth(Arrays.asList(auth));
 
         userRepository.save(user);

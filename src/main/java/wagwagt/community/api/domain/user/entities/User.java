@@ -32,7 +32,7 @@ public class User {
     @Column(name="user_passwd" ,nullable = false)
     private String password;
 
-    @Column(name= "user_email",unique = true ,nullable = false)
+    @Column(name= "user_email",nullable = false)
     private String email;
 
     @Setter
@@ -63,6 +63,7 @@ public class User {
 
     public void setMbti(Mbti mbti) {
         this.mbti = mbti;
+        mbti.setUser(this); // 양방향 설정
     }
 
     //orphanRemoval = true -> 연관된 엔티티 간의 참조가 끊어질 때 삭제 됨

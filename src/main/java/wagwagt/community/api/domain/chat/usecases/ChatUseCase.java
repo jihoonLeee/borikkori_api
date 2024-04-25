@@ -10,5 +10,5 @@ import wagwagt.community.api.domain.chat.interfaces.dto.response.ChatRoomListRes
 public interface ChatUseCase {
 
     ChatRoomListResponse getChatRoomList(CustomUserDetails customUserDetails);
-    void saveMessage(MessageRequest req);
+    void saveMessage(Long chatRoomId,MessageRequest req);
 }

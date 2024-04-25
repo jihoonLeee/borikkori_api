@@ -52,12 +52,12 @@ public class ChatController {
      * 채팅 입력 할 때마다 호출되는 api 
      * socket입력 시점에 할지 socket 메시지 전송 완료 시점에 할지 정하기
      */
-    @PostMapping("/rooms/{roomId}/messages")
-    public void saveMessage(@AuthenticationPrincipal CustomUserDetails customUser,@RequestBody MessageRequest req){
+    @PostMapping("/rooms/{chatRoomId}/messages")
+    public ResponseEntity<Void> saveMessage(@AuthenticationPrincipal CustomUserDetails customUser,@RequestBody MessageRequest req,@PathVariable Long chatRoomId){
+        req.setSender(customUser.getUser());
+        chatUseCase.saveMessage(chatRoomId,req);
 
-        req.setEmail(customUser.getUser().getEmail());
-        req.setMbtiType(customUser.getUser().getMbti().getResult());
-
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
