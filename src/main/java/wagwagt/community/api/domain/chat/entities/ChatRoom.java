@@ -35,6 +35,8 @@ public class ChatRoom {
 
     private int maxUsers = 50;
 
+    private int currentUserCount = 0;
+
     @CreatedDate
     @Column(updatable = false,nullable = false)
     private LocalDateTime regDate;
@@ -42,4 +44,22 @@ public class ChatRoom {
     @LastModifiedDate
     @Column(nullable = false)
     private LocalDateTime updDate;
+
+    // 참여자 수 증가 메소드
+    public void userEnter() {
+        if(this.currentUserCount < this.maxUsers) {
+            this.currentUserCount++;
+        } else {
+            throw new IllegalStateException("채팅방이 가득찼습니다.");
+        }
+    }
+
+    // 참여자 수 감소 메소드
+    public void userExit() {
+        if(this.currentUserCount > 0) {
+            this.currentUserCount--;
+        } else {
+            throw new IllegalStateException("현재 0명입니다.");
+        }
+    }
 }

@@ -27,7 +27,8 @@ public class ChatController {
     * */
 
     /*
-    * 채팅방 목록 보여주기
+    * DONE : 채팅방 목록 보여주기 [2024-04-20] 
+    * 유저별 접근 가능한 채팅방 목록 보여줌
     * */
     @GetMapping("/rooms")
     public ResponseEntity<ChatRoomListResponse> loadChatRooms(@AuthenticationPrincipal CustomUserDetails customUser){
@@ -48,9 +49,9 @@ public class ChatController {
     }
 
     /**
-     * TODO : 채팅 메시지 저장하기
-     * 채팅 입력 할 때마다 호출되는 api 
-     * socket입력 시점에 할지 socket 메시지 전송 완료 시점에 할지 정하기
+     * DONE : 채팅 메시지 저장하기 [2024-04-20]
+     * 채팅 입력 할 때마다 호출되는 api
+     * TODO : socket입력 시점에 할지 socket 메시지 전송 완료 시점에 할지 정하기
      */
     @PostMapping("/rooms/{chatRoomId}/messages")
     public ResponseEntity<Void> saveMessage(@AuthenticationPrincipal CustomUserDetails customUser,@RequestBody MessageRequest req,@PathVariable Long chatRoomId){

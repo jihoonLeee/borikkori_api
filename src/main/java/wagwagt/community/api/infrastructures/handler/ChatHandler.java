@@ -11,6 +11,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import wagwagt.community.api.common.service.CustomUserDetails;
 import wagwagt.community.api.common.enums.MessageType;
 import wagwagt.community.api.domain.chat.interfaces.dto.ChatMessageDto;
+import wagwagt.community.api.domain.chat.usecases.ChatUseCase;
 import wagwagt.community.api.domain.user.entities.User;
 
 import java.io.IOException;
@@ -31,6 +32,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class ChatHandler extends TextWebSocketHandler {
     private final ObjectMapper mapper;
+    private final ChatUseCase chatUseCase;
 
     // 현재 연결된 세션들
     private final Set<WebSocketSession> sessions = new HashSet<>();
@@ -41,6 +43,9 @@ public class ChatHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         log.info("{} 연결됨",session.getId());
+        /**
+         * TODO : 연결 하면 DB에 업데이트 해서 현재 인원수 체크
+         */
         sessions.add(session);
     }
 
@@ -83,6 +88,9 @@ public class ChatHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         log.info("{} 연결 끊김", session.getId());
+        /**
+         * TODO : 연결 끊기면 DB에서 인원수 감소
+         */
         sessions.remove(session);
     }
 
