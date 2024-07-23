@@ -55,6 +55,7 @@ dependencies {
 	// test
 	testImplementation ("org.junit.jupiter:junit-jupiter-api:5.3.1")
 	testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.3.1")
+	implementation(kotlin("script-runtime"))
 }
 val props = Properties()
 FileInputStream("src/main/resources/gradle.properties").use { props.load(it) }

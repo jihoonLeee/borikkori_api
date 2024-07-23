@@ -15,6 +15,6 @@ public class WebSocketConfig implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         // setAllowedOrigins(*) 모든 ip에서 접속 가능
-        registry.addHandler(chatHandler,"/ws/chat/message").addInterceptors(socketInterceptor).setAllowedOrigins("*");
+        registry.addHandler(chatHandler,"/ws/chat/message/1").addInterceptors(socketInterceptor).setAllowedOrigins("*");
     }
 }
