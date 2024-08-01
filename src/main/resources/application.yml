@@ -46,8 +46,8 @@ spring:
             enable: true
   data:
     redis:
-      host: ${REDIS_HOST}
-      port: ${REDIS_PORT}
+      host: localhost
+      port: 6379
 
 ## jwt.secret.key? ?? 256bit ????? ???.
 #jwt:
@@ -64,4 +64,4 @@ logging:
         security: DEBUG
 cors:
   allowed:
-    origins: ${CORS_ORIGIN}
+    origins: localhost
