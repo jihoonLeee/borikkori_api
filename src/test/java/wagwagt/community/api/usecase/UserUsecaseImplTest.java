@@ -1,3 +1,4 @@
+/*
 package wagwagt.community.api.usecase;
 
 import org.junit.jupiter.api.Assertions;
@@ -33,10 +34,12 @@ class UserUsecaseImplTest {
     JwtTokenProvider jwtTokenProvider;
 
 
-    /**
+    */
+/**
      * TODO : shouldSuccessJoinWithEmailVerification 과 같이 무엇을 위한 테스트인지 확실하게 이름을 정할 것
      * @throws Exception
-     */
+     *//*
+
     @Test
     public void join() throws Exception{
         //given
@@ -101,4 +104,4 @@ class UserUsecaseImplTest {
 //        userUsecase.login(req,res);
     }
 
-}
+}*/

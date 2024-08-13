@@ -26,7 +26,7 @@ spring:
     database: mysql
     show_sql: true
     hibernate:
-      ddl-auto: create # ?? ????? update or create .. ??
+      ddl-auto: update # ?? ????? update or create .. ??
     properties:
       hibernate:
         show_sql: true
@@ -35,7 +35,7 @@ spring:
 
   mail:
     host: smtp.gmail.com
-    port: ${MAIL_PORT}
+    port: 587
     username: ${MAIL_USER_NAME}
     password: ${MAIL_PASSWORD}
     properties:
@@ -64,4 +64,4 @@ logging:
         security: DEBUG
 cors:
   allowed:
-    origins: localhost
+    origins: borikkori.iptime.org
