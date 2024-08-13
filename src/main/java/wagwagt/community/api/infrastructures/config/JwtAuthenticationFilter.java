@@ -50,7 +50,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                      .sameSite("false")
                                      .httpOnly(true)
                                      .secure(false)
-                                     .domain("localhost")
+                                     .domain("borikkori.iptime.org")
                                      .maxAge(60*30)
                                      .build();
                              response.addHeader("Set-Cookie",cookie.toString());
