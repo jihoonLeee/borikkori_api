@@ -64,4 +64,4 @@ logging:
         security: DEBUG
 cors:
   allowed:
-    origins: borikkori.iptime.org
+    origins: ${VIEW_URL}
