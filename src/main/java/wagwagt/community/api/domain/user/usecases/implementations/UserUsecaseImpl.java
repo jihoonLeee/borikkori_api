@@ -98,7 +98,7 @@ public class UserUsecaseImpl implements UserUsecase {
                  .sameSite("false")
                  .httpOnly(true)
                  .secure(false)
-                 .domain("localhost")
+                 .domain("bokko.kr")
                  .maxAge(60*30)
                  .build();
          response.addHeader("Set-Cookie",cookie.toString());
