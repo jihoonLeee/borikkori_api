@@ -30,7 +30,7 @@ public class SecurityConfig {
         JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtTokenProvider,refreshTokenRepository);
 
         return http.cors(Customizer.withDefaults())
-                .csrf(csrf -> csrf.disable())  // csfr 잠시 사용 안함
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/swagger-ui/**","/mbti","/file/**","/images/**").permitAll()
                         .requestMatchers(HttpMethod.POST,"/user/join","/user/login","/user/sendEmail").permitAll()

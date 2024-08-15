@@ -15,7 +15,7 @@ public interface UserUsecase {
     Long join(JoinRequest req) throws NotExistAuthException;
     
     //회원 조회
-    User findOne(Long userId);
+    Optional<User> findOne(Long userId);
     Optional<User> findByEmail(String email);
     // 회원탈퇴
     
