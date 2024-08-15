@@ -37,7 +37,7 @@ public class FileUseCaseImpl implements FileUseCase {
 
     @PostConstruct
     public void init() {
-        IMAGE_URL = "https://bokko.kr/" + uploadDir;
+        IMAGE_URL = "https://www.bokko.kr/" + uploadDir;
     }
     private static final long MAX_SIZE = 10*(1024*1024); // 총 10MB
     @Override
