@@ -28,7 +28,7 @@ public class FileUseCaseImpl implements FileUseCase {
     private final FileRepository fileRepository;
     private final PostRepository postRepository;
 
-    private final String IMAGE_URL = "http://localhost:8080/images/";
+    private final String IMAGE_URL = "https://bokko.kr/images/";
     private static final long MAX_SIZE = 10*(1024*1024); // 총 10MB
     @Override
     @Transactional
