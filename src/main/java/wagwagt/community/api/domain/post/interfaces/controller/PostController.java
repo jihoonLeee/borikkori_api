@@ -15,6 +15,7 @@ import wagwagt.community.api.domain.post.interfaces.dto.response.PostListRespons
 import wagwagt.community.api.domain.post.interfaces.dto.response.PostResponse;
 import wagwagt.community.api.domain.post.interfaces.dto.response.PostTempResponse;
 import wagwagt.community.api.domain.post.usecases.PostUsecase;
+import wagwagt.community.api.domain.user.entities.User;
 import wagwagt.community.api.domain.user.usecases.UserUsecase;
 
 @Tag(name="post_api", description = "POST Apis")
@@ -56,9 +57,12 @@ public class PostController {
     @PostMapping("/{postId}/like")
     public ResponseEntity<PostResponse> postLike(@AuthenticationPrincipal CustomUserDetails customUser, @PathVariable Long postId){
         Post post = postUsecase.findOne(postId);
-        PostResponse res = postUsecase.postLike(post,customUser.getUser());
-        return new ResponseEntity<>(res,HttpStatus.OK);
+        User user = userUsecase.findOne(customUser.getUser().getId()).orElseThrow(() -> new RuntimeException("User not found"));
+
+        PostResponse res = postUsecase.postLike(post, user);
+        return new ResponseEntity<>(res, HttpStatus.OK);
     }
+
 
 
     @Operation(summary = "임시 글 체크" , description = "임시 게시글 체크")

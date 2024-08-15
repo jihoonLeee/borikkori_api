@@ -1,7 +1,9 @@
 package wagwagt.community.api.domain.file.usecases.implementations;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,8 +29,16 @@ public class FileUseCaseImpl implements FileUseCase {
 
     private final FileRepository fileRepository;
     private final PostRepository postRepository;
+    @Value("${file.upload-dir}")
+    private String uploadDir;
+    @Value("${file.base-dir}")
+    private String uploadBaseDir;
+    private String IMAGE_URL;
 
-    private final String IMAGE_URL = "https://bokko.kr/images/";
+    @PostConstruct
+    public void init() {
+        IMAGE_URL = "https://bokko.kr/" + uploadBaseDir;
+    }
     private static final long MAX_SIZE = 10*(1024*1024); // 총 10MB
     @Override
     @Transactional
@@ -56,7 +66,7 @@ public class FileUseCaseImpl implements FileUseCase {
         }
 
         String savedFileName = UUID.randomUUID().toString() + extension;
-        File destination = new File("D:/upload/images/" , savedFileName);
+        File destination = new File(uploadBaseDir+uploadDir , savedFileName);
         file.transferTo(destination);
         String imageUrl = IMAGE_URL+savedFileName;
 
@@ -79,7 +89,7 @@ public class FileUseCaseImpl implements FileUseCase {
     public void cleanupImage() {
         List<Image> images = fileRepository.findUnusedImages();
         for(Image image: images){
-            File destination = new File("D:/upload/images/", image.getSavedName());
+            File destination = new File(uploadBaseDir+uploadDir, image.getSavedName());
             boolean isDeleted = destination.delete();
             if (isDeleted) {
                 log.info(image.getSavedName() + " 파일 삭제 성공");

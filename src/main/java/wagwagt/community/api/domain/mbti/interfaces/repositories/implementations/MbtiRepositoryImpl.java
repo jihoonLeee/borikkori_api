@@ -31,6 +31,4 @@ public class MbtiRepositoryImpl implements MbtiRepository {
                 .setParameter("type",type)
                 .getSingleResult();
     }
-
-
 }
