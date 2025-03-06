@@ -1,3 +1,0 @@
-secret-key: ${JWT_KEY}
-expiration-minutes: 60
-refresh-expiration-hours: 72

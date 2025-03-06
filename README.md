@@ -1,5 +1,5 @@
-# wagwagt.server
-WAGWAGT 프로젝트 Backend 
+# borikkori.server
+borikkori 프로젝트 Backend 
 
 
 ## 요구사항 분석 
