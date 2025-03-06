@@ -8,7 +8,7 @@ plugins {
 	id("org.springdoc.openapi-gradle-plugin") version "1.8.0"
 }
 
-group = "wagwagt.community"
+group = "borikkori.community"
 version = "0.0.1"
 
 java {

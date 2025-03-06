@@ -1,0 +1,78 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  doc-openapi:
+    packages-to-scan: com.colabear754.springdoc_example.controllers
+    default-consumes-media-type: application/json;charset=UTF-8
+    default-produces-media-type: application/json;charset=UTF-8
+
+    swagger-ui:
+      path: /
+      disable-swagger-default-url: true
+      display-request-duration: true
+      operations-sorter:  alpha
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/borikkori?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&useSSL=true
+    username: root
+    password: 1031002wlgnsdl!
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+  jpa:
+    database: mysql
+    show_sql: true
+    hibernate:
+      ddl-auto: none # ?? ????? update or create .. ??
+      format_sql: true
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ljh2723@gmail.com
+    password: nvuahcemgobiitvg
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+jwt:
+  secret:
+    key: trvvE5iDiMw8quLrrSi495DJ2MU9qmBy
+    expiration-minutes: 30
+    refresh-expiration-hours: 24
+#https://acte.ltd/utils/randomkeygen
+
+logging:
+  level:
+    org:
+      hibernate.orm.jdbc.bind: trace
+      springframework:
+        security: DEBUG
+
+cors:
+  allowed:
+    origins: http://localhost:3000
+file:
+  base-dir: /home/jihoon/borikkori/view/borikkori_view/build/
+  upload-dir: images/upload/
+
+
+
