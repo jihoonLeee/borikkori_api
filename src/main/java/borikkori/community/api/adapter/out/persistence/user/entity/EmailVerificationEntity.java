@@ -30,11 +30,11 @@ public class EmailVerificationEntity {
     private LocalDateTime regDate;
 
     // 정적 팩토리 메서드
-    public static EmailVerificationEntity create(UserEntity user, int verificationNumber, LocalDateTime regDate) {
+    public static EmailVerificationEntity create(UserEntity user, int verificationNumber) {
         EmailVerificationEntity verification = new EmailVerificationEntity();
         verification.user = user;
         verification.verificationNumber = verificationNumber;
-        verification.regDate = regDate;
+        verification.regDate = LocalDateTime.now();
         verification.isSuccess = false; // 기본값 설정
         return verification;
     }

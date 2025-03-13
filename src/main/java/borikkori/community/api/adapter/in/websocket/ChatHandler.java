@@ -1,5 +1,6 @@
 package borikkori.community.api.adapter.in.websocket;
 
+import borikkori.community.api.adapter.out.persistence.user.mapper.UserMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,8 +11,8 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import borikkori.community.api.config.security.CustomUserDetails;
 import borikkori.community.api.common.enums.MessageType;
-import borikkori.community.api.application.chat.dto.ChatMessageDto;
-import borikkori.community.api.application.chat.usecase.ChatUseCase;
+import borikkori.community.api.application.domain.chat.dto.ChatMessageDto;
+import borikkori.community.api.application.domain.chat.usecase.ChatUseCase;
 import borikkori.community.api.adapter.out.persistence.user.entity.UserEntity;
 
 import java.io.IOException;
@@ -33,7 +34,7 @@ import java.util.Set;
 public class ChatHandler extends TextWebSocketHandler {
     private final ObjectMapper mapper;
     private final ChatUseCase chatUseCase;
-
+    private final UserMapper userMapper;
     // 현재 연결된 세션들
     private final Set<WebSocketSession> sessions = new HashSet<>();
     // chatRoomId , {session1,session2...}
@@ -60,7 +61,7 @@ public class ChatHandler extends TextWebSocketHandler {
         ChatMessageDto chatMessageDto = mapper.readValue(payload,ChatMessageDto.class);
         if(!"anonymousUser".equals(auth) ){
             CustomUserDetails customUserDetails = (CustomUserDetails)auth;
-            UserEntity user = customUserDetails.getUser();
+            UserEntity user =userMapper.toEntity(customUserDetails.getUser());
             chatMessageDto.setSender(user.getName());
         }else{
             chatMessageDto.setSender(auth.toString());

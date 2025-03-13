@@ -1,5 +1,7 @@
 package borikkori.community.api.adapter.in.web.post;
 
+import borikkori.community.api.adapter.out.persistence.user.entity.UserEntity;
+import borikkori.community.api.adapter.out.persistence.user.mapper.UserMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,7 +16,7 @@ import borikkori.community.api.adapter.in.web.post.request.CommentWriteRequest;
 import borikkori.community.api.adapter.in.web.post.response.CommentListResponse;
 import borikkori.community.api.adapter.in.web.post.request.CommentLikeRequest;
 import borikkori.community.api.adapter.in.web.post.response.CommentResponse;
-import borikkori.community.api.application.post.usecase.CommentUsecase;
+import borikkori.community.api.application.domain.post.usecase.CommentUsecase;
 
 import java.net.URI;
 
@@ -24,7 +26,7 @@ import java.net.URI;
 @RestController
 public class CommentController {
     private final CommentUsecase commentUsecase;
-
+    private final UserMapper userMapper;
     @Operation(summary = "댓글 작성" , description = "댓글 작성")
     @PostMapping
     @Parameter(name = "CommentWriteRequest")
@@ -43,7 +45,7 @@ public class CommentController {
     @PostMapping("/{commentId}/like")
     public ResponseEntity<CommentResponse> commentLike(@AuthenticationPrincipal CustomUserDetails customUser, @RequestBody CommentLikeRequest req, @PathVariable Long commentId){
         CommentEntity commentEntity = commentUsecase.findOne(commentId);
-        CommentResponse res = commentUsecase.commentLike(commentEntity,customUser.getUser());
+        CommentResponse res = commentUsecase.commentLike(commentEntity,userMapper.toEntity(customUser.getUser()));
         return new ResponseEntity<>(res,HttpStatus.OK);
     }
 }

@@ -1,5 +1,7 @@
 package borikkori.community.api.config.security;
 
+import borikkori.community.api.adapter.out.persistence.user.mapper.UserMapper;
+import borikkori.community.api.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,10 +15,10 @@ import borikkori.community.api.domain.user.repository.UserRepository;
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
-
+    private final UserMapper userMapper;
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        UserEntity user =  userRepository.findByEmail(email).orElseThrow(
+        User user =  userRepository.findByEmail(email).orElseThrow(
                 () -> new UsernameNotFoundException("Invalid authentication!")
         );
         return  new CustomUserDetails(user);

@@ -4,6 +4,7 @@ import borikkori.community.api.common.enums.RoleStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
@@ -29,6 +30,10 @@ public class UserRoleEntity {
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime regDate;
+
+    @LastModifiedDate
+    @Column(nullable = false)
+    private LocalDateTime updDate;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)

@@ -17,7 +17,6 @@ public class MbtiResultEntity {
 
     private Long count = 0L;
 
-
     public void setCount(Long count) {
         this.count = count;
     }

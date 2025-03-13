@@ -12,10 +12,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import borikkori.community.api.adapter.in.web.user.request.JoinRequest;
 import borikkori.community.api.adapter.in.web.user.request.LoginRequest;
-import borikkori.community.api.adapter.in.web.user.response.LoginResponse;
-import borikkori.community.api.application.user.usecase.EmailVerificationUsecase;
-import borikkori.community.api.application.user.usecase.UserAuthUsecase;
-import borikkori.community.api.application.user.usecase.UserManagementUsecase;
+import borikkori.community.api.adapter.in.web.user.response.UserResponse;
+import borikkori.community.api.application.domain.user.usecase.EmailVerificationUsecase;
+import borikkori.community.api.application.domain.user.usecase.UserAuthenticationUsecase;
+import borikkori.community.api.application.domain.user.usecase.UserRegistrationUsecase;
 
 import java.net.URI;
 
@@ -26,8 +26,8 @@ import java.net.URI;
 public class UserController {
 
     private final EmailVerificationUsecase emailVerificationUsecase;
-    private final UserAuthUsecase userAuthUsecase;
-    private final UserManagementUsecase userManagementUsecase;
+    private final UserAuthenticationUsecase userAuthenticationUsecase;
+    private final UserRegistrationUsecase userRegistrationUsecase;
 
     @Operation(summary = "이메일 전송" , description = "이메일 전송")
     @Parameter(name = "JoinRequest",description = "2번 반복할 문자열")
@@ -42,7 +42,7 @@ public class UserController {
     @PostMapping("/join")
     public ResponseEntity<Void> join(@RequestBody JoinRequest req){
         if(emailVerificationUsecase.checkEmail(req.getVerificationNumber(),req.getEmail())){
-            return ResponseEntity.created(URI.create("/join/"+ userManagementUsecase.join(req))).build();
+            return ResponseEntity.created(URI.create("/join/"+ userRegistrationUsecase.joinUser(req))).build();
         }else{
             return ResponseEntity.badRequest().build();
         }
@@ -51,8 +51,8 @@ public class UserController {
     @Operation(summary = "로그인" , description = "로그인 요청")
     @Parameter(name = "LoginRequest")
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest req, HttpServletResponse response){
-        LoginResponse res = userAuthUsecase.login(req,response);
+    public ResponseEntity<UserResponse> login(@RequestBody LoginRequest req, HttpServletResponse response){
+        UserResponse res = userAuthenticationUsecase.login(req,response);
         return new ResponseEntity<>(res,HttpStatus.OK);
     }
 
@@ -74,7 +74,7 @@ public class UserController {
         if (token == null) {
             return ResponseEntity.status(401).body("로그인하지 않았습니다.");
         } else {
-            LoginResponse response = userAuthUsecase.loginInfo(token);
+            UserResponse response = userAuthenticationUsecase.loginInfo(token);
             return ResponseEntity.ok(response);
         }
     }

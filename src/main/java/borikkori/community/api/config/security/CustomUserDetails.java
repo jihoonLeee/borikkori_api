@@ -1,6 +1,10 @@
 package borikkori.community.api.config.security;
 
+import borikkori.community.api.adapter.out.persistence.user.entity.UserRoleEntity;
+import borikkori.community.api.adapter.out.persistence.user.mapper.UserRoleMapper;
+import borikkori.community.api.domain.user.entity.User;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -8,24 +12,27 @@ import borikkori.community.api.adapter.out.persistence.user.entity.UserEntity;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 public class CustomUserDetails implements UserDetails {
 
-    private UserEntity user;
+    private final User user;
 
-    public CustomUserDetails(UserEntity user){
+    public CustomUserDetails (User user){
         this.user = user;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (!user.getAuth().isEmpty()) {
-            GrantedAuthority authority = new SimpleGrantedAuthority(user.getAuth().get(0).getAuthority());
-            return Collections.singletonList(authority);
-        } else {
+        List<String> roles = user.getRole();
+        if (roles == null || roles.isEmpty()) {
             return Collections.emptyList();
         }
+        return roles.stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
     }
 
     @Override

@@ -1,5 +1,7 @@
 package borikkori.community.api.adapter.in.web.chat;
 
+import borikkori.community.api.adapter.out.persistence.user.entity.UserEntity;
+import borikkori.community.api.adapter.out.persistence.user.mapper.UserMapper;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import borikkori.community.api.config.security.CustomUserDetails;
 import borikkori.community.api.adapter.in.web.chat.request.MessageRequest;
 import borikkori.community.api.adapter.in.web.chat.response.ChatRoomListResponse;
-import borikkori.community.api.application.chat.usecase.ChatUseCase;
+import borikkori.community.api.application.domain.chat.usecase.ChatUseCase;
 
 @Tag(name="chat_api", description = "CHAT Apis")
 @RequestMapping("chat")
@@ -20,7 +22,7 @@ import borikkori.community.api.application.chat.usecase.ChatUseCase;
 public class ChatController {
 
     private final ChatUseCase chatUseCase;
-
+    private final UserMapper userMapper;
     /*
     * TODO : 채팅방 입장할 때 -> 어떤 채팅방 인지? ->
     *
@@ -71,7 +73,8 @@ public class ChatController {
      */
     @PostMapping("/rooms/{chatRoomId}/messages")
     public ResponseEntity<Void> saveMessage(@AuthenticationPrincipal CustomUserDetails customUser,@RequestBody MessageRequest req,@PathVariable Long chatRoomId){
-        req.setSender(customUser.getUser());
+        UserEntity userEntity = userMapper.toEntity(customUser.getUser());
+        req.setSender(userEntity);
         chatUseCase.saveMessage(chatRoomId,req);
 
         return new ResponseEntity<>(HttpStatus.OK);
