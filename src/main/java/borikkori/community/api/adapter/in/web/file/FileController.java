@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import borikkori.community.api.adapter.in.web.file.request.ImageUploadRequest;
-import borikkori.community.api.application.file.usecase.FileUseCase;
+import borikkori.community.api.application.domain.file.usecase.FileUseCase;
 
 import java.io.IOException;
 

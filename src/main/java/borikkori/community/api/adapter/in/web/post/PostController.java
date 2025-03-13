@@ -1,5 +1,6 @@
 package borikkori.community.api.adapter.in.web.post;
 
+import borikkori.community.api.adapter.out.persistence.user.mapper.UserMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,9 +15,9 @@ import borikkori.community.api.adapter.in.web.post.request.PostWriteRequest;
 import borikkori.community.api.adapter.in.web.post.response.PostListResponse;
 import borikkori.community.api.adapter.in.web.post.response.PostResponse;
 import borikkori.community.api.adapter.in.web.post.response.PostTempResponse;
-import borikkori.community.api.application.post.usecase.PostUsecase;
+import borikkori.community.api.application.domain.post.usecase.PostUsecase;
 import borikkori.community.api.adapter.out.persistence.user.entity.UserEntity;
-import borikkori.community.api.application.user.usecase.UserManagementUsecase;
+import borikkori.community.api.application.domain.user.usecase.UserRegistrationUsecase;
 
 @Tag(name="post_api", description = "POST Apis")
 @RequestMapping("post")
@@ -25,8 +26,8 @@ import borikkori.community.api.application.user.usecase.UserManagementUsecase;
 public class PostController {
 
     private final PostUsecase postUsecase;
-    private final UserManagementUsecase userManagementUsecase;
-
+    private final UserRegistrationUsecase userRegistrationUsecase;
+    private final UserMapper userMapper;
 
     // 임시 글 작성으로 이미 Post 하나 생성 되어져 있으니까 그거 가지고 업데이트
     @Operation(summary = "글작성" , description = "게시글 작성")
@@ -34,7 +35,7 @@ public class PostController {
     @PostMapping
     public ResponseEntity<?> createPost(@AuthenticationPrincipal CustomUserDetails customUser,@RequestBody PostWriteRequest req){
         System.out.println(req.getPostId() + " 아이디");
-        req.setUser(customUser.getUser());
+        req.setUser(userMapper.toEntity(customUser.getUser()));
         postUsecase.posting(req);
         return  ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -57,10 +58,11 @@ public class PostController {
     @PostMapping("/{postId}/like")
     public ResponseEntity<PostResponse> postLike(@AuthenticationPrincipal CustomUserDetails customUser, @PathVariable Long postId){
         PostEntity postEntity = postUsecase.findOne(postId);
-        UserEntity user = userManagementUsecase.findOne(customUser.getUser().getId()).orElseThrow(() -> new RuntimeException("User not found"));
+       // UserEntity user = userRegistrationUsecase.find(customUser.getUser().getId()).orElseThrow(() -> new RuntimeException("User not found"));
 
-        PostResponse res = postUsecase.postLike(postEntity, user);
-        return new ResponseEntity<>(res, HttpStatus.OK);
+       // PostResponse res = postUsecase.postLike(postEntity, user);
+        // new ResponseEntity<>(res, HttpStatus.OK);
+        return null;
     }
 
 
@@ -68,8 +70,9 @@ public class PostController {
     @Operation(summary = "임시 글 체크" , description = "임시 게시글 체크")
     @PostMapping("/init")
     public ResponseEntity<PostTempResponse> tempPost(@AuthenticationPrincipal CustomUserDetails customUser){
-        PostTempResponse res =  postUsecase.postTempCheck(customUser.getUser());
-        return new ResponseEntity<>(res,HttpStatus.OK);
+       // PostTempResponse res =  postUsecase.postTempCheck(customUser.getUser());
+       // return new ResponseEntity<>(res,HttpStatus.OK);
+        return null;
     }
 
 

@@ -1,14 +1,24 @@
 package borikkori.community.api.adapter.out.persistence.user.mapper;
 
+import borikkori.community.api.adapter.in.web.user.response.UserResponse;
 import borikkori.community.api.adapter.out.persistence.user.entity.UserEntity;
-import borikkori.community.api.application.user.dto.UserDto;
+import borikkori.community.api.domain.user.entity.User;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-public class UserMapper {
-    public static UserDto toDto(UserEntity entity) {
-        return new UserDto(entity.getId(), entity.getName(), entity.getEmail());
-    }
+@Mapper(componentModel = "spring")
+public interface UserMapper {
 
-    public static UserEntity toEntity(UserDto dto) {
-        return new UserEntity(dto.getId(), dto.getName(), dto.getEmail());
-    }
+    // 영속성 모델 -> 도메인 모델
+    @Mapping(target = "mbti",source = "mbtiEntity.result")
+    User toDomain(UserEntity entity);
+
+    // 도메인 모델 -> 영속성 모델
+    @Mapping(target = "mbtiEntity.result", source = "mbtiResult")
+    UserEntity toEntity(User domain);
+
+    // 도메인 모델 -> 응답 DTO
+    @Mapping(target = "mbtiType",source = "mbtiResult")
+    UserResponse toResponse(User domain);
+
 }

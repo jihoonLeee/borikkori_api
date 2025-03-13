@@ -2,7 +2,7 @@ package borikkori.community.api.common.initializer;
 
 import borikkori.community.api.adapter.out.persistence.user.entity.RoleEntity;
 import borikkori.community.api.common.enums.Role;
-import borikkori.community.api.domain.user.repository.AuthorityRepository;
+import borikkori.community.api.domain.user.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AuthorityInitializer implements CommandLineRunner {
 
-    private final AuthorityRepository authorityRepository;
+    private final RoleRepository authorityRepository;
     @Override
     @Transactional
     public void run(String... args) throws Exception {

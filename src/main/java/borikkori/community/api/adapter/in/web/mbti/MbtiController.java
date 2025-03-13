@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import borikkori.community.api.config.security.CustomUserDetails;
 import borikkori.community.api.adapter.in.web.mbti.request.MbtiRequest;
 import borikkori.community.api.adapter.in.web.mbti.response.MbtiResultResponse;
-import borikkori.community.api.application.mbti.usecase.MbtiUseCase;
+import borikkori.community.api.application.domain.mbti.usecase.MbtiUseCase;
 
 import java.util.List;
 

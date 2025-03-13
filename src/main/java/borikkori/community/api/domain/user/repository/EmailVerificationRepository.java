@@ -5,7 +5,7 @@ import borikkori.community.api.adapter.out.persistence.user.entity.EmailVerifica
 
 public interface EmailVerificationRepository {
 
-     void verification(EmailVerificationEntity emailVerificationEntity);
-     EmailVerificationEntity findLast(String email);
+     void saveVerification(EmailVerificationEntity emailVerificationEntity);
+     EmailVerificationEntity findLatestVerificationByEmail(String email);
 
 }

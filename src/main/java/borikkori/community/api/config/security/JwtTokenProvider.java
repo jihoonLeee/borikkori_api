@@ -1,5 +1,6 @@
 package borikkori.community.api.config.security;
 
+import borikkori.community.api.common.enums.Role;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -19,6 +20,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Component
@@ -46,10 +48,10 @@ public class JwtTokenProvider {
     /**
      * 토큰 생성
      */
-    public String createToken(String email,String nickName, List<RoleEntity> role){
+    public String createToken(String email,String nickName, List<Role> roles){
         Claims claims = Jwts.claims().setSubject(email);
-        claims.put("role",role);
-        claims.put("nickName",nickName);
+        claims.put("role",roles.stream().map(Role::getRole).collect(Collectors.toList()));
+        claims.put("name",nickName);
         Date now= new Date();
         return Jwts.builder()
                 .setClaims(claims)

@@ -14,7 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import borikkori.community.api.common.enums.Role;
 import borikkori.community.api.adapter.in.filter.JwtAuthenticationFilter;
-import borikkori.community.api.domain.user.repository.RefreshTokenRepository;
+import borikkori.community.api.adapter.out.redis.repository.RefreshTokenRepository;
 
 @Configuration
 @EnableWebSecurity  // Spring Security 활성화

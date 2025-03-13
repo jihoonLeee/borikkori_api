@@ -1,5 +1,6 @@
 package borikkori.community.api.adapter.in.filter;
 
+import borikkori.community.api.common.enums.Role;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -13,10 +14,10 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
-import borikkori.community.api.application.user.dto.RefreshToken;
+import borikkori.community.api.adapter.out.redis.entity.RefreshTokenEntity;
 import borikkori.community.api.adapter.out.persistence.user.entity.RoleEntity;
 import borikkori.community.api.config.security.JwtTokenProvider;
-import borikkori.community.api.domain.user.repository.RefreshTokenRepository;
+import borikkori.community.api.adapter.out.redis.repository.RefreshTokenRepository;
 
 import java.io.IOException;
 import java.util.List;
@@ -69,18 +70,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void refreshAndAuthenticateToken(String token, HttpServletResponse response) throws IOException {
-        Optional<RefreshToken> refreshTokenOptional = refreshTokenRepository.findByAccessToken(token);
+        Optional<RefreshTokenEntity> refreshTokenOptional = refreshTokenRepository.findByAccessToken(token);
 
         if (refreshTokenOptional.isPresent()) {
-            RefreshToken refreshToken = refreshTokenOptional.get();
-            if (jwtTokenProvider.validateToken(refreshToken.getRefreshToken())) {
+            RefreshTokenEntity refreshTokenEntity = refreshTokenOptional.get();
+            if (jwtTokenProvider.validateToken(refreshTokenEntity.getRefreshToken())) {
                 Claims userAuth = jwtTokenProvider.getInfo(token);
                 String accessToken = jwtTokenProvider.createToken(
                         userAuth.getSubject(),
-                        (String) userAuth.get("nickName"),
-                        (List<RoleEntity>) userAuth.get("role")
+                        (String) userAuth.get("name"),
+                        (List<Role>) userAuth.get("role")
                 );
-                refreshTokenRepository.save(refreshToken);
+                refreshTokenRepository.save(refreshTokenEntity);
                 setAccessTokenInCookie(response, accessToken);
             }
         }
