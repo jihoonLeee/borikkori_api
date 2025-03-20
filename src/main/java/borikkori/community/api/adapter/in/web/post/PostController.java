@@ -34,10 +34,8 @@ public class PostController {
     @Parameter(name = "PostWriteRequest")
     @PostMapping
     public ResponseEntity<?> createPost(@AuthenticationPrincipal CustomUserDetails customUser,@RequestBody PostWriteRequest req){
-        System.out.println(req.getPostId() + " 아이디");
-        req.setUser(userMapper.toEntity(customUser.getUser()));
-        postUsecase.posting(req);
-        return  ResponseEntity.status(HttpStatus.CREATED).build();
+        PostResponse response = postUsecase.posting(req, customUser.getUser());
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @Operation(summary = "글 목록" , description = "게시글 목록")

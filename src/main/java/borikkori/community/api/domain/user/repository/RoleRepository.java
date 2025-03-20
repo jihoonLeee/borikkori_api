@@ -6,11 +6,11 @@ import borikkori.community.api.common.enums.Role;
 import java.util.Optional;
 
 public interface RoleRepository {
-    void save(RoleEntity auth);
+    void saveRole(Role role);
 
-    RoleEntity findById(Long id);
+    Role findRoleById(Long id);
 
-    Optional<RoleEntity> findByRole(Role role);
+    Optional<Role> findByRole(Role role);
 
-    long count() ;
+    long countRole() ;
 }

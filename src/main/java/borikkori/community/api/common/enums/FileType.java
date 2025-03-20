@@ -1,6 +1,5 @@
 package borikkori.community.api.common.enums;
 
-public enum ImageStatus {
-  DRAFT,PUBLISHED;
-
+public enum FileType {
+  IMAGE, VIDEO, DOCUMENT
 }

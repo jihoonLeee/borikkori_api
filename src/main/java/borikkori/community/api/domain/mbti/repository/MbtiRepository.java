@@ -9,7 +9,6 @@ import java.util.List;
 
 public interface MbtiRepository {
 
-
     void save(MbtiEntity mbtiEntity);
 
     List<MbtiResultEntity> findTopX(int X);

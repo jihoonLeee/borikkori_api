@@ -27,7 +27,7 @@ public class ChatUseCaseImpl implements ChatUseCase {
     private final ChatRoomRepository roomRepository;
     private final ChatMessageRepository messageRepository;
 
-    @Override
+    /*@Override
     public ChatRoomListResponse getChatRoomList(CustomUserDetails customUser) {
 
         ChatRoomType type = null;
@@ -58,5 +58,5 @@ public class ChatUseCaseImpl implements ChatUseCase {
         ChatRoomEntity chatRoomEntity = roomRepository.findById(chatRoomId);
         ChatMessageEntity chatMessageEntity = ChatMessageEntity.builder().message(req.getMessage()).sender(req.getSender()).chatRoomEntity(chatRoomEntity).build();
         messageRepository.save(chatMessageEntity);
-    }
+    }*/
 }

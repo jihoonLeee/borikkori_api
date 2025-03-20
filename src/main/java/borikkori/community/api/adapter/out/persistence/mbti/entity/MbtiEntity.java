@@ -11,9 +11,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Builder
 @Table(name="mbti")
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class MbtiEntity {
@@ -22,18 +21,17 @@ public class MbtiEntity {
     @Column(name = "mbti_id")
     private Long id;
 
-    @Setter
     @OneToOne(mappedBy = "mbti",fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id",nullable = true)
+    @Setter
     private UserEntity user;
 
-    private String name;
+    private String testName;
 
     @Enumerated(EnumType.STRING)
     private MbtiType result;
 
     @CreatedDate
     private LocalDateTime testDate;
-
 
 }

@@ -13,9 +13,8 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Table(name="comment")
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@NoArgsConstructor
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class CommentEntity {
 
@@ -40,6 +39,7 @@ public class CommentEntity {
 
     private CommentStatus commentStatus;
 
+    @Setter
     private int likeCnt;
 
     @CreatedDate
@@ -50,9 +50,5 @@ public class CommentEntity {
     @Column(nullable = false)
     private LocalDateTime updDate;
 
-
-    public void setLikeCnt(int likeCnt) {
-        this.likeCnt = likeCnt;
-    }
 }
 

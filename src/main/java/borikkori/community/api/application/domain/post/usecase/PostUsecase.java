@@ -6,10 +6,11 @@ import borikkori.community.api.adapter.in.web.post.request.PostWriteRequest;
 import borikkori.community.api.adapter.in.web.post.response.PostListResponse;
 import borikkori.community.api.adapter.in.web.post.response.PostResponse;
 import borikkori.community.api.adapter.in.web.post.response.PostTempResponse;
+import borikkori.community.api.domain.user.entity.User;
 
 public interface PostUsecase {
 
-    Long posting(PostWriteRequest req);
+    PostResponse posting(PostWriteRequest req, User user);
 
     void modifyPost(PostEntity postEntity);
 

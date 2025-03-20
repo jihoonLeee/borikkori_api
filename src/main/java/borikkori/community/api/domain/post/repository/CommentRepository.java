@@ -1,19 +1,20 @@
 package borikkori.community.api.domain.post.repository;
 
-import borikkori.community.api.adapter.out.persistence.post.entity.CommentEntity;
-import borikkori.community.api.adapter.out.persistence.post.entity.CommentLikeEntity;
+import borikkori.community.api.domain.post.entity.Comment;
+import borikkori.community.api.domain.post.entity.CommentLike;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface CommentRepository{
-    void save(CommentEntity commentEntity);
+    void saveComment(Comment comment);
 
-    CommentEntity findById(Long id);
-    Optional<List<CommentEntity>> findByPostId(Long postId, int page, int size) ;
+    Comment findCommentById(Long id);
 
-    long findCommentCounts(Long postId);
+    Optional<List<Comment>> findCommentsByPostId(Long postId, int page, int size);
 
-    void commentLike(CommentLikeEntity commentLikeEntity);
+    Long countByPostId(Long postId);
+
+    void saveCommentLike(CommentLike commentLike);
 
 }

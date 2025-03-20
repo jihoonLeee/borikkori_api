@@ -6,6 +6,6 @@ import borikkori.community.api.adapter.in.web.chat.response.ChatRoomListResponse
 
 public interface ChatUseCase {
 
-    ChatRoomListResponse getChatRoomList(CustomUserDetails customUserDetails);
-    void saveMessage(Long chatRoomId,MessageRequest req);
+    // getChatRoomList(CustomUserDetails customUserDetails);
+    //void saveMessage(Long chatRoomId,MessageRequest req);
 }

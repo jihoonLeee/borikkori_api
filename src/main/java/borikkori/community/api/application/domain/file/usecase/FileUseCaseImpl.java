@@ -7,9 +7,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import borikkori.community.api.adapter.out.persistence.file.entity.ImageEntity;
+import borikkori.community.api.adapter.out.persistence.file.entity.FileEntity;
 import borikkori.community.api.adapter.out.persistence.post.entity.PostEntity;
-import borikkori.community.api.common.enums.ImageStatus;
+import borikkori.community.api.common.enums.FileType;
 import borikkori.community.api.adapter.in.web.file.request.ImageUploadRequest;
 import borikkori.community.api.domain.file.repository.FileRepository;
 import borikkori.community.api.domain.post.repository.PostRepository;
@@ -69,32 +69,32 @@ public class FileUseCaseImpl implements FileUseCase {
         file.transferTo(destination);
         String imageUrl = IMAGE_URL+savedFileName;
 
-        ImageEntity imageEntity = ImageEntity.builder()
+        FileEntity fileEntity = FileEntity.builder()
                 .originalName(originalFilename)
                 .postEntity(postEntity)
                 .savedName(savedFileName)
                 .extension(extension)
                 .savedUrl(imageUrl)
-                .imageStatus(ImageStatus.DRAFT)
+                .imageStatus(FileType.DRAFT)
                 .imageSize(fileSize)
                 .build();
 
-        fileRepository.save(imageEntity);
+        fileRepository.save(fileEntity);
         return imageUrl;
     }
 
     @Override
     @Transactional
     public void cleanupImage() {
-        List<ImageEntity> imageEntities = fileRepository.findUnusedImages();
-        for(ImageEntity imageEntity : imageEntities){
-            File destination = new File(uploadBaseDir+uploadDir, imageEntity.getSavedName());
+        List<FileEntity> imageEntities = fileRepository.findUnusedImages();
+        for(FileEntity fileEntity : imageEntities){
+            File destination = new File(uploadBaseDir+uploadDir, fileEntity.getSavedName());
             boolean isDeleted = destination.delete();
             if (isDeleted) {
-                log.info(imageEntity.getSavedName() + " 파일 삭제 성공");
-                fileRepository.delete(imageEntity.getId());
+                log.info(fileEntity.getSavedName() + " 파일 삭제 성공");
+                fileRepository.delete(fileEntity.getId());
             } else {
-                log.info(imageEntity.getSavedName() + " 파일 삭제 실패");
+                log.info(fileEntity.getSavedName() + " 파일 삭제 실패");
             }
         }
     }

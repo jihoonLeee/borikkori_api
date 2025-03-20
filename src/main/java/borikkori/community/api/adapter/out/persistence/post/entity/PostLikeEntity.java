@@ -2,7 +2,6 @@ package borikkori.community.api.adapter.out.persistence.post.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -13,13 +12,14 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Builder
 @Table(name="post_like")
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-@IdClass(PostLikeIdEntity.class)
 public class PostLikeEntity {
+
+    @EmbeddedId
+    private PostLikeIdEntity id;
 
     @Id
     @ManyToOne(fetch = FetchType.LAZY)

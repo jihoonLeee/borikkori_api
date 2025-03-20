@@ -1,15 +1,20 @@
 package borikkori.community.api.application.domain.post.usecase;
 
+import borikkori.community.api.adapter.out.persistence.post.mapper.PostMapper;
+import borikkori.community.api.domain.post.entity.Post;
+import borikkori.community.api.domain.post.service.PostService;
+import borikkori.community.api.domain.user.entity.User;
+import borikkori.community.api.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import borikkori.community.api.domain.post.service.LikeService;
-import borikkori.community.api.adapter.out.persistence.file.entity.ImageEntity;
+import borikkori.community.api.adapter.out.persistence.file.entity.FileEntity;
 import borikkori.community.api.adapter.out.persistence.post.entity.PostEntity;
 import borikkori.community.api.adapter.out.persistence.post.entity.PostLikeEntity;
 import borikkori.community.api.adapter.out.persistence.post.entity.PostLikeIdEntity;
 import borikkori.community.api.adapter.out.persistence.user.entity.UserEntity;
-import borikkori.community.api.common.enums.ImageStatus;
+import borikkori.community.api.common.enums.FileType;
 import borikkori.community.api.common.enums.PostStatus;
 import borikkori.community.api.adapter.in.web.post.response.PostTempResponse;
 import borikkori.community.api.domain.file.repository.FileRepository;
@@ -28,22 +33,28 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PostUsecaseImpl implements PostUsecase {
 
+
     private final PostRepository postRepository;
+    private final UserRepository userRepository;
     private final FileRepository fileRepository;
     private final LikeService likeService;
+    private final PostService postService;
+    private final PostMapper postMapper;
 
     @Override
     @Transactional
-    public Long posting(PostWriteRequest req){
-        PostEntity postEntity = postRepository.findById(req.getPostId());
-        postEntity.setContents(req.getContents());
-        postEntity.setTitle(req.getTitle());
-        postEntity.setRegDate(LocalDateTime.now());
-        postEntity.setPostStatus(PostStatus.PUBLISHED);
-        postRepository.save(postEntity);
-        activeImage(postEntity); // << 이미지 사용중으로 변경하는 메서드
-        return postEntity.getId();
+    public PostResponse  posting(PostWriteRequest req, User user) {
+
+
+        Post post = postService.createPost(user, req.getTitle(), req.getContents());
+        // 2. 도메인 Post 객체를 영속성 엔티티로 변환 후 저장
+        Long postId = postRepository.savePost(post);
+        // 3. 이미지 상태 업데이트 (인프라 관련 처리)
+        activeImage(postId);
+
+        return savedId;
     }
+
 
     @Override
     public PostEntity findOne(Long postId){
@@ -144,9 +155,9 @@ public class PostUsecaseImpl implements PostUsecase {
     }
 
     private void activeImage(PostEntity postEntity){
-        List<ImageEntity> imageEntities = fileRepository.findByPost(postEntity);
+        List<FileEntity> imageEntities = fileRepository.findByPost(postEntity);
         imageEntities.forEach(image -> {
-            image.setImageStatus(ImageStatus.PUBLISHED);
+            image.setImageStatus(FileType.PUBLISHED);
             fileRepository.save(image);
         });
     }
