@@ -11,7 +11,9 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Table(name = "user_role")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class UserRoleEntity {
 

@@ -42,23 +42,22 @@ public class MbtiUseCaseImpl implements MbtiUseCase {
         UserMbti userMbti = mbtiDomainService.createUserMbti(req.getResult(), user.getName());
 
         // 3. 도메인 객체를 영속성 엔티티로 변환 및 저장
-        MbtiEntity mbtiEntity = mbtiMapper.toEntity(userMbti);
-        mbtiRepository.save(mbtiEntity);
+        mbtiRepository.saveUserMbti(userMbti);
 
         // 4. MBTI 통계 업데이트:
         //    - 먼저, 현재 결과에 해당하는 통계 엔티티를 조회 (한 번 호출하여 재사용)
-        MbtiResultEntity mbtiResultEntity = mbtiRepository.findByResult(req.getResult());
+        MbtiStatistics mbtiStatistics = mbtiRepository.findByResult(req.getResult());
 
         //    - 도메인 서비스에 통계 업데이트 로직을 위임
-        MbtiStatistics currentStats = mbtiStatisticsMapper.toDomain(mbtiResultEntity);
-        MbtiStatistics updatedStats = mbtiDomainService.updateStatistics(req.getResult(), currentStats);
+        MbtiResultEntity mbtiResultEntity = mbtiStatisticsMapper.toEntity(mbtiStatistics);
+        MbtiStatistics updatedStats = mbtiDomainService.updateStatistics(req.getResult(), mbtiStatistics);
         mbtiResultEntity.setCount(updatedStats.getCount());
     }
 
     @Override
     public List<MbtiResultResponse> getMbtiTopX(int topX) {
         return mbtiRepository.findTopX(topX).stream()
-                .map(mbtiMapper::toResponse)
+                .map(mbtiStatisticsMapper::toResponse)
                 .collect(Collectors.toList());
     }
 }

@@ -1,13 +1,13 @@
 package borikkori.community.api.application.domain.file.usecase;
 
-import borikkori.community.api.adapter.in.web.file.request.ImageUploadRequest;
+import borikkori.community.api.adapter.in.web.file.request.FileUploadRequest;
 
 import java.io.IOException;
 
 public interface FileUseCase {
 
-    String upload(ImageUploadRequest req) throws IOException;
+    String upload(FileUploadRequest req) throws IOException;
 
-    void cleanupImage();
+    void cleanupFiles();
 
 }

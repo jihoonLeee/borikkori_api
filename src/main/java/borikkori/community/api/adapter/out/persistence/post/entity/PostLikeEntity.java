@@ -21,14 +21,12 @@ public class PostLikeEntity {
     @EmbeddedId
     private PostLikeIdEntity id;
 
-    @Id
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id")
+    @JoinColumn(name = "post_id" ,insertable = false, updatable = false)
     private PostEntity postEntity;
 
-    @Id
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id",insertable = false, updatable = false)
     private UserEntity user;
 
     @CreatedDate

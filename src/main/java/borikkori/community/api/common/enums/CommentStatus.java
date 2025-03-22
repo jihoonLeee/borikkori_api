@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum CommentStatus {
     OPEN("OPEN"),
-    HIDE("HIDE"),
+    HIDE("HIDE"),  // 잠금 처리
     DELETE("DELETE");
 
     private String status;

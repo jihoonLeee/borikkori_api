@@ -38,10 +38,10 @@ public class PostEntity {
 
     private int likeCount;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private List<FileEntity> imageEntities;
+    @OneToMany(mappedBy = "postEntity", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<FileEntity> fileEntities;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "postEntity", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<CommentEntity> commentEntities;
 
     @Enumerated(EnumType.STRING)

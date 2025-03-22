@@ -42,7 +42,7 @@ public class UserController {
     @PostMapping("/join")
     public ResponseEntity<Void> join(@RequestBody JoinRequest req){
         if(emailVerificationUsecase.checkEmail(req.getVerificationNumber(),req.getEmail())){
-            return ResponseEntity.created(URI.create("/join/"+ userRegistrationUsecase.joinUser(req))).build();
+            return ResponseEntity.created(URI.create("/join/"+ userRegistrationUsecase.joinUser(req,null))).build();
         }else{
             return ResponseEntity.badRequest().build();
         }
@@ -70,7 +70,6 @@ public class UserController {
                 }
             }
         }
-
         if (token == null) {
             return ResponseEntity.status(401).body("로그인하지 않았습니다.");
         } else {

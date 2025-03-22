@@ -7,6 +7,7 @@ import borikkori.community.api.domain.user.entity.User;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,15 +24,16 @@ import borikkori.community.api.adapter.in.web.user.response.UserResponse;
 @RequiredArgsConstructor
 public class UserAuthenticationUsecaseImpl implements UserAuthenticationUsecase {
 
+    @Value("${cookie.domain}")
+    private String cookieDomain;
+    @Value("${cookie.secure}")
+    private boolean cookieSecure;
     private final UserRepository userRepository;
     private final JwtServicePort jwtService;
     private final PasswordEncoder passwordEncoder;
     private final RefreshTokenServiceAdapter refreshTokenServiceAdapter;
     private final UserMapper userMapper;
-    /**
-     * 로그인: 이메일, 비밀번호 검증 후 JWT 토큰 생성, 쿠키 설정, 리프레시 토큰 저장 처리
-     */
-    @Transactional
+
     @Override
     public UserResponse login(LoginRequest req, HttpServletResponse response) {
         // 1. 이메일로 사용자 조회 (없으면 BadCredentialsException)
@@ -52,8 +54,8 @@ public class UserAuthenticationUsecaseImpl implements UserAuthenticationUsecase 
                 .path("/")
                 .sameSite("Strict")
                 .httpOnly(true)
-                .secure(false)      // 실제 운영 시 secure(true)로 설정 필요
-                .domain("example.com")  // 실제 도메인으로 변경
+                .secure(cookieSecure)
+                .domain(cookieDomain)
                 .maxAge(60 * 30)
                 .build();
         response.addHeader("Set-Cookie", cookie.toString());

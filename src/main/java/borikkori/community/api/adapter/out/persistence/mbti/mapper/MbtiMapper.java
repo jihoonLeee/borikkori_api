@@ -15,5 +15,4 @@ public interface MbtiMapper {
     // 도메인 -> 엔티티
     MbtiEntity toEntity(UserMbti entity);
 
-    MbtiResultResponse toResponse(MbtiResultEntity entity);
 }

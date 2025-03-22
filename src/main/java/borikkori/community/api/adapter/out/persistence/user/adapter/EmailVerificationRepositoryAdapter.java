@@ -25,7 +25,7 @@ public class EmailVerificationRepositoryAdapter implements EmailVerificationRepo
 
     @Override
     public EmailVerificationEntity findLatestVerificationByEmail(String email) {
-        return emailVerificationJpaRepository.findTopByUser_EmailOrderByRegDateDesc(email)
+        return emailVerificationJpaRepository.findTopByEmailOrderByRegDateDesc(email)
                 .orElseThrow(() -> new EntityNotFoundException("No email verification found for email: " + email));
     }
 }

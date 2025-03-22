@@ -8,5 +8,6 @@ import java.util.Optional;
 
 public interface SpringDataEmailVerificationJpaRepository extends JpaRepository<EmailVerificationEntity,Long> {
     // 이메일로 검색하여 최신 인증 기록을 조회
-    Optional<EmailVerificationEntity> findTopByUser_EmailOrderByRegDateDesc(String email);
+    Optional<EmailVerificationEntity> findTopByEmailOrderByRegDateDesc(String email);
+
 }

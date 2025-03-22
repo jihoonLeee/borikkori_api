@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 @Getter
 @AllArgsConstructor
 public class CommentLike {
-    private CommentLikeId id;
-    private LocalDateTime regDate;
+    private final CommentLikeId id;
+    private final LocalDateTime regDate;
+
+
 }

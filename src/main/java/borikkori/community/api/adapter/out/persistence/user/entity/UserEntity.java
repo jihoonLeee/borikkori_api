@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 @Entity
 @Getter
+@Table(name = "user")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
@@ -56,8 +57,8 @@ public class UserEntity {
     @Column(nullable = false)
     private LocalDateTime updDate;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "mbti_id")
+    @OneToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "mbti_id", nullable = true)
     private MbtiEntity mbtiEntity;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -89,5 +90,7 @@ public class UserEntity {
             mbtiEntity.setUser(this);
         }
     }
-
+    public void updateMbtiEntity(MbtiEntity mbtiEntity) {
+        this.mbtiEntity = mbtiEntity;
+    }
 }

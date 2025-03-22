@@ -29,9 +29,10 @@ public class CommentRepositoryAdapter implements CommentRepository {
     private final CommentLikeMapper commentLikeMapper;
 
     @Override
-    public void saveComment(Comment comment) {
+    public Long saveComment(Comment comment) {
         CommentEntity commentEntity = commentMapper.toEntity(comment);
-        commentJpaRepository.save(commentEntity);
+        CommentEntity saved = commentJpaRepository.save(commentEntity);
+        return saved.getId();
     }
 
     @Override
@@ -42,19 +43,16 @@ public class CommentRepositoryAdapter implements CommentRepository {
     }
 
     @Override
-    public Optional<List<Comment>> findCommentsByPostId(Long postId, int page, int size) {
-        Pageable pageable = PageRequest.of(page - 1, size);  // 페이지 번호가 1부터 시작한다고 가정
-        Page<CommentEntity> commentPage = commentJpaRepository.findByPostId(postId, pageable);
-        List<CommentEntity> commentEntities = commentPage.getContent();
-        return commentEntities.isEmpty() ? Optional.empty()
-                : Optional.of(commentEntities.stream()
-                .map(commentMapper::toDomain)
-                .toList());
+    public Page<Comment> findCommentList(Long postId, int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<CommentEntity> commentPage = commentJpaRepository.findByPostEntity_Id(postId, pageable);
+        return commentPage.map(commentMapper::toDomain);
     }
+
 
     @Override
     public Long countByPostId(Long postId) {
-        return commentJpaRepository.countByPostId(postId);
+        return commentJpaRepository.countByPostEntity_Id(postId);
     }
 
     @Override

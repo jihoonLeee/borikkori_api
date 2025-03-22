@@ -30,7 +30,6 @@ public class UserRole {
     }
 
     // Factory 메서드를 통해 새 UserRole을 생성합니다.
-    // id는 아직 부여되지 않은 상태이므로 null 처리하고, 생성/수정 시간은 현재 시간으로 설정합니다.
     public static UserRole create(User user, Role role, RoleStatus status) {
         LocalDateTime now = LocalDateTime.now();
         return new UserRole(null, user, role, status, now, now);

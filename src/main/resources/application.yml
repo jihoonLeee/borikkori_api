@@ -2,3 +2,22 @@ spring:
   profiles:
     active: local
 
+jwt:
+  secret:
+    key: trvvE5iDiMw8quLrrSi495DJ2MU9qmBy
+    expiration-minutes: 30
+    refresh-expiration-hours: 24
+
+cors:
+  allowed:
+    origins: http://localhost:3000
+
+file:
+  upload-dir: images/upload/
+
+logging:
+  level:
+    org:
+      hibernate.orm.jdbc.bind: trace
+      springframework:
+        security: DEBUG

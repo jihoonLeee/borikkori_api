@@ -17,9 +17,8 @@ public class EmailVerificationEntity {
     @Column(name = "verification_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private UserEntity user;
+    @Column(nullable = false)
+    private String email;
 
     private int verificationNumber;
 
@@ -30,12 +29,12 @@ public class EmailVerificationEntity {
     private LocalDateTime regDate;
 
     // 정적 팩토리 메서드
-    public static EmailVerificationEntity create(UserEntity user, int verificationNumber) {
+    public static EmailVerificationEntity create(String email, int verificationNumber) {
         EmailVerificationEntity verification = new EmailVerificationEntity();
-        verification.user = user;
+        verification.email = email;
         verification.verificationNumber = verificationNumber;
         verification.regDate = LocalDateTime.now();
-        verification.isSuccess = false; // 기본값 설정
+        verification.isSuccess = false; // 기본값
         return verification;
     }
 

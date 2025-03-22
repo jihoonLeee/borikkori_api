@@ -31,8 +31,6 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 
-// https://mvnrepository.com/artifact/org.mapstruct/mapstruct
-	implementation("org.mapstruct:mapstruct:1.5.5.Final")
 
 	//메일
 	implementation("org.springframework.boot:spring-boot-starter-mail")
@@ -43,6 +41,11 @@ dependencies {
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2")
+
+
+	// https://mvnrepository.com/artifact/org.mapstruct/mapstruct
+	implementation("org.mapstruct:mapstruct:1.5.5.Final")
+	annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
 
 	//Spring Security
 	implementation("org.springframework.boot:spring-boot-starter-security")
@@ -62,6 +65,10 @@ dependencies {
 }
 val props = Properties()
 FileInputStream("src/main/resources/gradle.properties").use { props.load(it) }
+
+tasks.withType<JavaCompile> {
+	options.compilerArgs.add("-parameters")
+}
 
 tasks.withType<Test> {
 	useJUnitPlatform()

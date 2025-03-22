@@ -5,9 +5,11 @@ import borikkori.community.api.domain.mbti.entity.MbtiStatistics;
 import borikkori.community.api.domain.mbti.entity.UserMbti;
 import borikkori.community.api.domain.mbti.service.MbtiDomainService;
 import borikkori.community.api.domain.user.entity.User;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
+@Service
 public class MbtiDomainServiceImpl implements MbtiDomainService {
 
     /**

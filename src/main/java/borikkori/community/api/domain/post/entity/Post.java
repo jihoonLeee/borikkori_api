@@ -4,6 +4,7 @@ import borikkori.community.api.common.enums.PostStatus;
 import borikkori.community.api.domain.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 

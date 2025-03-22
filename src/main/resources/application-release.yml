@@ -3,20 +3,9 @@ spring:
     activate:
       on-profile: release
 
-  doc-openapi:
-    packages-to-scan: com.colabear754.springdoc_example.controllers
-    default-consumes-media-type: application/json;charset=UTF-8
-    default-produces-media-type: application/json;charset=UTF-8
-
-    swagger-ui:
-      path: /
-      disable-swagger-default-url: true
-      display-request-duration: true
-      operations-sorter:  alpha
-
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/borikkori?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&useSSL=true
+    url: ${DB_URL}
     username: ${DB_USER_NAME}
     password: ${DB_PASSWORD}
 
@@ -29,7 +18,7 @@ spring:
     database: mysql
     show_sql: true
     hibernate:
-      ddl-auto: update # ?? ????? update or create .. ??
+      ddl-auto: none
       format_sql: true
     properties:
       hibernate:
@@ -48,35 +37,17 @@ spring:
           auth: true
           starttls:
             enable: true
+
   data:
     redis:
       host: localhost
       port: 6379
 
-## jwt.secret.key? ?? 256bit ????? ???.
-#jwt:
-#  secret:
-#    key: ${JWT_KEY}
-#    expiration-minutes: 30
-#    refresh-expiration-hours: 24
-#https://acte.ltd/utils/randomkeygen
-
-logging:
-  level:
-    org:
-      hibernate.orm.jdbc.bind: trace
-      springframework:
-        security: DEBUG
-
-cors:
-  allowed:
-    origins: ${VIEW_URL}
-file:
-  base-dir: /home/jihoon/borikkori/view/borikkori_view/build/
-  upload-dir: images/upload/
-
 cookie:
   domain: ${COOKIE_DOMAIN:bokko.kr}
-  secure: ${COOKIE_SECURE:false}
+  secure: ${COOKIE_SECURE:true}
   path: ${COOKIE_PATH:/}
-  max-age: 1800  # 30 minutes
+  max-age: ${COOKIE_MAX_AGE:1800}
+
+file:
+  base-dir: /home/jihoon/borikkori/view/borikkori_view/build/

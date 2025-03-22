@@ -22,7 +22,7 @@ import borikkori.community.api.application.domain.chat.usecase.ChatUseCase;
 public class ChatController {
 
     private final ChatUseCase chatUseCase;
-    private final UserMapper userMapper;
+   // private final UserMapper userMapper;
     /*
     * TODO : 채팅방 입장할 때 -> 어떤 채팅방 인지? ->
     *

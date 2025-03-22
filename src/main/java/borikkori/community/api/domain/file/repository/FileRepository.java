@@ -1,7 +1,7 @@
 package borikkori.community.api.domain.file.repository;
 
-import borikkori.community.api.adapter.out.persistence.file.entity.FileEntity;
-import borikkori.community.api.adapter.out.persistence.post.entity.PostEntity;
+import borikkori.community.api.domain.file.entity.File;
+import borikkori.community.api.domain.post.entity.Post;
 
 import java.util.List;
 
@@ -13,7 +13,8 @@ public interface FileRepository {
 
     List<File> findFilesByPost(Post post);
 
-    List<File> findUnusedImages();
+    List<File> findUnusedFiles();
 
     void deleteFile(Long id);
+
 }

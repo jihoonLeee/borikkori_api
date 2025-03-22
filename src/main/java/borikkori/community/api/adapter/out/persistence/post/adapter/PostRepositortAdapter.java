@@ -14,12 +14,10 @@ import borikkori.community.api.domain.post.entity.PostLike;
 import borikkori.community.api.domain.post.repository.PostRepository;
 import borikkori.community.api.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -38,12 +36,12 @@ public class PostRepositortAdapter implements PostRepository {
     }
 
     @Override
-    public List<Post> findAllPost(int page, int size) {
-        List<PostEntity> postEntities = postJpaRepository.findAll(PageRequest.of(page - 1, size)).getContent();
-        return postEntities.stream()
-                .map(postMapper::toDomain)
-                .collect(Collectors.toList());
+    public Page<Post> findPostList(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<PostEntity> postEntityPage = postJpaRepository.findAll(pageable);
+        return postEntityPage.map(postMapper::toDomain);
     }
+
 
     @Override
     public long findPostCounts() {
@@ -65,10 +63,11 @@ public class PostRepositortAdapter implements PostRepository {
 
 
     @Override
-    public Optional<Post> findTempByUser(User user) {
+    public Post findTempByUser(User user) {
         UserEntity userEntity = userMapper.toEntity(user);
-        Optional<PostEntity> optionalPostEntity = postJpaRepository.findLatestTemporaryPost(userEntity, PostStatus.DRAFT);
-        return optionalPostEntity.map(postMapper::toDomain);
+        PostEntity postEntity = postJpaRepository.findLatestTemporaryPost(userEntity, PostStatus.DRAFT)
+                .orElseThrow(() -> new RuntimeException("Latest Temporary Post not found"));
+        return postMapper.toDomain(postEntity);
     }
 
     @Override

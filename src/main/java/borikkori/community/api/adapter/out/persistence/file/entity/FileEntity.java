@@ -1,5 +1,7 @@
 package borikkori.community.api.adapter.out.persistence.file.entity;
 
+import borikkori.community.api.adapter.out.persistence.post.entity.PostEntity;
+import borikkori.community.api.common.enums.FileStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -25,6 +27,10 @@ public class FileEntity {
     @Column(name = "file_id")
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY ,cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "post_id")
+    private PostEntity postEntity;
+
     // 원본 파일명
     @Column(nullable = false)
     private String originalName;
@@ -49,6 +55,9 @@ public class FileEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private FileType fileType;
+
+    @Enumerated(EnumType.STRING)
+    private FileStatus fileStatus;
 
     // 콘텐츠 타입 (MIME Type: "image/jpeg", "video/mp4" 등)
     @Column(nullable = false, length = 50)

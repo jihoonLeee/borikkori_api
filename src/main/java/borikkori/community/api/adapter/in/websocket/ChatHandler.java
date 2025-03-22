@@ -34,7 +34,7 @@ import java.util.Set;
 public class ChatHandler extends TextWebSocketHandler {
     private final ObjectMapper mapper;
     private final ChatUseCase chatUseCase;
-    private final UserMapper userMapper;
+   //private final UserMapper userMapper;
     // 현재 연결된 세션들
     private final Set<WebSocketSession> sessions = new HashSet<>();
     // chatRoomId , {session1,session2...}
@@ -61,8 +61,8 @@ public class ChatHandler extends TextWebSocketHandler {
         ChatMessageDto chatMessageDto = mapper.readValue(payload,ChatMessageDto.class);
         if(!"anonymousUser".equals(auth) ){
             CustomUserDetails customUserDetails = (CustomUserDetails)auth;
-            UserEntity user =userMapper.toEntity(customUserDetails.getUser());
-            chatMessageDto.setSender(user.getName());
+           // UserEntity user =userMapper.toEntity(customUserDetails.getUser());
+           // chatMessageDto.setSender(user.getName());
         }else{
             chatMessageDto.setSender(auth.toString());
         }

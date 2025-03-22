@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Builder
 @Table(name="chat_room")
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)

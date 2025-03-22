@@ -20,9 +20,10 @@ public class UserRepositoryAdapter implements UserRepository {
     private final UserMapper userMapper;
 
     @Override
-    public void save(User user) {
+    public User saveUser(User user) {
         UserEntity userEntity =  userMapper.toEntity(user);
-        userJpaRepository.save(userEntity);
+        UserEntity savedUserEntity = userJpaRepository.save(userEntity);
+        return userMapper.toDomain(savedUserEntity);
     }
 
     @Override
@@ -41,7 +42,7 @@ public class UserRepositoryAdapter implements UserRepository {
 
     @Override
     public Optional<User> findByEmail(String email) {
-        return userJpaRepository.findByEmail(email)
+        return userJpaRepository.findWithRolesByEmail(email)
                 .map(userMapper::toDomain);
     }
 

@@ -17,9 +17,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
         // 서비스 레이어에서 비밀번호 인코딩 처리
         String encodedPassword = passwordEncoder.encode(rawPassword);
         // 도메인 객체 생성 (인코딩된 비밀번호 전달)
-        User user = User.create(name, email, encodedPassword);
-        userRepository.save(user);
-        return user;
+        return User.create(name, email, encodedPassword);
     }
 
     public void duplicateUser(String email) {

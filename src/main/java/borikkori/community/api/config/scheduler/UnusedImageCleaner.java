@@ -19,7 +19,7 @@ public class UnusedImageCleaner {
      */
     @Scheduled(cron = "0 0 0 * * *")
     public void cleanUnusedImages() {
-        fileUseCase.cleanupImage();
+        fileUseCase.cleanupFiles();
         log.info("미사용 이미지 정리 작업 완료");
     }
 }

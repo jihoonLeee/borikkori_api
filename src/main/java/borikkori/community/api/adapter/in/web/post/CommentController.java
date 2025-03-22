@@ -30,9 +30,10 @@ public class CommentController {
     @Operation(summary = "댓글 작성" , description = "댓글 작성")
     @PostMapping
     @Parameter(name = "CommentWriteRequest")
-    public ResponseEntity<Void> write(@AuthenticationPrincipal CustomUserDetails customUser,@RequestBody CommentWriteRequest req){
-        req.setEmail(customUser.getUser().getEmail());
-        return ResponseEntity.created(URI.create("/write/"+commentUsecase.write(req))).build();
+    public ResponseEntity<Void> write(@AuthenticationPrincipal CustomUserDetails customUser,
+                                      @RequestBody CommentWriteRequest req){
+        Long savedCommentId= commentUsecase.createComment(req,customUser.getUser());
+        return ResponseEntity.created(URI.create("/write/"+savedCommentId)).build();
     }
 
     @Operation(summary = "댓글 목록" , description = "댓글 목록")
@@ -43,9 +44,11 @@ public class CommentController {
     }
     @Operation(summary = "따봉")
     @PostMapping("/{commentId}/like")
-    public ResponseEntity<CommentResponse> commentLike(@AuthenticationPrincipal CustomUserDetails customUser, @RequestBody CommentLikeRequest req, @PathVariable Long commentId){
-        CommentEntity commentEntity = commentUsecase.findOne(commentId);
-        CommentResponse res = commentUsecase.commentLike(commentEntity,userMapper.toEntity(customUser.getUser()));
+    public ResponseEntity<CommentResponse> commentLike(@AuthenticationPrincipal CustomUserDetails customUser,
+                                                       @PathVariable Long commentId){
+        CommentResponse res = commentUsecase.likeComment(
+                commentId,
+                customUser.getUser().getId().getId());
         return new ResponseEntity<>(res,HttpStatus.OK);
     }
 }

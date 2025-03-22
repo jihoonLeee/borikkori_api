@@ -63,10 +63,12 @@ public class User {
 
 
     public List<String> getRole() {
+        if (roles == null) return List.of();
         return roles.stream()
-                .map(Role::getRole)  // Role 객체가 getRole()을 제공한다고 가정
+                .map(Role::getRole)
                 .collect(Collectors.toList());
     }
+
 
     public void addRole(Role role) {
         // roles 리스트가 final 이라면, 초기화된 리스트가 수정 가능하도록 해야 합니다.

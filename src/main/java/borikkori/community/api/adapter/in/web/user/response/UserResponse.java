@@ -13,9 +13,6 @@ public class UserResponse {
     @Schema(description = "유저 닉네임")
     String name;
 
-    @Schema(description = "유저 유형",example = "DEFAULT")
-    Role role;
-
     @Schema(description = "유저 이메일",example = "jihoonn@gmail.com")
     String email;
 
