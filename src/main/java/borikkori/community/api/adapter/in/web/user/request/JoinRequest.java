@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import borikkori.community.api.common.enums.Role;
 
 @Getter
 @Setter
@@ -12,9 +11,9 @@ import borikkori.community.api.common.enums.Role;
 @AllArgsConstructor
 public class JoinRequest {
 
-    private String name;
-    private String email;
-    private String password;
-    private int verificationNumber;
+	private String name;
+	private String email;
+	private String password;
+	private int verificationNumber;
 
 }

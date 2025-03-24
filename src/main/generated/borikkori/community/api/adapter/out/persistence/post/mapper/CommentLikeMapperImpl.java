@@ -1,7 +1,6 @@
 package borikkori.community.api.adapter.out.persistence.post.mapper;
 
 import borikkori.community.api.adapter.out.persistence.post.entity.CommentLikeEntity;
-import borikkori.community.api.adapter.out.persistence.post.entity.CommentLikeIdEntity;
 import borikkori.community.api.domain.post.entity.CommentLike;
 import borikkori.community.api.domain.post.entity.CommentLikeId;
 import java.time.LocalDateTime;
@@ -10,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-03-22T17:16:03+0900",
+    date = "2025-03-24T22:03:53+0900",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.5 (Oracle Corporation)"
 )
 @Component
@@ -25,7 +24,7 @@ public class CommentLikeMapperImpl implements CommentLikeMapper {
         CommentLikeId id = null;
         LocalDateTime regDate = null;
 
-        id = commentLikeIdEntityToCommentLikeId( entity.getId() );
+        id = map( entity.getId() );
         regDate = entity.getRegDate();
 
         CommentLike commentLike = new CommentLike( id, regDate );
@@ -41,22 +40,8 @@ public class CommentLikeMapperImpl implements CommentLikeMapper {
 
         CommentLikeEntity commentLikeEntity = new CommentLikeEntity();
 
+        commentLikeEntity.setId( map( domain.getId() ) );
+
         return commentLikeEntity;
-    }
-
-    protected CommentLikeId commentLikeIdEntityToCommentLikeId(CommentLikeIdEntity commentLikeIdEntity) {
-        if ( commentLikeIdEntity == null ) {
-            return null;
-        }
-
-        Long commentId = null;
-        Long userId = null;
-
-        commentId = commentLikeIdEntity.getCommentId();
-        userId = commentLikeIdEntity.getUserId();
-
-        CommentLikeId commentLikeId = new CommentLikeId( commentId, userId );
-
-        return commentLikeId;
     }
 }

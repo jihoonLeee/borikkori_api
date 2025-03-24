@@ -51,3 +51,4 @@ cookie:
 
 file:
   base-dir: /home/jihoon/borikkori/view/borikkori_view/build/
+  base-url: https://www.bokko.kr

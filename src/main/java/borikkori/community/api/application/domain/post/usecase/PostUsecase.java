@@ -2,18 +2,23 @@ package borikkori.community.api.application.domain.post.usecase;
 
 import borikkori.community.api.adapter.in.web.post.request.PostWriteRequest;
 import borikkori.community.api.adapter.in.web.post.response.PostListResponse;
+import borikkori.community.api.adapter.in.web.post.response.PostNeighborsResponse;
 import borikkori.community.api.adapter.in.web.post.response.PostResponse;
 import borikkori.community.api.domain.user.entity.User;
 
 public interface PostUsecase {
 
-    Long createPost(PostWriteRequest req, User user);
+	void createPost(PostWriteRequest req, User user);
 
-    PostListResponse getPostList(int page, int size) ;
+	PostListResponse getPostList(int page, int size);
 
-    PostResponse getPost(Long id);
+	PostResponse getPost(Long postId);
 
-    PostResponse likePost(Long postId, Long userId);
+	PostNeighborsResponse getNeighborPosts(Long postId);
 
-    PostResponse findOrCreateTempPost(User user);
+	PostResponse likePost(Long postId, Long userId);
+
+	PostResponse findOrCreateTempPost(User user);
+
+	void deletePost(Long postId);
 }

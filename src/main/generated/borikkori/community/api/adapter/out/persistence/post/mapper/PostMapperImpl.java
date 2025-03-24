@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-03-22T17:16:03+0900",
+    date = "2025-03-24T22:03:52+0900",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.5 (Oracle Corporation)"
 )
 @Component
@@ -99,7 +99,7 @@ public class PostMapperImpl implements PostMapper {
         }
 
         Long postId = null;
-        String nickName = null;
+        String name = null;
         int visitCnt = 0;
         int likeCnt = 0;
         String title = null;
@@ -108,7 +108,7 @@ public class PostMapperImpl implements PostMapper {
         LocalDateTime updDate = null;
 
         postId = post.getId();
-        nickName = postUserName( post );
+        name = postUserName( post );
         visitCnt = post.getVisitCount();
         likeCnt = post.getLikeCount();
         title = post.getTitle();
@@ -118,7 +118,7 @@ public class PostMapperImpl implements PostMapper {
 
         boolean isTemp = false;
 
-        PostResponse postResponse = new PostResponse( postId, nickName, title, contents, visitCnt, likeCnt, isTemp, regDate, updDate );
+        PostResponse postResponse = new PostResponse( postId, name, title, contents, visitCnt, likeCnt, isTemp, regDate, updDate );
 
         return postResponse;
     }

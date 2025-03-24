@@ -7,5 +7,5 @@ import lombok.Setter;
 @Setter
 public class CommentLikeRequest {
 
-    private String email;
+	private String email;
 }

@@ -1,36 +1,47 @@
 package borikkori.community.api.adapter.out.persistence.post.entity;
 
-import jakarta.persistence.*;
+import java.time.LocalDateTime;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import borikkori.community.api.adapter.out.persistence.user.entity.UserEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import borikkori.community.api.adapter.out.persistence.user.entity.UserEntity;
-
-import java.time.LocalDateTime;
+import lombok.Setter;
 
 @Entity
 @Getter
-@Table(name="post_like")
+@Table(name = "post_like")
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class PostLikeEntity {
 
-    @EmbeddedId
-    private PostLikeIdEntity id;
+	@Setter
+	@EmbeddedId
+	private PostLikeIdEntity id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id" ,insertable = false, updatable = false)
-    private PostEntity postEntity;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "post_id", insertable = false, updatable = false)
+	private PostEntity postEntity;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id",insertable = false, updatable = false)
-    private UserEntity user;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id", insertable = false, updatable = false)
+	private UserEntity user;
 
-    @CreatedDate
-    @Column(updatable = false,nullable = false)
-    private LocalDateTime regDate;
+	@CreatedDate
+	@Column(updatable = false, nullable = false)
+	private LocalDateTime regDate;
+
 }
 

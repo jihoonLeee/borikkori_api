@@ -1,5 +1,14 @@
 package borikkori.community.api.adapter.out.persistence.post.adapter;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Repository;
+
 import borikkori.community.api.adapter.out.persistence.post.entity.PostEntity;
 import borikkori.community.api.adapter.out.persistence.post.entity.PostLikeEntity;
 import borikkori.community.api.adapter.out.persistence.post.mapper.PostLikeMapper;
@@ -14,65 +23,63 @@ import borikkori.community.api.domain.post.entity.PostLike;
 import borikkori.community.api.domain.post.repository.PostRepository;
 import borikkori.community.api.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
 public class PostRepositortAdapter implements PostRepository {
-    private final SpringDataPostJpaRepository postJpaRepository;
-    private final SpringDataPostLikeJpaRepository postLikeJpaRepository;
-    private final PostMapper postMapper;
-    private final PostLikeMapper postLikeMapper;
-    private final UserMapper userMapper;
+	private final SpringDataPostJpaRepository postJpaRepository;
+	private final SpringDataPostLikeJpaRepository postLikeJpaRepository;
+	private final PostMapper postMapper;
+	private final PostLikeMapper postLikeMapper;
+	private final UserMapper userMapper;
 
-    @Override
-    public Long savePost(Post post) {
-        PostEntity postEntity = postMapper.toEntity(post);
-        PostEntity saved = postJpaRepository.save(postEntity);
-        return saved.getId();
-    }
+	@Override
+	public Post savePost(Post post) {
+		PostEntity postEntity = postMapper.toEntity(post);
+		return postMapper.toDomain(postJpaRepository.save(postEntity));
+	}
 
-    @Override
-    public Page<Post> findPostList(int page, int size) {
-        Pageable pageable = PageRequest.of(page - 1, size);
-        Page<PostEntity> postEntityPage = postJpaRepository.findAll(pageable);
-        return postEntityPage.map(postMapper::toDomain);
-    }
+	public Page<Post> findPostList(int page, int size) {
+		Pageable pageable = PageRequest.of(page - 1, size,
+			Sort.by("regDate").descending());
+		Page<PostEntity> postEntityPage = postJpaRepository.findAll(pageable);
+		return postEntityPage.map(postMapper::toDomain);
+	}
 
+	@Override
+	public Long findPrevPostId(LocalDateTime currentRegDate) {
+		return postJpaRepository.getPrevPostId(currentRegDate);
+	}
 
-    @Override
-    public long findPostCounts() {
-        return postJpaRepository.count();
-    }
+	@Override
+	public Long findNextPostId(LocalDateTime currentRegDate) {
+		return postJpaRepository.getNextPostId(currentRegDate);
+	}
 
-    @Override
-    public Post findPostById(Long id) {
-        PostEntity postEntity = postJpaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Post not found with id: " + id));
-        return postMapper.toDomain(postEntity);
-    }
+	@Override
+	public Post findPostById(Long id) {
+		PostEntity postEntity = postJpaRepository.findById(id)
+			.orElseThrow(() -> new RuntimeException("Post not found with id: " + id));
+		return postMapper.toDomain(postEntity);
+	}
 
-    @Override
-    public void savePostLike(PostLike postLike) {
-        PostLikeEntity postLikeEntity = postLikeMapper.toEntity(postLike);
-        postLikeJpaRepository.save(postLikeEntity);
-    }
+	@Override
+	public void savePostLike(PostLike postLike) {
+		PostLikeEntity postLikeEntity = postLikeMapper.toEntity(postLike);
+		postLikeJpaRepository.save(postLikeEntity);
+	}
 
+	@Override
+	public Optional<Post> findTempByUser(User user) {
+		UserEntity userEntity = userMapper.toEntity(user);
+		return postJpaRepository.findLatestTemporaryPost(userEntity, PostStatus.DRAFT)
+			.map(postMapper::toDomain);
+	}
 
-    @Override
-    public Post findTempByUser(User user) {
-        UserEntity userEntity = userMapper.toEntity(user);
-        PostEntity postEntity = postJpaRepository.findLatestTemporaryPost(userEntity, PostStatus.DRAFT)
-                .orElseThrow(() -> new RuntimeException("Latest Temporary Post not found"));
-        return postMapper.toDomain(postEntity);
-    }
-
-    @Override
-    public void deletePost(Post post) {
-        PostEntity postEntity=  postMapper.toEntity(post);
-        postJpaRepository.delete(postEntity);
-    }
+	@Override
+	public void deletePost(Post post) {
+		PostEntity postEntity = postMapper.toEntity(post);
+		System.out.println(postEntity.getId() + " 아이디");
+		postJpaRepository.delete(postEntity);
+	}
 }

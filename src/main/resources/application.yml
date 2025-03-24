@@ -13,7 +13,7 @@ cors:
     origins: http://localhost:3000
 
 file:
-  upload-dir: images/upload/
+  upload-dir: /
 
 logging:
   level:

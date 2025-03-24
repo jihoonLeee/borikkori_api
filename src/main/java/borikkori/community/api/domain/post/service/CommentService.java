@@ -6,9 +6,9 @@ import borikkori.community.api.domain.user.entity.User;
 
 public interface CommentService {
 
-    Comment createComment(Post post, User user, String contents, Comment parentComment);
+	Comment createComment(Post post, User user, String contents, Comment parentComment);
 
-    void updateComment(Comment comment, String newContents);
+	void updateComment(Comment comment, String newContents);
 
-    void processLike(Comment comment);
+	void processLike(Comment comment);
 }

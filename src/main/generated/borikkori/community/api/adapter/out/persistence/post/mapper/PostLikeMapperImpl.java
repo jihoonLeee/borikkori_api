@@ -1,7 +1,6 @@
 package borikkori.community.api.adapter.out.persistence.post.mapper;
 
 import borikkori.community.api.adapter.out.persistence.post.entity.PostLikeEntity;
-import borikkori.community.api.adapter.out.persistence.post.entity.PostLikeIdEntity;
 import borikkori.community.api.domain.post.entity.PostLike;
 import borikkori.community.api.domain.post.entity.PostLikeId;
 import java.time.LocalDateTime;
@@ -10,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-03-22T17:16:03+0900",
+    date = "2025-03-24T22:03:52+0900",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.5 (Oracle Corporation)"
 )
 @Component
@@ -25,7 +24,7 @@ public class PostLikeMapperImpl implements PostLikeMapper {
         PostLikeId id = null;
         LocalDateTime regDate = null;
 
-        id = postLikeIdEntityToPostLikeId( entity.getId() );
+        id = map( entity.getId() );
         regDate = entity.getRegDate();
 
         PostLike postLike = new PostLike( id, regDate );
@@ -41,22 +40,8 @@ public class PostLikeMapperImpl implements PostLikeMapper {
 
         PostLikeEntity postLikeEntity = new PostLikeEntity();
 
+        postLikeEntity.setId( map( postLike.getId() ) );
+
         return postLikeEntity;
-    }
-
-    protected PostLikeId postLikeIdEntityToPostLikeId(PostLikeIdEntity postLikeIdEntity) {
-        if ( postLikeIdEntity == null ) {
-            return null;
-        }
-
-        Long postId = null;
-        Long userId = null;
-
-        postId = postLikeIdEntity.getPostId();
-        userId = postLikeIdEntity.getUserId();
-
-        PostLikeId postLikeId = new PostLikeId( postId, userId );
-
-        return postLikeId;
     }
 }

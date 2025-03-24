@@ -1,16 +1,14 @@
 package borikkori.community.api.application.domain.post.usecase;
 
-import borikkori.community.api.adapter.out.persistence.post.entity.CommentEntity;
-import borikkori.community.api.adapter.out.persistence.user.entity.UserEntity;
 import borikkori.community.api.adapter.in.web.post.request.CommentWriteRequest;
 import borikkori.community.api.adapter.in.web.post.response.CommentListResponse;
 import borikkori.community.api.adapter.in.web.post.response.CommentResponse;
 import borikkori.community.api.domain.user.entity.User;
 
 public interface CommentUsecase {
-    Long createComment(CommentWriteRequest req, User user);
+	Long createComment(CommentWriteRequest req, User user);
 
-    CommentListResponse getCommentList(Long postId, int page, int size);
+	CommentListResponse getCommentList(Long postId, int page, int size);
 
-    CommentResponse likeComment(Long commentId,Long userId);
+	CommentResponse likeComment(Long commentId, Long userId);
 }

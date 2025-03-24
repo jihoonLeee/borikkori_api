@@ -1,56 +1,56 @@
 package borikkori.community.api.adapter.out.persistence.post.mapper;
 
+import java.util.List;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.springframework.data.domain.Page;
+
 import borikkori.community.api.adapter.in.web.post.response.PostListResponse;
 import borikkori.community.api.adapter.in.web.post.response.PostResponse;
 import borikkori.community.api.adapter.out.persistence.post.entity.PostEntity;
 import borikkori.community.api.domain.post.entity.Post;
 import borikkori.community.api.domain.user.vo.UserId;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.springframework.data.domain.Page;
-
-import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface PostMapper {
 
-    // 엔티티 -> 도메인
-    Post toDomain(PostEntity entity);
+	// 엔티티 -> 도메인
+	Post toDomain(PostEntity entity);
 
-    // 도메인 -> 엔티티
-    PostEntity toEntity(Post domain);
+	// 도메인 -> 엔티티
+	PostEntity toEntity(Post domain);
 
-    @Mapping(target = "postId", source = "id")
-    @Mapping(target = "nickName", source = "user.name")
-    @Mapping(target = "visitCnt", source = "visitCount")
-    @Mapping(target = "likeCnt", source = "likeCount")
-    @Mapping(target = "title", source = "title")
-    @Mapping(target = "contents", source = "contents")
-    @Mapping(target = "regDate", source = "regDate")
-    @Mapping(target = "updDate", source = "updDate")
-    @Mapping(target = "isTemp", ignore = true)
-    PostResponse toResponse(Post post);
+	@Mapping(target = "postId", source = "id")
+	@Mapping(target = "name", source = "user.name")
+	@Mapping(target = "visitCnt", source = "visitCount")
+	@Mapping(target = "likeCnt", source = "likeCount")
+	@Mapping(target = "title", source = "title")
+	@Mapping(target = "contents", source = "contents")
+	@Mapping(target = "regDate", source = "regDate")
+	@Mapping(target = "updDate", source = "updDate")
+	@Mapping(target = "isTemp", ignore = true)
+	PostResponse toResponse(Post post);
 
-    List<PostResponse> toResponseList(List<Post> posts);
+	List<PostResponse> toResponseList(List<Post> posts);
 
-    // Page<Post>를 PostListResponse로 매핑하는 default 메서드
-    default PostListResponse toPostListResponse(Page<Post> postPage) {
-        List<PostResponse> responses = toResponseList(postPage.getContent());
-        return new PostListResponse(
-                responses,
-                postPage.getTotalElements(),
-                postPage.getNumber() + 1,
-                postPage.getSize(),
-                postPage.getTotalPages()
-        );
-    }
+	// Page<Post>를 PostListResponse로 매핑하는 default 메서드
+	default PostListResponse toPostListResponse(Page<Post> postPage) {
+		List<PostResponse> responses = toResponseList(postPage.getContent());
+		return new PostListResponse(
+			responses,
+			postPage.getTotalElements(),
+			postPage.getNumber() + 1,
+			postPage.getSize(),
+			postPage.getTotalPages()
+		);
+	}
 
+	default UserId map(Long value) {
+		return value == null ? null : new UserId(value);
+	}
 
-    default UserId map(Long value) {
-        return value == null ? null : new UserId(value);
-    }
-
-    default Long map(UserId userId) {
-        return userId == null ? null : userId.getId();
-    }
+	default Long map(UserId userId) {
+		return userId == null ? null : userId.getId();
+	}
 }

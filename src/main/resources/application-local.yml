@@ -50,6 +50,7 @@ cookie:
   max-age: 1800
 
 file:
-  base-dir: D:/jihoon/borikkori/view/borikkori_view/build/
+  base-dir: D:\jihoon\upload\borikkori\
+  base-url: http://localhost:8080
 
 
