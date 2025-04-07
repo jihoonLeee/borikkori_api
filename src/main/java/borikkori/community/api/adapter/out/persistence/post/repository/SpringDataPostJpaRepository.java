@@ -3,6 +3,8 @@ package borikkori.community.api.adapter.out.persistence.post.repository;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,6 +14,9 @@ import borikkori.community.api.adapter.out.persistence.user.entity.UserEntity;
 import borikkori.community.api.common.enums.PostStatus;
 
 public interface SpringDataPostJpaRepository extends JpaRepository<PostEntity, Long> {
+
+	@Query("SELECT p FROM PostEntity p WHERE p.postStatus = :postStatus ORDER BY p.regDate DESC")
+	Page<PostEntity> findPostsByStatus(Pageable pageable, @Param("postStatus") PostStatus postStatus);
 
 	@Query("SELECT p FROM PostEntity p WHERE p.user = :user AND p.postStatus = :postStatus ORDER BY p.id DESC")
 	Optional<PostEntity> findLatestTemporaryPost(

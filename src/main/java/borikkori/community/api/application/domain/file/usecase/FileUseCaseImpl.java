@@ -2,6 +2,7 @@ package borikkori.community.api.application.domain.file.usecase;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -18,8 +19,6 @@ import borikkori.community.api.domain.file.repository.FileRepository;
 import borikkori.community.api.domain.file.service.FileService;
 import borikkori.community.api.domain.post.entity.Post;
 import borikkori.community.api.domain.post.repository.PostRepository;
-import jakarta.annotation.PostConstruct;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,20 +31,16 @@ public class FileUseCaseImpl implements FileUseCase {
 	private final FileRepository fileRepository;
 	private final PostRepository postRepository;
 	private final FileService fileService;
-	@Value("${file.upload-dir}")
-	private String uploadDir;
+	@Value("${file.upload-video-dir}")
+	private String videoDir;
+	@Value("${file.upload-image-dir}")
+	private String imageDir;
+	@Value("${file.upload-document-dir}")
+	private String documentDir;
 	@Value("${file.base-dir}")
 	private String uploadBaseDir;
 	@Value("${file.base-url}")
 	private String baseUrl;
-
-	@Getter
-	private String fileUrl;
-
-	@PostConstruct
-	public void init() {
-		fileUrl = baseUrl + uploadDir;
-	}
 
 	private static final long MAX_SIZE = 10 * (1024 * 1024); // 총 10MB
 
@@ -75,20 +70,26 @@ public class FileUseCaseImpl implements FileUseCase {
 			throw new IllegalStateException("허용되지 않는 파일 타입입니다.");
 		}
 
-		// 5. 저장 파일명 및 파일 URL 생성
+		// 5. 저장 파일명 생성
 		String savedFileName = UUID.randomUUID() + extension;
-		File destination = new File(uploadBaseDir + uploadDir, savedFileName);
-		multipartFile.transferTo(destination);
-		fileUrl += savedFileName;
-
-		// 6. 파일 상태 결정 (MIME 타입 기반)
+		String savedUrl;
 		FileType fileType;
+		// 6. 파일 저장 및 URL 구성 (경로는 Java NIO Paths를 활용)
 		if (mimeType != null && mimeType.startsWith("image/")) {
 			fileType = FileType.IMAGE;
+			File destination = Paths.get(uploadBaseDir, imageDir, savedFileName).toFile();
+			multipartFile.transferTo(destination);
+			savedUrl = baseUrl + imageDir + savedFileName;
 		} else if (mimeType != null && mimeType.startsWith("video/")) {
 			fileType = FileType.VIDEO;
+			File destination = Paths.get(uploadBaseDir, videoDir, savedFileName).toFile();
+			multipartFile.transferTo(destination);
+			savedUrl = baseUrl + videoDir + savedFileName;
 		} else {
 			fileType = FileType.DOCUMENT;
+			File destination = Paths.get(uploadBaseDir, documentDir, savedFileName).toFile();
+			multipartFile.transferTo(destination);
+			savedUrl = baseUrl + documentDir + savedFileName;
 		}
 
 		// 7. 현재 시간을 regDate/updDate로 사용
@@ -96,35 +97,45 @@ public class FileUseCaseImpl implements FileUseCase {
 
 		// 8. FileEntity 생성 (Builder 사용 없이 생성자 사용)
 		borikkori.community.api.domain.file.entity.File file = fileService.createFile(
-			originalFilename,       // originalName
-			extension,              // extension
-			savedFileName,          // savedName
-			fileUrl,                // savedUrl
-			fileSize,               // fileSize
-			fileType,             // fileType
-			mimeType,               // contentType
-			null,                   // duration (해당 없으면 null)
-			null,                   // resolution (해당 없으면 null)
-			null                   // metadata (해당 없으면 null)
+			post,          // post
+			originalFilename,   // originalName
+			extension,          // extension
+			savedFileName,      // savedName
+			savedUrl,           // savedUrl
+			fileSize,           // fileSize
+			fileType,           // fileType
+			mimeType,           // contentType
+			null,               // duration (없으면 null)
+			null,               // resolution (없으면 null)
+			null                // metadata (없으면 null)
 		);
 
 		// 9. 파일 저장
 		fileRepository.saveFile(file);
-		return fileUrl;
+		return savedUrl;
 	}
 
 	@Override
 	@Transactional
 	public void cleanupFiles() {
+		// 사용되지 않는 파일 목록 조회
 		List<borikkori.community.api.domain.file.entity.File> fileEntities = fileRepository.findUnusedFiles();
 		for (borikkori.community.api.domain.file.entity.File file : fileEntities) {
-			File destination = new File(uploadBaseDir + uploadDir, file.getSavedName());
-			boolean isDeleted = destination.delete();
+			String directory;
+			if (file.getFileType() == FileType.IMAGE) {
+				directory = imageDir;
+			} else if (file.getFileType() == FileType.VIDEO) {
+				directory = videoDir;
+			} else {
+				directory = documentDir;
+			}
+			File targetFile = Paths.get(uploadBaseDir, directory, file.getSavedName()).toFile();
+			boolean isDeleted = targetFile.delete();
 			if (isDeleted) {
 				log.info(file.getSavedName() + " 파일 삭제 성공");
 				fileRepository.deleteFile(file.getId());
 			} else {
-				log.info(file.getSavedName() + " 파일 삭제 실패");
+				log.warn(file.getSavedName() + " 파일 삭제 실패");
 			}
 		}
 	}

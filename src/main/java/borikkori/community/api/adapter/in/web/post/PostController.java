@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import borikkori.community.api.adapter.in.web.post.request.PostReactionRequest;
 import borikkori.community.api.adapter.in.web.post.request.PostWriteRequest;
 import borikkori.community.api.adapter.in.web.post.response.PostListResponse;
 import borikkori.community.api.adapter.in.web.post.response.PostNeighborsResponse;
@@ -41,17 +42,18 @@ public class PostController {
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
-	@Operation(summary = "글삭제", description = "게시글 삭제")
+	@Operation(summary = "글 삭제", description = "게시글 삭제")
 	@DeleteMapping("/{postId}")
 	public ResponseEntity<Void> deletePost(@AuthenticationPrincipal CustomUserDetails customUser,
 		@PathVariable Long postId) {
+		// 게시글 소유자 확인 하기..
 		postUsecase.deletePost(postId);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
 	@Operation(summary = "글 목록", description = "게시글 목록")
 	@GetMapping
-	public ResponseEntity<PostListResponse> getPosts(@RequestParam int page) {
+	public ResponseEntity<PostListResponse> readPostList(@RequestParam int page) {
 		PostListResponse res = postUsecase.getPostList(page, 10);
 		return new ResponseEntity<>(res, HttpStatus.OK);
 	}
@@ -65,23 +67,26 @@ public class PostController {
 
 	@Operation(summary = "게시글 조회", description = "게시글 목록")
 	@GetMapping("/{postId}")
-	public ResponseEntity<PostResponse> getPost(@PathVariable Long postId) {
+	public ResponseEntity<PostResponse> readPost(@PathVariable Long postId) {
 		PostResponse res = postUsecase.getPost(postId);
 		return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 
-	@Operation(summary = "따봉")
-	@PostMapping("/{postId}/like")
-	public ResponseEntity<PostResponse> postLike(@AuthenticationPrincipal CustomUserDetails customUser,
-		@PathVariable Long postId) {
-		PostResponse res = postUsecase.likePost(postId, customUser.getUser().getId().getId());
+	@Operation(summary = "따봉 ~")
+	@PostMapping("/reaction")
+	public ResponseEntity<PostResponse> reactionPost(
+		@AuthenticationPrincipal CustomUserDetails customUser,
+		@RequestBody PostReactionRequest req) {
+		PostResponse res = postUsecase.reactionPost(req.getPostId(), customUser.getUser().getId().getId(),
+			req.getReactionType());
 		return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 
 	@Operation(summary = "임시 Post 생성", description = "글쓰기 화면 도입 시")
 	@PostMapping("/init")
-	public ResponseEntity<PostResponse> postInit(@AuthenticationPrincipal CustomUserDetails customUser) {
-		PostResponse res = postUsecase.findOrCreateTempPost(customUser.getUser());
+	public ResponseEntity<PostResponse> postInit(@AuthenticationPrincipal CustomUserDetails customUser,
+		@RequestBody PostWriteRequest req) {
+		PostResponse res = postUsecase.findOrCreateTempPost(customUser.getUser(), req);
 		return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 

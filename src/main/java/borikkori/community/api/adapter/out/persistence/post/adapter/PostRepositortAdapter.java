@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import borikkori.community.api.adapter.out.persistence.post.entity.PostEntity;
@@ -40,9 +39,8 @@ public class PostRepositortAdapter implements PostRepository {
 	}
 
 	public Page<Post> findPostList(int page, int size) {
-		Pageable pageable = PageRequest.of(page - 1, size,
-			Sort.by("regDate").descending());
-		Page<PostEntity> postEntityPage = postJpaRepository.findAll(pageable);
+		Pageable pageable = PageRequest.of(page - 1, size);
+		Page<PostEntity> postEntityPage = postJpaRepository.findPostsByStatus(pageable, PostStatus.PUBLISHED);
 		return postEntityPage.map(postMapper::toDomain);
 	}
 
@@ -72,8 +70,7 @@ public class PostRepositortAdapter implements PostRepository {
 	@Override
 	public Optional<Post> findTempByUser(User user) {
 		UserEntity userEntity = userMapper.toEntity(user);
-		return postJpaRepository.findLatestTemporaryPost(userEntity, PostStatus.DRAFT)
-			.map(postMapper::toDomain);
+		return postJpaRepository.findLatestTemporaryPost(userEntity, PostStatus.DRAFT).map(postMapper::toDomain);
 	}
 
 	@Override

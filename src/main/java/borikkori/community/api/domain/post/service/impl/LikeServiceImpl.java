@@ -16,4 +16,9 @@ public class LikeServiceImpl implements LikeService {
 		return em.find(entityClass, id) == null;
 	}
 
+	@Override
+	public <T> T findReactionData(Class<T> entityClass, Object id) {
+		return em.find(entityClass, id);
+	}
+
 }

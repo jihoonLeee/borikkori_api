@@ -2,20 +2,26 @@ package borikkori.community.api.adapter.out.persistence.file.mapper;
 
 import borikkori.community.api.adapter.out.persistence.file.entity.FileEntity;
 import borikkori.community.api.adapter.out.persistence.post.entity.PostEntity;
+import borikkori.community.api.adapter.out.persistence.post.mapper.PostMapper;
 import borikkori.community.api.common.enums.FileStatus;
 import borikkori.community.api.common.enums.FileType;
 import borikkori.community.api.domain.file.entity.File;
+import borikkori.community.api.domain.post.entity.Post;
 import java.time.LocalDateTime;
 import javax.annotation.processing.Generated;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-03-24T22:03:49+0900",
+    date = "2025-04-04T23:58:52+0900",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.5 (Oracle Corporation)"
 )
 @Component
 public class FileMapperImpl implements FileMapper {
+
+    @Autowired
+    private PostMapper postMapper;
 
     @Override
     public File toDomain(FileEntity entity) {
@@ -23,6 +29,7 @@ public class FileMapperImpl implements FileMapper {
             return null;
         }
 
+        Post post = null;
         Long id = null;
         String originalName = null;
         String extension = null;
@@ -38,6 +45,7 @@ public class FileMapperImpl implements FileMapper {
         LocalDateTime regDate = null;
         LocalDateTime updDate = null;
 
+        post = postMapper.toDomain( entity.getPostEntity() );
         id = entity.getId();
         originalName = entity.getOriginalName();
         extension = entity.getExtension();
@@ -53,7 +61,7 @@ public class FileMapperImpl implements FileMapper {
         regDate = entity.getRegDate();
         updDate = entity.getUpdDate();
 
-        File file = new File( id, originalName, extension, savedName, savedUrl, fileSize, fileType, fileStatus, contentType, duration, resolution, metadata, regDate, updDate );
+        File file = new File( id, post, originalName, extension, savedName, savedUrl, fileSize, fileType, fileStatus, contentType, duration, resolution, metadata, regDate, updDate );
 
         return file;
     }
@@ -64,6 +72,7 @@ public class FileMapperImpl implements FileMapper {
             return null;
         }
 
+        PostEntity postEntity = null;
         Long id = null;
         String originalName = null;
         String extension = null;
@@ -79,6 +88,7 @@ public class FileMapperImpl implements FileMapper {
         LocalDateTime regDate = null;
         LocalDateTime updDate = null;
 
+        postEntity = postMapper.toEntity( domain.getPost() );
         id = domain.getId();
         originalName = domain.getOriginalName();
         extension = domain.getExtension();
@@ -93,8 +103,6 @@ public class FileMapperImpl implements FileMapper {
         metadata = domain.getMetadata();
         regDate = domain.getRegDate();
         updDate = domain.getUpdDate();
-
-        PostEntity postEntity = null;
 
         FileEntity fileEntity = new FileEntity( id, postEntity, originalName, extension, savedName, savedUrl, fileSize, fileType, fileStatus, contentType, duration, resolution, metadata, regDate, updDate );
 

@@ -6,6 +6,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import borikkori.community.api.adapter.out.persistence.user.entity.UserEntity;
+import borikkori.community.api.common.enums.ReactionType;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
@@ -39,6 +40,8 @@ public class CommentLikeEntity {
 	@JoinColumn(name = "user_id", insertable = false, updatable = false)
 	private UserEntity user;
 
+	private ReactionType reactionType;
+	
 	@CreatedDate
 	@Column(updatable = false, nullable = false)
 	private LocalDateTime regDate;

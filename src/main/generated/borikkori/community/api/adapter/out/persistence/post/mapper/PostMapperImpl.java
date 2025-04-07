@@ -3,25 +3,30 @@ package borikkori.community.api.adapter.out.persistence.post.mapper;
 import borikkori.community.api.adapter.in.web.post.response.PostResponse;
 import borikkori.community.api.adapter.out.persistence.file.entity.FileEntity;
 import borikkori.community.api.adapter.out.persistence.mbti.entity.MbtiEntity;
+import borikkori.community.api.adapter.out.persistence.post.entity.CategoryEntity;
 import borikkori.community.api.adapter.out.persistence.post.entity.CommentEntity;
 import borikkori.community.api.adapter.out.persistence.post.entity.PostEntity;
 import borikkori.community.api.adapter.out.persistence.user.entity.UserEntity;
 import borikkori.community.api.adapter.out.persistence.user.entity.UserRoleEntity;
+import borikkori.community.api.common.enums.CategoryType;
 import borikkori.community.api.common.enums.MbtiType;
 import borikkori.community.api.common.enums.PostStatus;
 import borikkori.community.api.common.enums.Role;
+import borikkori.community.api.domain.post.entity.Category;
 import borikkori.community.api.domain.post.entity.Post;
 import borikkori.community.api.domain.user.entity.User;
 import borikkori.community.api.domain.user.vo.UserId;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-03-24T22:03:52+0900",
+    date = "2025-04-04T23:58:52+0900",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.5 (Oracle Corporation)"
 )
 @Component
@@ -39,6 +44,9 @@ public class PostMapperImpl implements PostMapper {
         String contents = null;
         int visitCount = 0;
         int likeCount = 0;
+        int shareCount = 0;
+        Category category = null;
+        String thumbnailUrl = null;
         PostStatus postStatus = null;
         LocalDateTime regDate = null;
         LocalDateTime updDate = null;
@@ -49,11 +57,16 @@ public class PostMapperImpl implements PostMapper {
         contents = entity.getContents();
         visitCount = entity.getVisitCount();
         likeCount = entity.getLikeCount();
+        shareCount = entity.getShareCount();
+        category = categoryEntityToCategory( entity.getCategory() );
+        thumbnailUrl = entity.getThumbnailUrl();
         postStatus = entity.getPostStatus();
         regDate = entity.getRegDate();
         updDate = entity.getUpdDate();
 
-        Post post = new Post( id, user, title, contents, visitCount, likeCount, postStatus, regDate, updDate );
+        int disLikeCount = 0;
+
+        Post post = new Post( id, user, title, contents, visitCount, likeCount, disLikeCount, shareCount, category, thumbnailUrl, postStatus, regDate, updDate );
 
         return post;
     }
@@ -70,6 +83,9 @@ public class PostMapperImpl implements PostMapper {
         String contents = null;
         int visitCount = 0;
         int likeCount = 0;
+        int shareCount = 0;
+        CategoryEntity category = null;
+        String thumbnailUrl = null;
         PostStatus postStatus = null;
         LocalDateTime regDate = null;
         LocalDateTime updDate = null;
@@ -80,14 +96,19 @@ public class PostMapperImpl implements PostMapper {
         contents = domain.getContents();
         visitCount = domain.getVisitCount();
         likeCount = domain.getLikeCount();
+        shareCount = domain.getShareCount();
+        category = categoryToCategoryEntity( domain.getCategory() );
+        thumbnailUrl = domain.getThumbnailUrl();
         postStatus = domain.getPostStatus();
         regDate = domain.getRegDate();
         updDate = domain.getUpdDate();
 
+        int dislikeCount = 0;
+        String tags = null;
         List<FileEntity> fileEntities = null;
         List<CommentEntity> commentEntities = null;
 
-        PostEntity postEntity = new PostEntity( id, user, title, contents, visitCount, likeCount, fileEntities, commentEntities, postStatus, regDate, updDate );
+        PostEntity postEntity = new PostEntity( id, user, title, contents, visitCount, likeCount, dislikeCount, shareCount, category, tags, thumbnailUrl, fileEntities, commentEntities, postStatus, regDate, updDate );
 
         return postEntity;
     }
@@ -137,6 +158,13 @@ public class PostMapperImpl implements PostMapper {
         return list;
     }
 
+    @Override
+    public void updateEntity(Post post, PostEntity entity) {
+        if ( post == null ) {
+            return;
+        }
+    }
+
     protected User userEntityToUser(UserEntity userEntity) {
         if ( userEntity == null ) {
             return null;
@@ -174,6 +202,32 @@ public class PostMapperImpl implements PostMapper {
         return user;
     }
 
+    protected Set<Category> categoryEntitySetToCategorySet(Set<CategoryEntity> set) {
+        if ( set == null ) {
+            return null;
+        }
+
+        Set<Category> set1 = new LinkedHashSet<Category>( Math.max( (int) ( set.size() / .75f ) + 1, 16 ) );
+        for ( CategoryEntity categoryEntity : set ) {
+            set1.add( categoryEntityToCategory( categoryEntity ) );
+        }
+
+        return set1;
+    }
+
+    protected Category categoryEntityToCategory(CategoryEntity categoryEntity) {
+        if ( categoryEntity == null ) {
+            return null;
+        }
+
+        Category category = new Category();
+
+        category.setParentCategory( categoryEntityToCategory( categoryEntity.getParentCategory() ) );
+        category.setSubCategories( categoryEntitySetToCategorySet( categoryEntity.getSubCategories() ) );
+
+        return category;
+    }
+
     protected UserEntity userToUserEntity(User user) {
         if ( user == null ) {
             return null;
@@ -209,6 +263,49 @@ public class PostMapperImpl implements PostMapper {
         UserEntity userEntity = new UserEntity( id, name, email, password, active, emailVerified, accountLocked, failedLoginAttempts, lastLoginDate, regDate, updDate, mbtiEntity, userRoles );
 
         return userEntity;
+    }
+
+    protected Set<CategoryEntity> categorySetToCategoryEntitySet(Set<Category> set) {
+        if ( set == null ) {
+            return null;
+        }
+
+        Set<CategoryEntity> set1 = new LinkedHashSet<CategoryEntity>( Math.max( (int) ( set.size() / .75f ) + 1, 16 ) );
+        for ( Category category : set ) {
+            set1.add( categoryToCategoryEntity( category ) );
+        }
+
+        return set1;
+    }
+
+    protected CategoryEntity categoryToCategoryEntity(Category category) {
+        if ( category == null ) {
+            return null;
+        }
+
+        Set<CategoryEntity> subCategories = null;
+        Long id = null;
+        CategoryType categoryType = null;
+        boolean active = false;
+        int displayOrder = 0;
+        String description = null;
+        CategoryEntity parentCategory = null;
+        LocalDateTime regDate = null;
+        LocalDateTime updDate = null;
+
+        subCategories = categorySetToCategoryEntitySet( category.getSubCategories() );
+        id = category.getId();
+        categoryType = category.getCategoryType();
+        active = category.isActive();
+        displayOrder = category.getDisplayOrder();
+        description = category.getDescription();
+        parentCategory = categoryToCategoryEntity( category.getParentCategory() );
+        regDate = category.getRegDate();
+        updDate = category.getUpdDate();
+
+        CategoryEntity categoryEntity = new CategoryEntity( id, categoryType, active, displayOrder, description, parentCategory, subCategories, regDate, updDate );
+
+        return categoryEntity;
     }
 
     private String postUserName(Post post) {

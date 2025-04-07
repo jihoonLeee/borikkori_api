@@ -1,6 +1,7 @@
 package borikkori.community.api.adapter.out.persistence.post.mapper;
 
 import borikkori.community.api.adapter.out.persistence.post.entity.CommentLikeEntity;
+import borikkori.community.api.common.enums.ReactionType;
 import borikkori.community.api.domain.post.entity.CommentLike;
 import borikkori.community.api.domain.post.entity.CommentLikeId;
 import java.time.LocalDateTime;
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-03-24T22:03:53+0900",
+    date = "2025-04-04T23:58:52+0900",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.5 (Oracle Corporation)"
 )
 @Component
@@ -22,12 +23,14 @@ public class CommentLikeMapperImpl implements CommentLikeMapper {
         }
 
         CommentLikeId id = null;
+        ReactionType reactionType = null;
         LocalDateTime regDate = null;
 
         id = map( entity.getId() );
+        reactionType = entity.getReactionType();
         regDate = entity.getRegDate();
 
-        CommentLike commentLike = new CommentLike( id, regDate );
+        CommentLike commentLike = new CommentLike( id, reactionType, regDate );
 
         return commentLike;
     }

@@ -34,15 +34,20 @@ public class SecurityConfig {
 			.csrf(csrf -> csrf.disable())
 			.authorizeHttpRequests(authorize -> authorize
 				// 모든 사용자에게 허용되는 경로
-				.requestMatchers("/mbti", "/file/**", "/images/**").permitAll()
+				.requestMatchers("/mbti/**", "/videos/**", "/images/**", "/documents/**")
+				.permitAll()
 				// POST 요청에 대해 허용되는 경로
-				.requestMatchers(HttpMethod.POST, "/user/join", "/user/login", "/user/sendEmail").permitAll()
+				.requestMatchers(HttpMethod.POST, "/user/join", "/user/login", "/user/sendEmail")
+				.permitAll()
 				// 모든 사용자에게 허용되는 경로 (GET)
-				.requestMatchers(HttpMethod.GET, "/post/**", "/comment/**").permitAll()
+				.requestMatchers(HttpMethod.GET, "/post/**", "/comment/**")
+				.permitAll()
 				// 인증된 사용자에게만 허용되는 나머지 GET 경로
-				.requestMatchers(HttpMethod.GET, "/ws/chat/**", "/chat/**", "/swagger-ui/**").authenticated()
+				.requestMatchers(HttpMethod.GET, "/ws/chat/**", "/chat/**", "/swagger-ui/**")
+				.authenticated()
 				// 나머지 모든 요청에 대해서는 USER 또는 ADMIN 권한이 필요
-				.anyRequest().hasAnyAuthority(Role.USER.getRole(), Role.ADMIN.getRole())
+				.anyRequest()
+				.hasAnyAuthority(Role.USER.getRole(), Role.ADMIN.getRole())
 			)
 			.logout(logout -> logout
 				.logoutUrl("/logout")

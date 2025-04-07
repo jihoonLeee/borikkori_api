@@ -4,6 +4,7 @@ import borikkori.community.api.adapter.in.web.post.request.PostWriteRequest;
 import borikkori.community.api.adapter.in.web.post.response.PostListResponse;
 import borikkori.community.api.adapter.in.web.post.response.PostNeighborsResponse;
 import borikkori.community.api.adapter.in.web.post.response.PostResponse;
+import borikkori.community.api.common.enums.ReactionType;
 import borikkori.community.api.domain.user.entity.User;
 
 public interface PostUsecase {
@@ -16,9 +17,9 @@ public interface PostUsecase {
 
 	PostNeighborsResponse getNeighborPosts(Long postId);
 
-	PostResponse likePost(Long postId, Long userId);
+	PostResponse reactionPost(Long postId, Long userId, ReactionType reactionType);
 
-	PostResponse findOrCreateTempPost(User user);
+	PostResponse findOrCreateTempPost(User user, PostWriteRequest req);
 
 	void deletePost(Long postId);
 }

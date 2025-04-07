@@ -25,7 +25,7 @@ public class MbtiInitializer implements CommandLineRunner {
 			mbtiRepository.saveMbtiResult(new MbtiStatistics(MbtiType.ESFJ, 0L));
 			mbtiRepository.saveMbtiResult(new MbtiStatistics(MbtiType.ESFP, 0L));
 			mbtiRepository.saveMbtiResult(new MbtiStatistics(MbtiType.ESTP, 0L));
-			mbtiRepository.saveMbtiResult(new MbtiStatistics(MbtiType.ESFP, 0L));
+			mbtiRepository.saveMbtiResult(new MbtiStatistics(MbtiType.ESTJ, 0L));
 			mbtiRepository.saveMbtiResult(new MbtiStatistics(MbtiType.INFJ, 0L));
 			mbtiRepository.saveMbtiResult(new MbtiStatistics(MbtiType.INFP, 0L));
 			mbtiRepository.saveMbtiResult(new MbtiStatistics(MbtiType.INTJ, 0L));
@@ -33,7 +33,7 @@ public class MbtiInitializer implements CommandLineRunner {
 			mbtiRepository.saveMbtiResult(new MbtiStatistics(MbtiType.ISFJ, 0L));
 			mbtiRepository.saveMbtiResult(new MbtiStatistics(MbtiType.ISFP, 0L));
 			mbtiRepository.saveMbtiResult(new MbtiStatistics(MbtiType.ISTP, 0L));
-			mbtiRepository.saveMbtiResult(new MbtiStatistics(MbtiType.ISFP, 0L));
+			mbtiRepository.saveMbtiResult(new MbtiStatistics(MbtiType.ISTJ, 0L));
 		}
 	}
 }

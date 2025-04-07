@@ -31,7 +31,7 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
-	public File createFile(String originalName,
+	public File createFile(Post post, String originalName,
 		String extension,
 		String savedName,
 		String savedUrl,
@@ -44,6 +44,7 @@ public class FileServiceImpl implements FileService {
 		LocalDateTime now = LocalDateTime.now();
 		return new File(
 			null,                    // 아직 ID 미할당 (영속화 시 할당)
+			post,
 			originalName,
 			extension,
 			savedName,

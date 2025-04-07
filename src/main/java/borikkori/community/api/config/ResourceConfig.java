@@ -18,9 +18,9 @@ public class ResourceConfig implements WebMvcConfigurer {
 
 	@Override
 	public void addResourceHandlers(final ResourceHandlerRegistry registry) {
-		registry.addResourceHandler("/**")
+		registry.addResourceHandler("/*/**")
 			.addResourceLocations("file:///" + fileDir)
-			.setCacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES)); // 캐시 저장 시간
+			.setCacheControl(CacheControl.maxAge(5, TimeUnit.MINUTES)); // 캐시 저장 시간
 	}
 
 }

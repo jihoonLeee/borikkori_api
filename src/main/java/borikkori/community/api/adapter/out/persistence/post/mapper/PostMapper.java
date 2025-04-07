@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.springframework.data.domain.Page;
 
 import borikkori.community.api.adapter.in.web.post.response.PostListResponse;
@@ -12,7 +13,7 @@ import borikkori.community.api.adapter.out.persistence.post.entity.PostEntity;
 import borikkori.community.api.domain.post.entity.Post;
 import borikkori.community.api.domain.user.vo.UserId;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {CategoryMapper.class})
 public interface PostMapper {
 
 	// 엔티티 -> 도메인
@@ -53,4 +54,8 @@ public interface PostMapper {
 	default Long map(UserId userId) {
 		return userId == null ? null : userId.getId();
 	}
+
+	@Mapping(target = "regDate", ignore = true)
+	void updateEntity(Post post, @MappingTarget PostEntity entity);
+
 }

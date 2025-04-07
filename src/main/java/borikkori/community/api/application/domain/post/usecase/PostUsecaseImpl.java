@@ -14,10 +14,13 @@ import borikkori.community.api.adapter.in.web.post.response.PostResponse;
 import borikkori.community.api.adapter.out.persistence.post.entity.PostLikeEntity;
 import borikkori.community.api.adapter.out.persistence.post.entity.PostLikeIdEntity;
 import borikkori.community.api.adapter.out.persistence.post.mapper.PostMapper;
+import borikkori.community.api.common.enums.ReactionType;
 import borikkori.community.api.domain.file.service.FileService;
+import borikkori.community.api.domain.post.entity.Category;
 import borikkori.community.api.domain.post.entity.Post;
 import borikkori.community.api.domain.post.entity.PostLike;
 import borikkori.community.api.domain.post.entity.PostLikeId;
+import borikkori.community.api.domain.post.repository.CategoryRepository;
 import borikkori.community.api.domain.post.repository.PostRepository;
 import borikkori.community.api.domain.post.service.LikeService;
 import borikkori.community.api.domain.post.service.PostService;
@@ -34,13 +37,15 @@ public class PostUsecaseImpl implements PostUsecase {
 	private final PostService postService;
 	private final LikeService likeService;
 	private final PostMapper postMapper;
+	private final CategoryRepository categoryRepository;
 
 	@Override
 	@Transactional
 	public void createPost(PostWriteRequest req, User user) {
+		Category category = categoryRepository.findCategoryByName(req.getCategoryType());
 		Post post;
 		if (req.getPostId() == null) {
-			post = postService.createPost(user, req.getTitle(), req.getContents());
+			post = postService.createPost(user, category, req.getTitle(), req.getContents());
 		} else {
 			// 업데이트임
 			post = postRepository.findPostById(req.getPostId());
@@ -55,8 +60,8 @@ public class PostUsecaseImpl implements PostUsecase {
 
 	@Override
 	@Transactional
-	public PostResponse getPost(Long id) {
-		Post post = postRepository.findPostById(id);
+	public PostResponse getPost(Long postId) {
+		Post post = postRepository.findPostById(postId);
 		postService.incrementVisit(post);
 		postRepository.savePost(post);
 		return postMapper.toResponse(post);
@@ -82,26 +87,34 @@ public class PostUsecaseImpl implements PostUsecase {
 
 	@Override
 	@Transactional
-	public PostResponse likePost(Long postId, Long userId) {
+	public PostResponse reactionPost(Long postId, Long userId, ReactionType reactionType) {
 		Post post = postRepository.findPostById(postId);
 
-		boolean isEnabled = likeService.isLikeNotExists(PostLikeEntity.class, new PostLikeIdEntity(postId, userId));
+		PostLikeEntity reactionEntity = likeService.findReactionData(PostLikeEntity.class,
+			new PostLikeIdEntity(postId, userId));
 
-		if (isEnabled) {
+		if (reactionEntity != null) {
+			ReactionType reaction = reactionEntity.getReactionType();
+			if (reaction == ReactionType.LIKE) {
+				throw new IllegalStateException("이미 좋아요를 눌렀습니다.");
+			} else if (reaction == ReactionType.DISLIKE) {
+				throw new IllegalStateException("이미 싫어요를 눌렀습니다.");
+			}
+		} else {
 			postService.processLike(post);
 			postRepository.savePost(post);
-			PostLike postLike = new PostLike(new PostLikeId(post.getId(), userId), LocalDateTime.now());
+			PostLike postLike = new PostLike(new PostLikeId(post.getId(), userId), reactionType,
+				LocalDateTime.now());
 			postRepository.savePostLike(postLike);
-			return postMapper.toResponse(post);
-		} else {
-			throw new IllegalStateException("이미 좋아요를 눌렀습니다.");
 		}
+		return postMapper.toResponse(post);
 	}
 
 	@Override
 	@Transactional
-	public PostResponse findOrCreateTempPost(User user) {
+	public PostResponse findOrCreateTempPost(User user, PostWriteRequest req) {
 		Optional<Post> optionalPost = postRepository.findTempByUser(user);
+		Category category = categoryRepository.findCategoryByName(req.getCategoryType());
 		if (optionalPost.isPresent()) {
 			// 쓰고있는 글이 있으면 쓰던 글 반환
 			PostResponse postResponse = postMapper.toResponse(optionalPost.get());
@@ -109,7 +122,7 @@ public class PostUsecaseImpl implements PostUsecase {
 			return postResponse;
 		} else {
 			// 임시 글이 없으면 새로운 임시 글 생성
-			Post tempPost = postService.createPost(user, null, null);
+			Post tempPost = postService.createPost(user, category, null, null);
 			Post savedPost = postRepository.savePost(tempPost);
 			return postMapper.toResponse(savedPost);
 		}
@@ -121,5 +134,4 @@ public class PostUsecaseImpl implements PostUsecase {
 		Post post = postRepository.findPostById(postId);
 		postRepository.deletePost(post);
 	}
-
 }

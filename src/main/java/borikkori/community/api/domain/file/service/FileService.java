@@ -9,7 +9,7 @@ public interface FileService {
 
 	void activateFilesForPost(Post post);
 
-	File createFile(String originalName,
+	File createFile(Post post, String originalName,
 		String extension,
 		String savedName,
 		String savedUrl,

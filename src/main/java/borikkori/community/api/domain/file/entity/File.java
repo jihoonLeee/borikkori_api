@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import borikkori.community.api.common.enums.FileStatus;
 import borikkori.community.api.common.enums.FileType;
+import borikkori.community.api.domain.post.entity.Post;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -11,6 +12,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class File {
 	private final Long id;
+	private final Post post;
 	private final String originalName;
 	private final String extension;
 	private final String savedName;

@@ -5,16 +5,27 @@ import java.time.LocalDateTime;
 import org.springframework.stereotype.Service;
 
 import borikkori.community.api.common.enums.PostStatus;
+import borikkori.community.api.domain.post.entity.Category;
 import borikkori.community.api.domain.post.entity.Post;
+import borikkori.community.api.domain.post.service.CategoryService;
 import borikkori.community.api.domain.post.service.PostService;
 import borikkori.community.api.domain.user.entity.User;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
+
+	private final CategoryService categoryService;
+
 	@Override
-	public Post createPost(User user, String title, String contents) {
+	public Post createPost(User user, Category category, String title, String contents) {
 		LocalDateTime now = LocalDateTime.now();
-		return new Post(null, user, title, contents, 0, 0, PostStatus.DRAFT, now, now);
+		Post post = new Post(null, user, title, contents, 0, 0, 0, 0,
+			category, "", PostStatus.DRAFT, now, now);
+
+		post.updateThumbnailFromContent();
+		return post;
 	}
 
 	@Override
@@ -30,5 +41,10 @@ public class PostServiceImpl implements PostService {
 	@Override
 	public void processLike(Post post) {
 		post.addLike();
+	}
+
+	@Override
+	public void processDislike(Post post) {
+		post.addDislike();
 	}
 }

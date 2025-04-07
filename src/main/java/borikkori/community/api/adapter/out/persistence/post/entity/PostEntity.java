@@ -55,6 +55,24 @@ public class PostEntity {
 
 	private int likeCount;
 
+	// 반대 좋아요 수
+	private int dislikeCount;
+	// 공유 수
+	private int shareCount;
+
+	// 카테고리 (예: 자유, 공지, 질문 등)
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "category_id", nullable = false)
+	private CategoryEntity category;
+	
+	// 태그들 (콤마로 구분된 문자열 형태로 저장하거나 별도 테이블과 연관관계로 구성할 수 있음)
+	@Column(name = "tags", length = 1000)
+	private String tags;
+
+	// 썸네일 URL (게시글 목록 미리보기용 이미지)
+	@Column(name = "thumbnail_url")
+	private String thumbnailUrl;
+
 	@OneToMany(mappedBy = "postEntity", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
 	private List<FileEntity> fileEntities;
 

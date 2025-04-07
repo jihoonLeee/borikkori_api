@@ -10,8 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import borikkori.community.api.adapter.in.web.post.request.CommentWriteRequest;
 import borikkori.community.api.adapter.in.web.post.response.CommentListResponse;
 import borikkori.community.api.adapter.in.web.post.response.CommentResponse;
-import borikkori.community.api.adapter.out.persistence.post.entity.CommentLikeIdEntity;
+import borikkori.community.api.adapter.out.persistence.post.entity.CommentLikeEntity;
 import borikkori.community.api.adapter.out.persistence.post.mapper.CommentMapper;
+import borikkori.community.api.common.enums.ReactionType;
 import borikkori.community.api.domain.post.entity.Comment;
 import borikkori.community.api.domain.post.entity.CommentLike;
 import borikkori.community.api.domain.post.entity.CommentLikeId;
@@ -54,19 +55,24 @@ public class CommentUsecaseImpl implements CommentUsecase {
 
 	@Override
 	@Transactional
-	public CommentResponse likeComment(Long commentId, Long userId) {
+	public CommentResponse reactionComment(Long commentId, Long userId, ReactionType reactionType) {
 		Comment comment = commentRepository.findCommentById(commentId);
-		boolean isEnabled = likeService.isLikeNotExists(CommentLikeIdEntity.class,
+		CommentLikeEntity reactionEntity = likeService.findReactionData(CommentLikeEntity.class,
 			new CommentLikeId(commentId, userId));
-		if (isEnabled) {
+		if (reactionEntity != null) {
+			ReactionType reaction = reactionEntity.getReactionType();
+			if (reaction == ReactionType.LIKE) {
+				throw new IllegalStateException("이미 좋아요를 눌렀습니다.");
+			} else if (reaction == ReactionType.DISLIKE) {
+				throw new IllegalStateException("이미 싫어요를 눌렀습니다.");
+			}
+		} else {
 			commentService.processLike(comment);
 			commentRepository.saveComment(comment);
 			CommentLike commentLike = new CommentLike(
-				new CommentLikeId(comment.getId(), userId), LocalDateTime.now());
+				new CommentLikeId(comment.getId(), userId), reactionType, LocalDateTime.now());
 			commentRepository.saveCommentLike(commentLike);
-			return commentMapper.toResponse(comment);
-		} else {
-			throw new IllegalStateException("이미 따봉을 눌렀습니다.");
 		}
+		return commentMapper.toResponse(comment);
 	}
 }
