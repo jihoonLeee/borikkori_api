@@ -40,11 +40,17 @@ public class CategoryUseCaseImpl implements CategoryUseCase {
 	@Override
 	@Transactional
 	public void createSubCategory(Category parentCategory, CategoryType categoryType) {
-		// 서브 카테고리 생성: 부모가 지정되고, 서브 컬렉션은 빈 컬렉션으로 초기화합니다.
+		// parentCategory가 저장되지 않은 경우 저장
+		System.out.println("----11111 ---" + parentCategory.getId());
+		System.out.println("----11111 ---" + parentCategory);
+		if (parentCategory.getId() == null) {
+			parentCategory = categoryRepository.saveCategory(parentCategory);
+		}
+		System.out.println("----sub ---" + categoryType.getDisplayName());
 		Category subCategory = categoryService.createSubCategory(parentCategory, categoryType);
-		// 부모 카테고리에 서브 카테고리를 추가합니다.
-		parentCategory.addSubCategory(subCategory);
-		categoryRepository.saveCategory(parentCategory);
+		System.out.println("----sub2 ---" + subCategory.getCategoryType().getDisplayName());
+		parentCategory.addSubCategory(subCategory); // 도메인 객체 관계 설정
+		categoryRepository.saveCategory(subCategory); // 하위 카테고리 저장
 	}
 
 	@Override

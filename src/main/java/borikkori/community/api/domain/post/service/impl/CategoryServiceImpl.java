@@ -33,7 +33,7 @@ public class CategoryServiceImpl implements CategoryService {
 	@Override
 	public Category createSubCategory(Category parentCategory, CategoryType categoryType) {
 		LocalDateTime now = LocalDateTime.now();
-		Category subCategory = new Category(
+		return new Category(
 			null,
 			categoryType,
 			categoryType.getDescription(),
@@ -44,9 +44,6 @@ public class CategoryServiceImpl implements CategoryService {
 			parentCategory,
 			new HashSet<>()
 		);
-		// 부모 카테고리에 서브 카테고리를 추가합니다.
-		parentCategory.addSubCategory(subCategory);
-		return subCategory;
 	}
 
 	@Override

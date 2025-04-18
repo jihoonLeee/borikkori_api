@@ -24,24 +24,28 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "category")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Builder
 @EntityListeners(AuditingEntityListener.class)
 public class CategoryEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "category_id")
+	@Setter
 	private Long id;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "category_type", nullable = false, unique = true)
+	@Column(name = "category_type", nullable = false)
 	private CategoryType categoryType;
 
 	@Column(name = "active", nullable = false)

@@ -1,20 +1,20 @@
 package borikkori.community.api.adapter.out.persistence.post.mapper;
 
+import org.mapstruct.Builder;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import borikkori.community.api.adapter.out.persistence.post.entity.CategoryEntity;
 import borikkori.community.api.domain.post.entity.Category;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", builder = @Builder(disableBuilder = false))
 public interface CategoryMapper {
 
-	// 엔티티 -> 도메인
+	@Mapping(target = "id", source = "id")
 	Category toDomain(CategoryEntity entity);
 
-	// 도메인 -> 엔티티: 순환 참조로 인한 재귀를 방지하기 위해 무시함.
-	@Mapping(target = "parentCategory", ignore = true)
 	@Mapping(target = "subCategories", ignore = true)
 	@Mapping(target = "id", source = "id")
+	@Mapping(target = "categoryType", source = "categoryType")
 	CategoryEntity toEntity(Category domain);
 }

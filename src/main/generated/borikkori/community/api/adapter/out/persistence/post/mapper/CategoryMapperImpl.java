@@ -1,9 +1,7 @@
 package borikkori.community.api.adapter.out.persistence.post.mapper;
 
 import borikkori.community.api.adapter.out.persistence.post.entity.CategoryEntity;
-import borikkori.community.api.common.enums.CategoryType;
 import borikkori.community.api.domain.post.entity.Category;
-import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import javax.annotation.processing.Generated;
@@ -11,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-04-05T00:13:11+0900",
+    date = "2025-04-17T22:44:06+0900",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.5 (Oracle Corporation)"
 )
 @Component
@@ -23,12 +21,19 @@ public class CategoryMapperImpl implements CategoryMapper {
             return null;
         }
 
-        Category category = new Category();
+        Category.CategoryBuilder category = Category.builder();
 
-        category.setParentCategory( toDomain( entity.getParentCategory() ) );
-        category.setSubCategories( categoryEntitySetToCategorySet( entity.getSubCategories() ) );
+        category.id( entity.getId() );
+        category.categoryType( entity.getCategoryType() );
+        category.description( entity.getDescription() );
+        category.active( entity.isActive() );
+        category.displayOrder( entity.getDisplayOrder() );
+        category.regDate( entity.getRegDate() );
+        category.updDate( entity.getUpdDate() );
+        category.parentCategory( toDomain( entity.getParentCategory() ) );
+        category.subCategories( categoryEntitySetToCategorySet( entity.getSubCategories() ) );
 
-        return category;
+        return category.build();
     }
 
     @Override
@@ -37,28 +42,18 @@ public class CategoryMapperImpl implements CategoryMapper {
             return null;
         }
 
-        Long id = null;
-        CategoryType categoryType = null;
-        boolean active = false;
-        int displayOrder = 0;
-        String description = null;
-        LocalDateTime regDate = null;
-        LocalDateTime updDate = null;
+        CategoryEntity.CategoryEntityBuilder categoryEntity = CategoryEntity.builder();
 
-        id = domain.getId();
-        categoryType = domain.getCategoryType();
-        active = domain.isActive();
-        displayOrder = domain.getDisplayOrder();
-        description = domain.getDescription();
-        regDate = domain.getRegDate();
-        updDate = domain.getUpdDate();
+        categoryEntity.id( domain.getId() );
+        categoryEntity.categoryType( domain.getCategoryType() );
+        categoryEntity.active( domain.isActive() );
+        categoryEntity.displayOrder( domain.getDisplayOrder() );
+        categoryEntity.description( domain.getDescription() );
+        categoryEntity.parentCategory( toEntity( domain.getParentCategory() ) );
+        categoryEntity.regDate( domain.getRegDate() );
+        categoryEntity.updDate( domain.getUpdDate() );
 
-        CategoryEntity parentCategory = null;
-        Set<CategoryEntity> subCategories = null;
-
-        CategoryEntity categoryEntity = new CategoryEntity( id, categoryType, active, displayOrder, description, parentCategory, subCategories, regDate, updDate );
-
-        return categoryEntity;
+        return categoryEntity.build();
     }
 
     protected Set<Category> categoryEntitySetToCategorySet(Set<CategoryEntity> set) {

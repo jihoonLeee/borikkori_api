@@ -24,12 +24,6 @@ public interface PostMapper {
 
 	@Mapping(target = "postId", source = "id")
 	@Mapping(target = "name", source = "user.name")
-	@Mapping(target = "visitCnt", source = "visitCount")
-	@Mapping(target = "likeCnt", source = "likeCount")
-	@Mapping(target = "title", source = "title")
-	@Mapping(target = "contents", source = "contents")
-	@Mapping(target = "regDate", source = "regDate")
-	@Mapping(target = "updDate", source = "updDate")
 	@Mapping(target = "isTemp", ignore = true)
 	PostResponse toResponse(Post post);
 

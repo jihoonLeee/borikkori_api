@@ -8,7 +8,6 @@ import borikkori.community.api.adapter.out.persistence.post.entity.CommentEntity
 import borikkori.community.api.adapter.out.persistence.post.entity.PostEntity;
 import borikkori.community.api.adapter.out.persistence.user.entity.UserEntity;
 import borikkori.community.api.adapter.out.persistence.user.entity.UserRoleEntity;
-import borikkori.community.api.common.enums.CategoryType;
 import borikkori.community.api.common.enums.MbtiType;
 import borikkori.community.api.common.enums.PostStatus;
 import borikkori.community.api.common.enums.Role;
@@ -18,19 +17,21 @@ import borikkori.community.api.domain.user.entity.User;
 import borikkori.community.api.domain.user.vo.UserId;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import javax.annotation.processing.Generated;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-04-04T23:58:52+0900",
+    date = "2025-04-17T23:26:10+0900",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.5 (Oracle Corporation)"
 )
 @Component
 public class PostMapperImpl implements PostMapper {
+
+    @Autowired
+    private CategoryMapper categoryMapper;
 
     @Override
     public Post toDomain(PostEntity entity) {
@@ -58,7 +59,7 @@ public class PostMapperImpl implements PostMapper {
         visitCount = entity.getVisitCount();
         likeCount = entity.getLikeCount();
         shareCount = entity.getShareCount();
-        category = categoryEntityToCategory( entity.getCategory() );
+        category = categoryMapper.toDomain( entity.getCategory() );
         thumbnailUrl = entity.getThumbnailUrl();
         postStatus = entity.getPostStatus();
         regDate = entity.getRegDate();
@@ -97,7 +98,7 @@ public class PostMapperImpl implements PostMapper {
         visitCount = domain.getVisitCount();
         likeCount = domain.getLikeCount();
         shareCount = domain.getShareCount();
-        category = categoryToCategoryEntity( domain.getCategory() );
+        category = categoryMapper.toEntity( domain.getCategory() );
         thumbnailUrl = domain.getThumbnailUrl();
         postStatus = domain.getPostStatus();
         regDate = domain.getRegDate();
@@ -121,8 +122,6 @@ public class PostMapperImpl implements PostMapper {
 
         Long postId = null;
         String name = null;
-        int visitCnt = 0;
-        int likeCnt = 0;
         String title = null;
         String contents = null;
         LocalDateTime regDate = null;
@@ -130,14 +129,14 @@ public class PostMapperImpl implements PostMapper {
 
         postId = post.getId();
         name = postUserName( post );
-        visitCnt = post.getVisitCount();
-        likeCnt = post.getLikeCount();
         title = post.getTitle();
         contents = post.getContents();
         regDate = post.getRegDate();
         updDate = post.getUpdDate();
 
         boolean isTemp = false;
+        int visitCnt = 0;
+        int likeCnt = 0;
 
         PostResponse postResponse = new PostResponse( postId, name, title, contents, visitCnt, likeCnt, isTemp, regDate, updDate );
 
@@ -202,32 +201,6 @@ public class PostMapperImpl implements PostMapper {
         return user;
     }
 
-    protected Set<Category> categoryEntitySetToCategorySet(Set<CategoryEntity> set) {
-        if ( set == null ) {
-            return null;
-        }
-
-        Set<Category> set1 = new LinkedHashSet<Category>( Math.max( (int) ( set.size() / .75f ) + 1, 16 ) );
-        for ( CategoryEntity categoryEntity : set ) {
-            set1.add( categoryEntityToCategory( categoryEntity ) );
-        }
-
-        return set1;
-    }
-
-    protected Category categoryEntityToCategory(CategoryEntity categoryEntity) {
-        if ( categoryEntity == null ) {
-            return null;
-        }
-
-        Category category = new Category();
-
-        category.setParentCategory( categoryEntityToCategory( categoryEntity.getParentCategory() ) );
-        category.setSubCategories( categoryEntitySetToCategorySet( categoryEntity.getSubCategories() ) );
-
-        return category;
-    }
-
     protected UserEntity userToUserEntity(User user) {
         if ( user == null ) {
             return null;
@@ -263,49 +236,6 @@ public class PostMapperImpl implements PostMapper {
         UserEntity userEntity = new UserEntity( id, name, email, password, active, emailVerified, accountLocked, failedLoginAttempts, lastLoginDate, regDate, updDate, mbtiEntity, userRoles );
 
         return userEntity;
-    }
-
-    protected Set<CategoryEntity> categorySetToCategoryEntitySet(Set<Category> set) {
-        if ( set == null ) {
-            return null;
-        }
-
-        Set<CategoryEntity> set1 = new LinkedHashSet<CategoryEntity>( Math.max( (int) ( set.size() / .75f ) + 1, 16 ) );
-        for ( Category category : set ) {
-            set1.add( categoryToCategoryEntity( category ) );
-        }
-
-        return set1;
-    }
-
-    protected CategoryEntity categoryToCategoryEntity(Category category) {
-        if ( category == null ) {
-            return null;
-        }
-
-        Set<CategoryEntity> subCategories = null;
-        Long id = null;
-        CategoryType categoryType = null;
-        boolean active = false;
-        int displayOrder = 0;
-        String description = null;
-        CategoryEntity parentCategory = null;
-        LocalDateTime regDate = null;
-        LocalDateTime updDate = null;
-
-        subCategories = categorySetToCategoryEntitySet( category.getSubCategories() );
-        id = category.getId();
-        categoryType = category.getCategoryType();
-        active = category.isActive();
-        displayOrder = category.getDisplayOrder();
-        description = category.getDescription();
-        parentCategory = categoryToCategoryEntity( category.getParentCategory() );
-        regDate = category.getRegDate();
-        updDate = category.getUpdDate();
-
-        CategoryEntity categoryEntity = new CategoryEntity( id, categoryType, active, displayOrder, description, parentCategory, subCategories, regDate, updDate );
-
-        return categoryEntity;
     }
 
     private String postUserName(Post post) {

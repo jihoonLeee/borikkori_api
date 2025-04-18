@@ -21,7 +21,15 @@ public class CategoryRepositoryAdapter implements CategoryRepository {
 
 	@Override
 	public Category saveCategory(Category category) {
+		System.out.println("Saving category: " + category);
+		System.out.println("Category ID: " + category.getId());
+		System.out.println("Category Type: " + category.getCategoryType());
+		System.out.println(
+			"Parent Category: " + (category.getParentCategory() != null ? category.getParentCategory().getId() :
+				"null"));
 		CategoryEntity categoryEntity = categoryMapper.toEntity(category);
+		System.out.println("Mapped Entity: " + categoryEntity);
+		System.out.println("Entity Category Type: " + categoryEntity.getCategoryType());
 		CategoryEntity savedCategory = categoryJpaRepository.save(categoryEntity);
 		return categoryMapper.toDomain(savedCategory);
 	}

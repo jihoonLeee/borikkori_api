@@ -24,6 +24,10 @@ public class CategoryInitializer implements CommandLineRunner {
 			Category info = categoryUseCase.createCategory(CategoryType.INFO);
 			Category beginner = categoryUseCase.createCategory(CategoryType.BEGINNER);
 			Category funny = categoryUseCase.createCategory(CategoryType.FUNNY);
+			System.out.println("패런츠");
+			System.out.println(free.getId());
+			System.out.println(free.getCategoryType());
+			System.out.println("패런츠");
 			categoryUseCase.createSubCategory(free, CategoryType.NOTICE);
 			categoryUseCase.createSubCategory(info, CategoryType.NOTICE);
 			categoryUseCase.createSubCategory(beginner, CategoryType.NOTICE);

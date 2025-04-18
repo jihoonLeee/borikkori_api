@@ -5,11 +5,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 import borikkori.community.api.common.enums.CategoryType;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
+@Builder
 @NoArgsConstructor
 public class Category {
 	private Long id;
