@@ -1,24 +1,21 @@
 spring:
-  profiles:
-    active: local
-
+  config:
+    activate:
+      on-profile: "${SPRING_PROFILES_ACTIVE:local}"
 jwt:
   secret:
-    key: trvvE5iDiMw8quLrrSi495DJ2MU9qmBy
-    expiration-minutes: 30
-    refresh-expiration-hours: 24
-
+    key: ${JWT_SECRET_KEY}
+    expiration-minutes: ${JWT_EXPIRATION_MINUTES:30}
+    refresh-expiration-hours: ${JWT_REFRESH_EXPIRATION_HOURS:24}
 cors:
   allowed:
-    origins: http://localhost:3000
-
+    origins: ${CORS_ALLOWED_ORIGINS}
 file:
-  upload-image-dir: /images/
-  upload-video-dir: /videos/
-  upload-document-dir: /documents/
+  upload:
+    image-dir: ${FILE_UPLOAD_IMAGE_DIR}
+    video-dir: ${FILE_UPLOAD_VIDEO_DIR}
+    document-dir: ${FILE_UPLOAD_DOCUMENT_DIR}
 logging:
   level:
-    org:
-      hibernate.orm.jdbc.bind: trace
-      springframework:
-        security: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE
+    org.springframework.security: DEBUG

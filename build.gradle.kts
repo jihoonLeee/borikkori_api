@@ -1,3 +1,4 @@
+import org.springframework.boot.gradle.tasks.bundling.BootJar
 import java.io.FileInputStream
 import java.util.*
 
@@ -82,4 +83,12 @@ tasks.withType<Test> {
     systemProperty("spring.data.redis.host", props.getProperty("REDIS_HOST") as String)
     systemProperty("spring.data.redis.port", props.getProperty("REDIS_PORT") as String)
     systemProperty("cors.allowed.origins", props.getProperty("CORS_ORIGIN") as String)
+}
+
+
+tasks.named<BootJar>("bootJar") {
+    // 기본 형태: archiveBaseName-archiveVersion[-archiveClassifier].jar
+    archiveBaseName.set("borikkori-community")
+    archiveVersion.set(project.version.toString())// 버전
+    archiveClassifier.set("")
 }

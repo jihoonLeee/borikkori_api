@@ -1,0 +1,47 @@
+name: deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Prepare SSH directory
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+
+      - name: Populate known_hosts from Secret
+        run: |
+          echo "${{ secrets.KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Setup SSH private key
+        run: |
+          echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: SSH into server and deploy
+        uses: appleboy/ssh-action@v0.8.1
+        with:
+          host: bokko.kr
+          port: 22
+          username: deploy
+          key: ${{ secrets.DEPLOY_KEY }}
+          script: |
+            set -e
+            cd ~/borikkori/secret
+            git pull origin main
+            chmod 600 .env.release
+            docker-compose -f docker-compose.release.yml pull
+            docker-compose -f docker-compose.release.yml up -d
+            docker-compose -f docker-compose.release.yml ps

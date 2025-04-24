@@ -1,0 +1,42 @@
+version: '3.8'
+services:
+  db:
+    image: mysql:8.0
+    container_name: borikkori-mysql
+    restart: always
+    env_file:
+      - .env.release
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: borikkori
+      MYSQL_USER: ${DB_USER_NAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  redis:
+    image: redis:7.0-alpine
+    container_name: borikkori-redis
+    env_file:
+      - .env.release
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  app:
+    image: ghcr.io/jihoonleee/borikkori-community:latest
+    container_name: borikkori-app
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env.release
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ${FILE_BASE_DIR}:/home/app/uploads
+
+volumes:
+  mysql_data:
+  redis_data:
