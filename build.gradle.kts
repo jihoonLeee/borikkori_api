@@ -1,6 +1,4 @@
 import org.springframework.boot.gradle.tasks.bundling.BootJar
-import java.io.FileInputStream
-import java.util.*
 
 plugins {
     java
@@ -64,8 +62,6 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.3.1")
     implementation(kotlin("script-runtime"))
 }
-val props = Properties()
-FileInputStream("src/main/resources/gradle.properties").use { props.load(it) }
 
 tasks.withType<JavaCompile> {
     options.compilerArgs.add("-parameters")
@@ -73,16 +69,6 @@ tasks.withType<JavaCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
-    systemProperty("spring.datasource.url", props.getProperty("DB_URL") as String)
-    systemProperty("spring.datasource.username", props.getProperty("DB_USER_NAME") as String)
-    systemProperty("spring.datasource.password", props.getProperty("DB_PASSWORD") as String)
-    systemProperty("spring.mail.port", props.getProperty("MAIL_PORT") as String)
-    systemProperty("spring.mail.username", props.getProperty("MAIL_USER_NAME") as String)
-    systemProperty("spring.mail.password", props.getProperty("MAIL_PASSWORD") as String)
-    systemProperty("secret-key", props.getProperty("JWT_KEY") as String)
-    systemProperty("spring.data.redis.host", props.getProperty("REDIS_HOST") as String)
-    systemProperty("spring.data.redis.port", props.getProperty("REDIS_PORT") as String)
-    systemProperty("cors.allowed.origins", props.getProperty("CORS_ORIGIN") as String)
 }
 
 
