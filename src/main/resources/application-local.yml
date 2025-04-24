@@ -3,17 +3,6 @@ spring:
     activate:
       on-profile: local
 
-  doc-openapi:
-    packages-to-scan: com.colabear754.springdoc_example.controllers
-    default-consumes-media-type: application/json;charset=UTF-8
-    default-produces-media-type: application/json;charset=UTF-8
-
-    swagger-ui:
-      path: /
-      disable-swagger-default-url: true
-      display-request-duration: true
-      operations-sorter:  alpha
-
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/borikkori?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&useSSL=true
@@ -29,7 +18,7 @@ spring:
     database: mysql
     show_sql: true
     hibernate:
-      ddl-auto: none # ?? ????? update or create .. ??
+      ddl-auto: create #none
       format_sql: true
     properties:
       hibernate:
@@ -48,31 +37,20 @@ spring:
           auth: true
           starttls:
             enable: true
+
   data:
     redis:
       host: localhost
       port: 6379
 
-jwt:
-  secret:
-    key: trvvE5iDiMw8quLrrSi495DJ2MU9qmBy
-    expiration-minutes: 30
-    refresh-expiration-hours: 24
-#https://acte.ltd/utils/randomkeygen
+cookie:
+  domain: localhost
+  secure: false
+  path: /
+  max-age: 1800
 
-logging:
-  level:
-    org:
-      hibernate.orm.jdbc.bind: trace
-      springframework:
-        security: DEBUG
-
-cors:
-  allowed:
-    origins: http://localhost:3000
 file:
-  base-dir: /home/jihoon/borikkori/view/borikkori_view/build/
-  upload-dir: images/upload/
-
+  base-dir: D:\jihoon\upload\borikkori\
+  base-url: http://localhost:8080
 
 

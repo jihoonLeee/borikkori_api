@@ -4,7 +4,7 @@ import lombok.experimental.StandardException;
 
 @StandardException
 public class NotExistAuthException extends RuntimeException {
-    public NotExistAuthException(String message) {
-        super(message);
-    }
+	public NotExistAuthException(String message) {
+		super(message);
+	}
 }

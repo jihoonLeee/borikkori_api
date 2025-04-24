@@ -1,42 +1,27 @@
 spring:
-  config:
-    activate:
-      on-profile: release
-
-  doc-openapi:
-    packages-to-scan: com.colabear754.springdoc_example.controllers
-    default-consumes-media-type: application/json;charset=UTF-8
-    default-produces-media-type: application/json;charset=UTF-8
-
-    swagger-ui:
-      path: /
-      disable-swagger-default-url: true
-      display-request-duration: true
-      operations-sorter:  alpha
-
+  profiles: release
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/borikkori?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&useSSL=true
+    url: ${DB_URL}
     username: ${DB_USER_NAME}
     password: ${DB_PASSWORD}
-
   servlet:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
-
   jpa:
     database: mysql
-    show_sql: true
+    show_sql: false  # 운영에서는 false 권장
     hibernate:
-      ddl-auto: update # ?? ????? update or create .. ??
-      format_sql: true
+      ddl-auto: none
+      format_sql: false
     properties:
       hibernate:
-        show_sql: true
-        format_sql: true
         dialect: org.hibernate.dialect.MySQLDialect
-
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
   mail:
     host: smtp.gmail.com
     port: 587
@@ -48,35 +33,11 @@ spring:
           auth: true
           starttls:
             enable: true
-  data:
-    redis:
-      host: localhost
-      port: 6379
-
-## jwt.secret.key? ?? 256bit ????? ???.
-#jwt:
-#  secret:
-#    key: ${JWT_KEY}
-#    expiration-minutes: 30
-#    refresh-expiration-hours: 24
-#https://acte.ltd/utils/randomkeygen
-
-logging:
-  level:
-    org:
-      hibernate.orm.jdbc.bind: trace
-      springframework:
-        security: DEBUG
-
-cors:
-  allowed:
-    origins: ${VIEW_URL}
-file:
-  base-dir: /home/jihoon/borikkori/view/borikkori_view/build/
-  upload-dir: images/upload/
-
 cookie:
-  domain: ${COOKIE_DOMAIN:bokko.kr}
-  secure: ${COOKIE_SECURE:false}
-  path: ${COOKIE_PATH:/}
-  max-age: 1800  # 30 minutes
+  domain: ${COOKIE_DOMAIN}
+  secure: ${COOKIE_SECURE}
+  path: ${COOKIE_PATH}
+  max-age: ${COOKIE_MAX_AGE}
+file:
+  base-dir: ${FILE_BASE_DIR}
+  base-url: ${FILE_BASE_URL}

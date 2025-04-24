@@ -1,19 +1,20 @@
 package borikkori.community.api.domain.mbti.repository;
 
-import borikkori.community.api.adapter.out.persistence.mbti.entity.MbtiEntity;
-import borikkori.community.api.adapter.out.persistence.mbti.entity.MbtiResultEntity;
+import org.springframework.data.domain.Page;
+
 import borikkori.community.api.common.enums.MbtiType;
-
-import java.util.List;
-
+import borikkori.community.api.domain.mbti.entity.MbtiStatistics;
+import borikkori.community.api.domain.mbti.entity.UserMbti;
 
 public interface MbtiRepository {
 
+	void saveUserMbti(UserMbti userMbti);
 
-    void save(MbtiEntity mbtiEntity);
+	void saveMbtiResult(MbtiStatistics mbtiStatistics);
 
-    List<MbtiResultEntity> findTopX(int X);
+	Page<MbtiStatistics> findTopX(int X);
 
-    MbtiResultEntity findByResult(MbtiType type);
+	MbtiStatistics findByResult(MbtiType type);
 
+	long countMbtiResult();
 }

@@ -1,153 +1,137 @@
 package borikkori.community.api.application.domain.post.usecase;
 
-import lombok.RequiredArgsConstructor;
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import borikkori.community.api.domain.post.service.LikeService;
-import borikkori.community.api.adapter.out.persistence.file.entity.ImageEntity;
-import borikkori.community.api.adapter.out.persistence.post.entity.PostEntity;
-import borikkori.community.api.adapter.out.persistence.post.entity.PostLikeEntity;
-import borikkori.community.api.adapter.out.persistence.post.entity.PostLikeIdEntity;
-import borikkori.community.api.adapter.out.persistence.user.entity.UserEntity;
-import borikkori.community.api.common.enums.ImageStatus;
-import borikkori.community.api.common.enums.PostStatus;
-import borikkori.community.api.adapter.in.web.post.response.PostTempResponse;
-import borikkori.community.api.domain.file.repository.FileRepository;
-import borikkori.community.api.domain.post.repository.PostRepository;
+
 import borikkori.community.api.adapter.in.web.post.request.PostWriteRequest;
 import borikkori.community.api.adapter.in.web.post.response.PostListResponse;
+import borikkori.community.api.adapter.in.web.post.response.PostNeighborsResponse;
 import borikkori.community.api.adapter.in.web.post.response.PostResponse;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import borikkori.community.api.adapter.out.persistence.post.entity.PostLikeEntity;
+import borikkori.community.api.adapter.out.persistence.post.entity.PostLikeIdEntity;
+import borikkori.community.api.adapter.out.persistence.post.mapper.PostMapper;
+import borikkori.community.api.common.enums.ReactionType;
+import borikkori.community.api.domain.file.service.FileService;
+import borikkori.community.api.domain.post.entity.Category;
+import borikkori.community.api.domain.post.entity.Post;
+import borikkori.community.api.domain.post.entity.PostLike;
+import borikkori.community.api.domain.post.entity.PostLikeId;
+import borikkori.community.api.domain.post.repository.CategoryRepository;
+import borikkori.community.api.domain.post.repository.PostRepository;
+import borikkori.community.api.domain.post.service.LikeService;
+import borikkori.community.api.domain.post.service.PostService;
+import borikkori.community.api.domain.user.entity.User;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class PostUsecaseImpl implements PostUsecase {
 
-    private final PostRepository postRepository;
-    private final FileRepository fileRepository;
-    private final LikeService likeService;
+	private final PostRepository postRepository;
+	private final FileService fileService;
+	private final PostService postService;
+	private final LikeService likeService;
+	private final PostMapper postMapper;
+	private final CategoryRepository categoryRepository;
 
-    @Override
-    @Transactional
-    public Long posting(PostWriteRequest req){
-        PostEntity postEntity = postRepository.findById(req.getPostId());
-        postEntity.setContents(req.getContents());
-        postEntity.setTitle(req.getTitle());
-        postEntity.setRegDate(LocalDateTime.now());
-        postEntity.setPostStatus(PostStatus.PUBLISHED);
-        postRepository.save(postEntity);
-        activeImage(postEntity); // << 이미지 사용중으로 변경하는 메서드
-        return postEntity.getId();
-    }
+	@Override
+	@Transactional
+	public void createPost(PostWriteRequest req, User user) {
+		Category category = categoryRepository.findCategoryByName(req.getCategoryType());
+		Post post;
+		if (req.getPostId() == null) {
+			post = postService.createPost(user, category, req.getTitle(), req.getContents());
+		} else {
+			// 업데이트임
+			post = postRepository.findPostById(req.getPostId());
+			post.updateContent(req.getTitle(), req.getContents());
+		}
+		if (!req.isTemp()) {
+			post.markAsPublished();
+		}
+		fileService.activateFilesForPost(post);
+		postRepository.savePost(post);
+	}
 
-    @Override
-    public PostEntity findOne(Long postId){
-        return postRepository.findById(postId);
-    }
+	@Override
+	@Transactional
+	public PostResponse getPost(Long postId) {
+		Post post = postRepository.findPostById(postId);
+		postService.incrementVisit(post);
+		postRepository.savePost(post);
+		return postMapper.toResponse(post);
+	}
 
-    @Override
-    @Transactional
-    public void modifyPost(PostEntity postEntity) {
+	@Override
+	public PostNeighborsResponse getNeighborPosts(Long postId) {
+		Post currentPost = postRepository.findPostById(postId);
+		LocalDateTime currentRegDate = currentPost.getRegDate();
+		// 이전글 조회 (현재 글보다 등록일이 더 큰 글)
+		Long prevPostId = postRepository.findPrevPostId(currentRegDate);
+		// 다음글 조회 (현재 글보다 등록일이 더 작은 글)
+		Long nextPostId = postRepository.findNextPostId(currentRegDate);
 
-    }
+		return new PostNeighborsResponse(prevPostId, nextPostId);
+	}
 
-    @Override
-    public void deletePost(PostEntity postEntity) {
-        postRepository.delete(postEntity);
-    }
+	@Override
+	public PostListResponse getPostList(int page, int size) {
+		Page<Post> postPage = postRepository.findPostList(page, size);
+		return postMapper.toPostListResponse(postPage);
+	}
 
-    @Override
-    @Transactional
-    public PostResponse getPost(Long id) {
-        PostEntity postEntity = postRepository.findById(id);
-        postEntity.setVisitCnt(postEntity.getVisitCnt()+1);
-        return PostResponse.builder()
-                .postId(id)
-                .title(postEntity.getTitle())
-                .contents(postEntity.getContents())
-                .nickName(postEntity.getUser().getName())
-                .regDate(postEntity.getRegDate())
-                .updDate(postEntity.getUpdDate())
-                .visitCnt(postEntity.getVisitCnt())
-                .likeCnt(postEntity.getLikeCnt())
-                .build();
-    }
+	@Override
+	@Transactional
+	public PostResponse reactionPost(Long postId, Long userId, ReactionType reactionType) {
+		Post post = postRepository.findPostById(postId);
 
-    @Override
-    public PostListResponse getPostList(int page, int size) {
+		PostLikeEntity reactionEntity = likeService.findReactionData(PostLikeEntity.class,
+			new PostLikeIdEntity(postId, userId));
 
-        List<PostResponse> posts= postRepository.findAll(page,size).stream()
-                .map(post -> PostResponse.builder()
-                        .postId(post.getId())
-                        .nickName(post.getUser().getName())
-                        .title(post.getTitle())
-                        .contents(post.getContents())
-                        .regDate(post.getRegDate())
-                        .updDate(post.getUpdDate())
-                        .likeCnt(post.getLikeCnt())
-                        .visitCnt(post.getVisitCnt())
-                        .build())
-                .collect(Collectors.toList());
-        return PostListResponse.builder().posts(posts)
-                .totalCount(postRepository.findPostCounts())
-                .build();
-    }
+		if (reactionEntity != null) {
+			ReactionType reaction = reactionEntity.getReactionType();
+			if (reaction == ReactionType.LIKE) {
+				throw new IllegalStateException("이미 좋아요를 눌렀습니다.");
+			} else if (reaction == ReactionType.DISLIKE) {
+				throw new IllegalStateException("이미 싫어요를 눌렀습니다.");
+			}
+		} else {
+			postService.processLike(post);
+			postRepository.savePost(post);
+			PostLike postLike = new PostLike(new PostLikeId(post.getId(), userId), reactionType,
+				LocalDateTime.now());
+			postRepository.savePostLike(postLike);
+		}
+		return postMapper.toResponse(post);
+	}
 
-    @Override
-    @Transactional
-    public PostResponse postLike(PostEntity postEntity, UserEntity user){
-        PostLikeIdEntity postLikeIdEntity = new PostLikeIdEntity(postEntity.getId(), user.getId());
-        boolean isEnabled = likeService.likeDupleCheck(PostLikeEntity.class, postLikeIdEntity);
+	@Override
+	@Transactional
+	public PostResponse findOrCreateTempPost(User user, PostWriteRequest req) {
+		Optional<Post> optionalPost = postRepository.findTempByUser(user);
+		Category category = categoryRepository.findCategoryByName(req.getCategoryType());
+		if (optionalPost.isPresent()) {
+			// 쓰고있는 글이 있으면 쓰던 글 반환
+			PostResponse postResponse = postMapper.toResponse(optionalPost.get());
+			postResponse.setTemp(true);
+			return postResponse;
+		} else {
+			// 임시 글이 없으면 새로운 임시 글 생성
+			Post tempPost = postService.createPost(user, category, null, null);
+			Post savedPost = postRepository.savePost(tempPost);
+			return postMapper.toResponse(savedPost);
+		}
+	}
 
-        if(isEnabled){
-            postEntity.setLikeCnt(postEntity.getLikeCnt()+1);
-            postRepository.save(postEntity);
-            postRepository.postLike(PostLikeEntity.builder().postEntity(postEntity).user(user).build());
-            return PostResponse.builder()
-                    .postId(postEntity.getId())
-                    .title(postEntity.getTitle())
-                    .contents(postEntity.getContents())
-                    .nickName(postEntity.getUser().getName())
-                    .regDate(postEntity.getRegDate())
-                    .updDate(postEntity.getUpdDate())
-                    .visitCnt(postEntity.getVisitCnt())
-                    .likeCnt(postEntity.getLikeCnt())
-                    .build();
-        }else{
-            throw new IllegalStateException("이미 따봉을 눌렀습니다.");
-        }
-    }
-
-    @Override
-    @Transactional
-    public PostTempResponse postTempCheck(UserEntity user) {
-        Optional<PostEntity> optionalPost = postRepository.findTempByUser(user);
-        if(optionalPost.isPresent()){
-            PostEntity postEntity = optionalPost.get();
-            return PostTempResponse.builder()
-                    .isTemp(true)
-                    .title(postEntity.getTitle())
-                    .contents(postEntity.getContents())
-                    .postId(postEntity.getId())
-                    .build();
-        }else{
-            PostEntity tempPostEntity = PostEntity.builder().user(user).postStatus(PostStatus.DRAFT).build();
-            Long postId = postRepository.save(tempPostEntity);
-            System.out.println(postId + " 아이디");
-            return PostTempResponse.builder().postId(postId).isTemp(false).build();
-        }
-    }
-
-    private void activeImage(PostEntity postEntity){
-        List<ImageEntity> imageEntities = fileRepository.findByPost(postEntity);
-        imageEntities.forEach(image -> {
-            image.setImageStatus(ImageStatus.PUBLISHED);
-            fileRepository.save(image);
-        });
-    }
+	@Transactional
+	@Override
+	public void deletePost(Long postId) {
+		Post post = postRepository.findPostById(postId);
+		postRepository.deletePost(post);
+	}
 }

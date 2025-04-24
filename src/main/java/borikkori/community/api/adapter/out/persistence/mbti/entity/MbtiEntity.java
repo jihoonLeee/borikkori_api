@@ -1,39 +1,54 @@
 package borikkori.community.api.adapter.out.persistence.mbti.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
+import java.time.LocalDateTime;
+
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import borikkori.community.api.adapter.out.persistence.user.entity.UserEntity;
 import borikkori.community.api.common.enums.MbtiType;
-
-import java.time.LocalDateTime;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
-@Builder
-@Table(name="mbti")
-@NoArgsConstructor
+@Table(name = "user_mbti")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class MbtiEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "mbti_id")
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "mbti_id")
+	private Long id;
 
-    @Setter
-    @OneToOne(mappedBy = "mbti",fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id",nullable = true)
-    private UserEntity user;
+	@OneToOne(mappedBy = "mbtiEntity", fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id", nullable = true)
+	@Setter
+	private UserEntity user;
 
-    private String name;
+	private String testName;
 
-    @Enumerated(EnumType.STRING)
-    private MbtiType result;
+	@Enumerated(EnumType.STRING)
+	private MbtiType result;
 
-    @CreatedDate
-    private LocalDateTime testDate;
-
+	@CreatedDate
+	private LocalDateTime testDate;
 
 }

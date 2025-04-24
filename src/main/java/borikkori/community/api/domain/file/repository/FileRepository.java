@@ -1,19 +1,20 @@
 package borikkori.community.api.domain.file.repository;
 
-import borikkori.community.api.adapter.out.persistence.file.entity.ImageEntity;
-import borikkori.community.api.adapter.out.persistence.post.entity.PostEntity;
-
 import java.util.List;
+
+import borikkori.community.api.domain.file.entity.File;
+import borikkori.community.api.domain.post.entity.Post;
 
 public interface FileRepository {
 
-    void save(ImageEntity imageEntity);
+	void saveFile(File file);
 
-    ImageEntity findById(Long id);
+	File findFileById(Long id);
 
-    List<ImageEntity> findByPost(PostEntity postEntity);
+	List<File> findFilesByPost(Post post);
 
-    List<ImageEntity> findUnusedImages();
+	List<File> findUnusedFiles();
 
-    void delete(Long id);
+	void deleteFile(Long id);
+
 }

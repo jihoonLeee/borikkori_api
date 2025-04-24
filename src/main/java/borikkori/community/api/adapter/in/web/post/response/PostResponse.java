@@ -1,28 +1,32 @@
 package borikkori.community.api.adapter.in.web.post.response;
 
-import lombok.Builder;
-import lombok.Getter;
-
 import java.time.LocalDateTime;
 
-@Builder
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
+@AllArgsConstructor
 @Getter
 public class PostResponse {
 
-    private Long postId;
+	private Long postId;
 
-    private String nickName;
+	private String name;
 
-    private String title;
+	private String title;
 
-    private String contents;
+	private String contents;
 
-    private int visitCnt;
+	private int visitCnt;
 
-    private int likeCnt;
+	private int likeCnt;
 
-    private LocalDateTime regDate;
+	@Setter
+	private boolean isTemp = false; // 임시 게시물 용
 
-    private LocalDateTime updDate;
+	private LocalDateTime regDate;
+
+	private LocalDateTime updDate;
 
 }

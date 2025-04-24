@@ -1,78 +1,68 @@
 package borikkori.community.api.usecase;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.test.annotation.Rollback;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
-import borikkori.community.api.adapter.out.persistence.user.entity.RoleEntity;
-import borikkori.community.api.adapter.out.persistence.user.entity.UserEntity;
-import borikkori.community.api.common.enums.Role;
+
 import borikkori.community.api.adapter.in.web.user.request.JoinRequest;
-import borikkori.community.api.adapter.in.web.user.request.LoginRequest;
 import borikkori.community.api.application.domain.user.usecase.EmailVerificationUsecase;
 import borikkori.community.api.application.domain.user.usecase.UserAuthenticationUsecase;
 import borikkori.community.api.application.domain.user.usecase.UserRegistrationUsecase;
+import borikkori.community.api.common.enums.Role;
 import borikkori.community.api.config.security.JwtTokenProvider;
 import borikkori.community.api.domain.user.repository.UserRepository;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @SpringBootTest
 @Transactional
 class UserEntityUsecaseImplTest {
 
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    UserAuthenticationUsecase userAuthenticationUsecase;
-    @Autowired
-    UserRegistrationUsecase userRegistrationUsecase;
-    @Autowired
-    EmailVerificationUsecase emailVerificationUsecase;
+	@Autowired
+	UserRepository userRepository;
+	@Autowired
+	UserAuthenticationUsecase userAuthenticationUsecase;
+	@Autowired
+	UserRegistrationUsecase userRegistrationUsecase;
+	@Autowired
+	EmailVerificationUsecase emailVerificationUsecase;
 
-    @Autowired
-    PasswordEncoder passwordEncoder;
+	@Autowired
+	PasswordEncoder passwordEncoder;
 
-    @Autowired
-    JwtTokenProvider jwtTokenProvider;
-
-
-/*
-     * TODO : shouldSuccessJoinWithEmailVerification 과 같이 무엇을 위한 테스트인지 확실하게 이름을 정할 것
-     * @throws Exception
-*/
-
-    @Test
-    public void join() throws Exception{
-        //given
-        //인증을 먼저 받고 받은 이메일이 다음 챕터로 넘어감
-        int code = emailVerificationUsecase.sendEmail("jihoon2723@naver.com");
-        emailVerificationUsecase.checkEmail(code,"jihoon2723@naver.com");
-        String encodedPw = passwordEncoder.encode("1234");
+	@Autowired
+	JwtTokenProvider jwtTokenProvider;
 
 
-        JoinRequest req = new JoinRequest();
-        req.setEmail("ljh2723@naver.com");
-        req.setPassword(encodedPw);
-        req.setName("테스트");
-        req.setVerificationNumber(code);
-        //when
-        Long id = userRegistrationUsecase.joinUser(req);
+	/*
+	 * TODO : shouldSuccessJoinWithEmailVerification 과 같이 무엇을 위한 테스트인지 확실하게 이름을 정할 것
+	 * @throws Exception
+	 */
 
-        //then
-        Assertions.assertEquals(Role.USER,Role.USER);
-    }
+	@Test
+	public void join() throws Exception {
+		//given
+		//인증을 먼저 받고 받은 이메일이 다음 챕터로 넘어감
+		int code = emailVerificationUsecase.sendEmail("jihoon2723@naver.com");
+		emailVerificationUsecase.checkEmail(code, "jihoon2723@naver.com");
+		String encodedPw = passwordEncoder.encode("1234");
 
-    @Test
+		JoinRequest req = new JoinRequest();
+		req.setEmail("ljh2723@naver.com");
+		req.setPassword(encodedPw);
+		req.setName("테스트");
+		req.setVerificationNumber(code);
+		//when
+		Long id = userRegistrationUsecase.joinUser(req);
 
-    public void login() throws Exception{
+		//then
+		Assertions.assertEquals(Role.USER, Role.USER);
+	}
+
+	@Test
+
+	public void login() throws Exception {
        /* String passwd = "1234";
         String  encodePasswd = passwordEncoder.encode("1234");
         int code = emailVerificationUsecase.sendEmail("jihoon2723@naver.com");
@@ -110,6 +100,6 @@ class UserEntityUsecaseImplTest {
         }).when(res).addCookie(Mockito.any(Cookie.class));
 
         userAuthenticationUsecase.login(loginRequest,res);*/
-    }
+	}
 
 }
