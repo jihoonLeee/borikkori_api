@@ -30,7 +30,7 @@ jobs:
           host: bokko.kr
           port: 22
           username: deploy
-          key: "${{ secrets.DEPLOY_KEY }}"
+          key_path: ~/.ssh/id_rsa
           script: |
             set -e
             cd ~/borikkori/secret
