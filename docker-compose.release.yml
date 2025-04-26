@@ -5,7 +5,7 @@ services:
     container_name: borikkori-mysql
     restart: always
     env_file:
-      - .env.release
+      - /home/deploy/borikkori/secret/.env.release
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: borikkori
