@@ -36,8 +36,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
-          context: ~/borikkori/api/borikkori_api
-          file: ~/borikkori/api/borikkori_api/Dockerfile
+          context: ./
+          file: ./Dockerfile
           push: true
           tags: |
             ghcr.io/jihoonleee/borikkori-community:latest
