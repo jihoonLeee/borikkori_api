@@ -46,7 +46,11 @@ jobs:
             set -e
             cd ~/borikkori/secret
             git pull origin main
+            # GPG로 암호화된 파일 복호화
+            gpg --batch --yes --passphrase "${{ secrets.GPG_PASSPHRASE }}" --decrypt .env.release.gpg > .env.release
             chmod 600 .env.release
             docker-compose -f docker-compose.release.yml pull
             docker-compose -f docker-compose.release.yml up -d
             docker-compose -f docker-compose.release.yml ps
+            # 보안을 위해 복호화된 파일 삭제 (선택 사항)
+            rm .env.release
