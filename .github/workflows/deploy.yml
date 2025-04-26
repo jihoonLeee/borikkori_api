@@ -1,39 +1,62 @@
-name: deploy
+name: CI/CD Pipeline
 
 on:
   push:
+    # 모든 태그 푸시에 반응
     tags:
       - '*'
 
 jobs:
-  deploy:
+  # 1) 코드 푸시된 태그 기준으로 GHCR에 Docker 이미지 빌드 & 푸시
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Prepare SSH directory
-        run: |
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
+      - name: Set up QEMU (for multi-arch)
+        uses: docker/setup-qemu-action@v3
 
-      - name: Populate known_hosts from Secret
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: jihoonleee
+          password: ${{ secrets.GHCR_TOKEN }}
+
+      - name: Build and push Docker image
+        id: build
+        uses: docker/build-push-action@v4
+        with:
+          context: ./borikkori/api/borikkori_api      # 실제 Dockerfile 경로에 맞게 조정
+          file: ./borikkori/api/borikkori_api/Dockerfile
+          push: true
+          tags: ghcr.io/jihoonleee/borikkori-community:${{ github.ref_name }}
+
+  # 2) 빌드가 끝난 태그 이미지를 서버에 배포
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Prepare SSH keys
         run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
           echo "${{ secrets.KNOWN_HOSTS }}" > ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
-
-      - name: Add SSH key to agent
-        run: |
           echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          eval $(ssh-agent -s)
+          eval "$(ssh-agent -s)"
           ssh-add ~/.ssh/id_ed25519
 
-      - name: Test SSH connection
-        run: |
-          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no deploy@bokko.kr "echo 'SSH connection successful'"
+      - name: Test SSH Connection
+        run: ssh -o StrictHostKeyChecking=no deploy@bokko.kr "echo SSH 연결 OK"
 
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
@@ -44,23 +67,36 @@ jobs:
           key: ${{ secrets.DEPLOY_KEY }}
           script: |
             set -e
-            
+
+            IMAGE=ghcr.io/jihoonleee/borikkori-community:${{ github.ref_name }}
+
+            echo "🔐 GHCR 로그인"
             echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u jihoonleee --password-stdin
-            
-            cd ~/borikkori/api/borikkori_api
-            git fetch origin
-            git pull origin main 
-            # GPG 복호화 (~/borikkori/secret)
+
+            echo "⬇️ 새 이미지 Pull: $IMAGE"
+            docker pull $IMAGE
+
+            # 환경변수 복호화
             cd ~/borikkori/secret
-            gpg --batch --yes --passphrase "${{ secrets.GPG_PASSPHRASE }}" --decrypt .env.release.gpg > .env.release
+            gpg --batch --yes \
+              --passphrase "${{ secrets.GPG_PASSPHRASE }}" \
+              --decrypt .env.release.gpg > .env.release
             chmod 600 .env.release
 
-            # Docker Compose 실행 (~/borikkori/api/borikkori_api)
+            # docker-compose로 재배포
             cd ~/borikkori/api/borikkori_api
             export ENV_FILE=~/borikkori/secret/.env.release
-            docker-compose -f docker-compose.release.yml --env-file $ENV_FILE pull
-            docker-compose -f docker-compose.release.yml --env-file $ENV_FILE up -d
-            docker-compose -f docker-compose.release.yml --env-file $ENV_FILE ps
+            docker-compose \
+              -f docker-compose.release.yml \
+              --env-file $ENV_FILE pull
 
-            # 보안을 위해 복호화된 파일 삭제
+            docker-compose \
+              -f docker-compose.release.yml \
+              --env-file $ENV_FILE up -d
+
+            docker-compose \
+              -f docker-compose.release.yml \
+              --env-file $ENV_FILE ps
+
+            # 민감정보 제거
             rm ~/borikkori/secret/.env.release
