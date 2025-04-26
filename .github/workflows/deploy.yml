@@ -24,13 +24,24 @@ jobs:
           echo "${{ secrets.KNOWN_HOSTS }}" > ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
 
+      - name: Add SSH key to agent
+        run: |
+          echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          eval $(ssh-agent -s)
+          ssh-add ~/.ssh/id_ed25519
+
+      - name: Test SSH connection
+        run: |
+          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no deploy@bokko.kr "echo 'SSH connection successful'"
+
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
         with:
           host: bokko.kr
           port: 22
           username: deploy
-          key_path: ~/.ssh/id_rsa
+          key: ${{ secrets.DEPLOY_KEY }}
           script: |
             set -e
             cd ~/borikkori/secret
