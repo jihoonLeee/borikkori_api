@@ -18,7 +18,7 @@ services:
     image: redis:7.0-alpine
     container_name: borikkori-redis
     env_file:
-      - .env.release
+      - /home/deploy/borikkori/secret/.env.release
     ports:
       - "6379:6379"
     volumes:
@@ -30,7 +30,7 @@ services:
     ports:
       - "8080:8080"
     env_file:
-      - .env.release
+      - /home/deploy/borikkori/secret/.env.release
     depends_on:
       - db
       - redis
