@@ -44,6 +44,9 @@ jobs:
           key: ${{ secrets.DEPLOY_KEY }}
           script: |
             set -e
+            
+            echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u jihoonleee --password-stdin
+            
             cd ~/borikkori/api/borikkori_api
             git fetch origin
             git pull origin main 
