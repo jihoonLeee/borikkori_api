@@ -1,8 +1,8 @@
 package borikkori.community.api.adapter.out.redis.entity;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
-import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +15,6 @@ public class RefreshTokenEntity {
 
 	@Id
 	private String refreshToken;
-
 	private Long userId;
 	private String accessToken;
 }
