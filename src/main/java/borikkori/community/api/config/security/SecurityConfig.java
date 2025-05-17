@@ -11,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.filter.ForwardedHeaderFilter;
 
 import borikkori.community.api.adapter.in.filter.JwtAuthenticationFilter;
 import borikkori.community.api.adapter.out.redis.repository.RefreshTokenRepository;
@@ -51,7 +52,7 @@ public class SecurityConfig {
 			)
 			.logout(logout -> logout
 				.logoutUrl("/logout")
-				.logoutSuccessUrl("/users/logout")
+				.logoutSuccessUrl("/user/logout")
 				.deleteCookies("access_token")
 				.permitAll())
 			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
@@ -66,4 +67,10 @@ public class SecurityConfig {
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
+
+	@Bean
+	public ForwardedHeaderFilter forwardedHeaderFilter() {
+		return new ForwardedHeaderFilter();
+	}
+
 }
