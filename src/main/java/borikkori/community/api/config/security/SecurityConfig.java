@@ -23,6 +23,7 @@ import org.springframework.web.filter.ForwardedHeaderFilter;
 import borikkori.community.api.adapter.in.filter.JwtAuthenticationFilter;
 import borikkori.community.api.adapter.out.redis.repository.RefreshTokenRepository;
 import borikkori.community.api.common.enums.Role;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -62,8 +63,13 @@ public class SecurityConfig {
 			)
 			.logout(logout -> logout
 				.logoutUrl("/logout")
-				.logoutSuccessUrl("/user/logout")
 				.deleteCookies("access_token")
+				.logoutSuccessHandler((req, res, auth) -> {
+					res.setStatus(
+						HttpServletResponse.SC_OK);
+					res.setContentType("application/json");
+					res.getWriter().print("{\"message\":\"로그아웃 성공\"}");
+				})
 				.permitAll())
 			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 			//rememberMe(Customizer.withDefaults())
