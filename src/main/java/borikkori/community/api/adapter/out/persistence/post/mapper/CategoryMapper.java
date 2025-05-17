@@ -10,7 +10,7 @@ import borikkori.community.api.domain.post.entity.Category;
 @Mapper(componentModel = "spring", builder = @Builder(disableBuilder = false))
 public interface CategoryMapper {
 
-	@Mapping(target = "id", source = "id")
+	@Mapping(target = "subCategories", ignore = true)
 	Category toDomain(CategoryEntity entity);
 
 	@Mapping(target = "subCategories", ignore = true)
