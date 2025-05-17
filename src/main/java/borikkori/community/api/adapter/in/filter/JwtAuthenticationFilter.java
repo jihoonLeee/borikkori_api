@@ -1,23 +1,24 @@
 package borikkori.community.api.adapter.in.filter;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Description;
 import org.springframework.http.ResponseCookie;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import borikkori.community.api.adapter.out.redis.entity.RefreshTokenEntity;
-import borikkori.community.api.adapter.out.redis.repository.RefreshTokenRepository;
+import borikkori.community.api.application.port.RefreshTokenServicePort;
 import borikkori.community.api.common.enums.Role;
 import borikkori.community.api.config.security.JwtTokenProvider;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private final JwtTokenProvider jwtTokenProvider;
-	private final RefreshTokenRepository refreshTokenRepository;
+	private final RefreshTokenServicePort refreshTokenServicePort;
 
 	@Value("${cookie.domain}")
 	private String cookieDomain;
@@ -44,59 +45,78 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private int cookieMaxAge;
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-		FilterChain filterChain) throws ServletException, IOException {
+	protected void doFilterInternal(HttpServletRequest req,
+		HttpServletResponse res,
+		FilterChain chain) throws ServletException, IOException {
 		try {
-			String token = jwtTokenProvider.resolveToken(request);
-			if (token != null) {
-				handleTokenAuthentication(token, request, response);
+			String accessToken = jwtTokenProvider.resolveToken(req);
+			if (accessToken != null) {
+				if (jwtTokenProvider.validateToken(accessToken)) {
+					SecurityContextHolder.getContext()
+						.setAuthentication(jwtTokenProvider.getAuthentication(accessToken));
+				} else {
+					attemptRefresh(req, res);
+				}
 			}
 		} catch (Exception e) {
 			log.error("Authentication failed", e);
-			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication Failed");
+			res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication Failed");
 			return;
 		}
-
-		filterChain.doFilter(request, response);
+		chain.doFilter(req, res);
 	}
 
-	private void handleTokenAuthentication(String token, HttpServletRequest request,
-		HttpServletResponse response) throws IOException {
-		if (jwtTokenProvider.validateToken(token)) {
-			Authentication auth = jwtTokenProvider.getAuthentication(token);
-			SecurityContextHolder.getContext().setAuthentication(auth);
-		} else {
-			refreshAndAuthenticateToken(token, response);
-		}
+	private void attemptRefresh(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		// 1) 쿠키에서 리프레시 토큰 꺼내기
+		String refreshToken = Arrays.stream(Optional.ofNullable(req.getCookies()).orElse(new Cookie[0]))
+			.filter(c -> "refresh_token".equals(c.getName()))
+			.map(Cookie::getValue)
+			.findFirst().orElse(null);
+
+		if (refreshToken == null)
+			return;
+
+		// 2) 레디스에서 조회
+		RefreshTokenEntity entity = refreshTokenServicePort
+			.findByRefreshToken(refreshToken)
+			.orElseThrow(() -> new RuntimeException("Invalid refresh token"));
+
+		// 3) 유효성 검사
+		if (!jwtTokenProvider.validateToken(entity.getRefreshToken()))
+			return;
+
+		// 4) 새 액세스 토큰
+		Claims info = jwtTokenProvider.getInfo(entity.getRefreshToken());
+		String newAccess = jwtTokenProvider.createToken(
+			info.getSubject(),
+			(String)info.get("name"),
+			(List<Role>)info.get("role")
+		);
+		setCookie(res, "access_token", newAccess, cookieMaxAge);
+
+		// 5) 시큐리티 컨텍스트에 설정
+		SecurityContextHolder.getContext()
+			.setAuthentication(jwtTokenProvider.getAuthentication(newAccess));
+
+		// 6) 리프레시 토큰 회전
+		String newRefresh = jwtTokenProvider.createRefreshToken(info.getSubject());
+		entity.setRefreshToken(newRefresh);
+		refreshTokenServicePort.saveTokenInfo(entity.getUserId(), newRefresh, newAccess);
+		setCookie(res, "refresh_token", newRefresh, cookieMaxAge);
 	}
 
-	private void refreshAndAuthenticateToken(String token, HttpServletResponse response) throws IOException {
-		Optional<RefreshTokenEntity> refreshTokenOptional = refreshTokenRepository.findByAccessToken(token);
-
-		if (refreshTokenOptional.isPresent()) {
-			RefreshTokenEntity refreshTokenEntity = refreshTokenOptional.get();
-			if (jwtTokenProvider.validateToken(refreshTokenEntity.getRefreshToken())) {
-				Claims userAuth = jwtTokenProvider.getInfo(token);
-				String accessToken = jwtTokenProvider.createToken(
-					userAuth.getSubject(),
-					(String)userAuth.get("name"),
-					(List<Role>)userAuth.get("role")
-				);
-				refreshTokenRepository.save(refreshTokenEntity);
-				setAccessTokenInCookie(response, accessToken);
-			}
-		}
-	}
-
-	private void setAccessTokenInCookie(HttpServletResponse response, String accessToken) {
-		ResponseCookie cookie = ResponseCookie.from("access_token", accessToken)
-			.path(cookiePath)
-			.sameSite("Strict")
-			.httpOnly(true)
+	private void setCookie(HttpServletResponse res,
+		String name,
+		String value,
+		int maxAgeSeconds) {
+		ResponseCookie cookie = ResponseCookie.from(name, value)
+			.domain(cookieDomain)    // ex. ".bokko.kr"
+			.path(cookiePath)        // ex. "/"
+			.maxAge(maxAgeSeconds)
 			.secure(cookieSecure)
-			.domain(cookieDomain)
-			.maxAge(cookieMaxAge)
+			.httpOnly(true)
+			.sameSite("None")
 			.build();
-		response.addHeader("Set-Cookie", cookie.toString());
+		res.addHeader("Set-Cookie", cookie.toString());
 	}
 }

@@ -36,7 +36,7 @@ public class UserAuthenticationUsecaseImpl implements UserAuthenticationUsecase 
 
 	@Override
 	public UserResponse login(LoginRequest req, HttpServletResponse response) {
-		// 1. 이메일로 사용자 조회 (없으면 BadCredentialsException)
+		// 1. 이메일로 사용자 조회
 		User user = userRepository.findByEmail(req.getEmail())
 			.orElseThrow(() -> new BadCredentialsException("잘못된 계정 정보"));
 
@@ -45,25 +45,37 @@ public class UserAuthenticationUsecaseImpl implements UserAuthenticationUsecase 
 			throw new BadCredentialsException("잘못된 비밀번호");
 		}
 
-		// 3. JWT 토큰 생성 (사용자 권한 정보(user.getAuth())를 활용)
+		// 3. JWT 토큰 생성
 		String accessToken = jwtService.createToken(user.getEmail(), user.getName(), user.getRoles());
 		String refreshToken = jwtService.createRefreshToken(user.getEmail());
 
-		// 4. JWT 액세스 토큰을 HTTP 응답 쿠키에 설정 (보안, 도메인 등은 환경에 맞게 조정)
-		ResponseCookie cookie = ResponseCookie.from("access_token", accessToken)
+		// 4. Access Token 쿠키 설정
+		ResponseCookie accessCookie = ResponseCookie.from("access_token", accessToken)
 			.path("/")
-			.sameSite("Strict")
+			.domain(cookieDomain)
 			.httpOnly(true)
 			.secure(cookieSecure)
-			.domain(cookieDomain)
-			.maxAge(60 * 30)
+			.sameSite("None")
+			.maxAge(60 * 30)             // 30분
 			.build();
-		response.addHeader("Set-Cookie", cookie.toString());
+		response.addHeader("Set-Cookie", accessCookie.toString());
 
-		// 5. 리프레시 토큰 정보를 저장 (Redis 등 사용)
-		refreshTokenServiceAdapter.saveTokenInfo(user.getId().getId(), refreshToken, accessToken);
+		// 5. Refresh Token 쿠키 설정 (추가)
+		ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", refreshToken)
+			.path("/")
+			.domain(cookieDomain)
+			.httpOnly(true)
+			.secure(cookieSecure)
+			.sameSite("None")
+			.maxAge(60 * 60 * 24 * 7)    // 예: 7일
+			.build();
+		response.addHeader("Set-Cookie", refreshCookie.toString());
 
-		// 6. 사용자 응답 DTO 반환 (필요한 정보만 포함)
+		// 6. 리프레시 토큰 정보는 서버측 저장소에도 남겨 놓기
+		refreshTokenServiceAdapter.saveTokenInfo(
+			user.getId().getId(), refreshToken, accessToken);
+
+		// 7. 사용자 응답 DTO 반환
 		return UserResponse.builder()
 			.name(user.getName())
 			.email(user.getEmail())

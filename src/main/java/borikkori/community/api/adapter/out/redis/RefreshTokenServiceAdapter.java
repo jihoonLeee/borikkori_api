@@ -1,5 +1,7 @@
 package borikkori.community.api.adapter.out.redis;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,13 +18,17 @@ public class RefreshTokenServiceAdapter implements RefreshTokenServicePort {
 	@Override
 	@Transactional
 	public void saveTokenInfo(Long userId, String refreshToken, String accessToken) {
-		refreshTokenRepository.save(new RefreshTokenEntity(userId, refreshToken, accessToken));
+		refreshTokenRepository.save(new RefreshTokenEntity(refreshToken, userId, accessToken));
 	}
 
 	@Override
 	@Transactional
-	public void removeRefreshToken(String accessToken) {
-		refreshTokenRepository.findByAccessToken(accessToken)
-			.ifPresent(token -> refreshTokenRepository.delete(token));
+	public void removeRefreshToken(String refreshToken) {
+		refreshTokenRepository.deleteById(refreshToken);
+	}
+
+	@Override
+	public Optional<RefreshTokenEntity> findByRefreshToken(String refreshToken) {
+		return refreshTokenRepository.findById(refreshToken);
 	}
 }

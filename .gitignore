@@ -8,7 +8,7 @@ build/
 application-local.yml
 .env.local
 .env.release
-/generated/
+generated/
 ### STS ###
 .apt_generated
 .classpath

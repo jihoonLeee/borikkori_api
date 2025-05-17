@@ -3,12 +3,14 @@ package borikkori.community.api.config.security;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,8 +23,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.ForwardedHeaderFilter;
 
 import borikkori.community.api.adapter.in.filter.JwtAuthenticationFilter;
-import borikkori.community.api.adapter.out.redis.repository.RefreshTokenRepository;
+import borikkori.community.api.application.port.RefreshTokenServicePort;
 import borikkori.community.api.common.enums.Role;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -33,14 +36,17 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 
 	private final JwtTokenProvider jwtTokenProvider;
-	private final RefreshTokenRepository refreshTokenRepository;
+	private final RefreshTokenServicePort refreshTokenServicePort;
 	@Value("${cors.allowed.origins}")          // ← yml에서 주입
 	private String allowedOrigins;
+
+	@Value("${cookie.domain}")
+	private String cookieDomain;
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtTokenProvider,
-			refreshTokenRepository);
+			refreshTokenServicePort);
 		return http
 			.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 			.csrf(csrf -> csrf.disable())
@@ -63,14 +69,22 @@ public class SecurityConfig {
 			)
 			.logout(logout -> logout
 				.logoutUrl("/logout")
-				.deleteCookies("access_token")
-				.logoutSuccessHandler((req, res, auth) -> {
-					res.setStatus(
-						HttpServletResponse.SC_OK);
-					res.setContentType("application/json");
-					res.getWriter().print("{\"message\":\"로그아웃 성공\"}");
+				.addLogoutHandler((req, res, auth) -> {
+					String refreshToken = Arrays.stream(Optional.ofNullable(req.getCookies()).orElse(new Cookie[0]))
+						.filter(c -> "refresh_token".equals(c.getName()))
+						.map(Cookie::getValue)
+						.findFirst().orElse(null);
+
+					if (refreshToken != null) {
+						// 2) Redis에서 제거
+						refreshTokenServicePort.removeRefreshToken(refreshToken);
+					}
+					// 두 쿠키 모두 삭제
+					addDeleteCookie(res, "access_token");
+					addDeleteCookie(res, "refresh_token");
 				})
-				.permitAll())
+				.logoutSuccessHandler((req, res, auth) ->
+					res.setStatus(HttpServletResponse.SC_NO_CONTENT)))
 			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 			//rememberMe(Customizer.withDefaults())
 			.build();
@@ -104,6 +118,18 @@ public class SecurityConfig {
 	@Bean
 	public ForwardedHeaderFilter forwardedHeaderFilter() {
 		return new ForwardedHeaderFilter();
+	}
+
+	private void addDeleteCookie(HttpServletResponse res, String name) {
+		ResponseCookie cookie = ResponseCookie.from(name, "")
+			.domain(cookieDomain)
+			.path("/")
+			.sameSite("None")
+			.httpOnly(true)
+			.secure(true)
+			.maxAge(0)
+			.build();
+		res.addHeader("Set-Cookie", cookie.toString());
 	}
 
 }
