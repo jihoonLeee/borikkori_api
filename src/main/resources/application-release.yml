@@ -2,7 +2,7 @@ spring:
   config:
     activate:
       on-profile: release
-          
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: ${DB_URL}
@@ -44,3 +44,4 @@ cookie:
 file:
   base-dir: ${FILE_BASE_DIR}
   base-url: ${FILE_BASE_URL}
+
