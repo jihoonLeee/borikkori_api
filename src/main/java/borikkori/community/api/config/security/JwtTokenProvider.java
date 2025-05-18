@@ -39,7 +39,7 @@ public class JwtTokenProvider {
 	@Value("${jwt.secret.expiration-minutes}")
 	private long exp;
 
-	@Value("${jwt.secret.refresh-expiration-hours}")
+	@Value("${jwt.secret.refresh-expiration-minutes}")
 	private long refreshExp;
 
 	private final CustomUserDetailsService userDetailsService;
@@ -74,7 +74,7 @@ public class JwtTokenProvider {
 		return Jwts.builder()
 			.setClaims(claims)
 			.setIssuedAt(now)
-			.setExpiration(Date.from(Instant.now().plus(refreshExp, ChronoUnit.HOURS)))
+			.setExpiration(Date.from(Instant.now().plus(refreshExp, ChronoUnit.MINUTES)))
 			.signWith(secretKey, SignatureAlgorithm.HS256)
 			.compact();
 	}

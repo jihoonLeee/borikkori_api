@@ -37,7 +37,7 @@ public class SecurityConfig {
 
 	private final JwtTokenProvider jwtTokenProvider;
 	private final RefreshTokenServicePort refreshTokenServicePort;
-	@Value("${cors.allowed.origins}")          // ← yml에서 주입
+	@Value("${cors.allowed.origins}")
 	private String allowedOrigins;
 
 	@Value("${cookie.domain}")
