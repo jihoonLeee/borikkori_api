@@ -62,7 +62,7 @@ public class UserController {
 	}
 
 	@Operation(summary = "로그인 상태 체크", description = "로그인 상태 체크")
-	@PostMapping("/userInfo")
+	@GetMapping("/userInfo")
 	public ResponseEntity<?> getUserInfo(HttpServletRequest request) throws Exception {
 		Cookie[] cookies = request.getCookies();
 		String token = null;
