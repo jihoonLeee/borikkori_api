@@ -19,9 +19,9 @@ public class PostResponse {
 
 	private String contents;
 
-	private int visitCnt;
+	private int visitCount;
 
-	private int likeCnt;
+	private int likeCount;
 
 	private Category category;
 
