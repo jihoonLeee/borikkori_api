@@ -119,6 +119,7 @@ public class PostUsecaseImpl implements PostUsecase {
 	@Transactional
 	public PostResponse findOrCreateTempPost(User user, PostWriteRequest req) {
 		Optional<Post> optionalPost = postRepository.findTempByUser(user);
+		Category category = categoryRepository.findCategoryByName(req.getCategoryType());
 		if (optionalPost.isPresent()) {
 			// 쓰고있는 글이 있으면 쓰던 글 반환
 			PostResponse postResponse = postMapper.toResponse(optionalPost.get());
@@ -126,7 +127,7 @@ public class PostUsecaseImpl implements PostUsecase {
 			return postResponse;
 		} else {
 			// 임시 글이 없으면 새로운 임시 글 생성
-			Post tempPost = postService.createPost(user, null, null, null);
+			Post tempPost = postService.createPost(user, category, null, null);
 			Post savedPost = postRepository.savePost(tempPost);
 			return postMapper.toResponse(savedPost);
 		}
