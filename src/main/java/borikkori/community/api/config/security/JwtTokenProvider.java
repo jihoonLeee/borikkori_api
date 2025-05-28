@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -111,18 +112,22 @@ public class JwtTokenProvider {
 		return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
 	}
 
+	// JwtTokenProvider.java
 	public String resolveToken(HttpServletRequest request) {
-		Cookie[] cookies = request.getCookies();
-		String token = null;
-		if (cookies != null) {
-			for (Cookie cookie : cookies) {
-				if (cookie.getName().equals("access_token")) {
-					token = cookie.getValue();
-					break;
+		// 1) Authorization 헤더
+		String bearer = request.getHeader(HttpHeaders.AUTHORIZATION);
+		if (bearer != null && bearer.startsWith("Bearer ")) {
+			return bearer.substring(7);
+		}
+		// 2) 없으면 Cookie에서
+		if (request.getCookies() != null) {
+			for (Cookie cookie : request.getCookies()) {
+				if ("access_token".equals(cookie.getName())) {
+					return cookie.getValue();
 				}
 			}
 		}
-		return token;
+		return null;
 	}
 
 	/**
