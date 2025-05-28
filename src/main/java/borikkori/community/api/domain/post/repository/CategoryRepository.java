@@ -12,6 +12,8 @@ public interface CategoryRepository {
 
 	Category findCategoryByName(CategoryType categoryType);
 
+	Category findByTypeAndSubType(CategoryType type, CategoryType subType);
+
 	List<Category> findAllCategory();
 
 	List<Category> findCategoryList(Long categoryId);

@@ -17,7 +17,7 @@ public interface MbtiStatisticsMapper {
 	@Mapping(target = "count", expression = "java(domain.getCount())")
 	@Mapping(target = "type", source = "type")
 	MbtiResultEntity toEntity(MbtiStatistics domain);
-
+	
 	// 도메인 -> Response
 	MbtiResultResponse toResponse(MbtiStatistics domain);
 }

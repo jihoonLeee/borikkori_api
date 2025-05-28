@@ -3,8 +3,10 @@ package borikkori.community.api.config.security;
 import java.security.Key;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -53,9 +55,17 @@ public class JwtTokenProvider {
 	 * 토큰 생성
 	 */
 	public String createToken(String email, String nickName, List<Role> roles) {
+		// roles 가 null 이면 빈 리스트로 대체 - NPE 방지
+		List<String> roleNames = Optional.ofNullable(roles)
+			.orElseGet(Collections::emptyList)
+			.stream()
+			.map(Role::getRole)
+			.collect(Collectors.toList());
+
 		Claims claims = Jwts.claims().setSubject(email);
-		claims.put("role", roles.stream().map(Role::getRole).collect(Collectors.toList()));
+		claims.put("role", roleNames);
 		claims.put("name", nickName);
+
 		Date now = new Date();
 		return Jwts.builder()
 			.setClaims(claims)

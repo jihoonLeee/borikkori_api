@@ -12,6 +12,7 @@ public class PostWriteRequest {
 	private Long postId;
 	private String title;
 	private CategoryType categoryType;
+	private CategoryType subCategoryType;
 	private String contents;
 
 	@JsonProperty("isTemp")
