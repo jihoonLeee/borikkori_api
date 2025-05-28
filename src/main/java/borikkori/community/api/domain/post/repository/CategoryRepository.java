@@ -12,7 +12,7 @@ public interface CategoryRepository {
 
 	Category findCategoryByName(CategoryType categoryType);
 
-	Category findByTypeAndSubType(CategoryType type, CategoryType subType);
+	Category findByParentIdAndType(Long parentCategoryId, CategoryType categoryType);
 
 	List<Category> findAllCategory();
 

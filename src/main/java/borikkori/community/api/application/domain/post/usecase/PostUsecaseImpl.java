@@ -42,13 +42,15 @@ public class PostUsecaseImpl implements PostUsecase {
 	@Override
 	@Transactional
 	public void createPost(PostWriteRequest req, User user) {
-		Category category = hasText(req.getSubCategoryType().toString())
-			? categoryRepository.findByTypeAndSubType(
-			req.getCategoryType(), req.getSubCategoryType())
-			: categoryRepository.findCategoryByName(req.getCategoryType());
+		Category mainCategory = categoryRepository.findCategoryByName(req.getCategoryType());
+
+		Category finalCategory = Optional.ofNullable(req.getSubCategoryType())
+			.map(subType -> categoryRepository.findByParentIdAndType(mainCategory.getId(), subType))
+			.orElse(mainCategory);
+
 		Post post;
 		if (req.getPostId() == null) {
-			post = postService.createPost(user, category, req.getTitle(), req.getContents());
+			post = postService.createPost(user, finalCategory, req.getTitle(), req.getContents());
 		} else {
 			// 업데이트임
 			post = postRepository.findPostById(req.getPostId());

@@ -10,5 +10,5 @@ import borikkori.community.api.common.enums.CategoryType;
 public interface SpringDataCategoryJpaRepository extends JpaRepository<CategoryEntity, Long> {
 	Optional<CategoryEntity> findByCategoryType(CategoryType categoryType);
 
-	Optional<CategoryEntity> findByCategoryTypeAndSubType(CategoryType categoryType, CategoryType subCategoryType);
+	Optional<CategoryEntity> findByParentCategory_IdAndCategoryType(Long parentId, CategoryType categoryType);
 }

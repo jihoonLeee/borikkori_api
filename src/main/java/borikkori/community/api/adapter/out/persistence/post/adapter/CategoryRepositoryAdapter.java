@@ -49,14 +49,12 @@ public class CategoryRepositoryAdapter implements CategoryRepository {
 	}
 
 	@Override
-	public Category findByTypeAndSubType(CategoryType type, CategoryType subCategoryType) {
-		CategoryEntity categoryEntity = categoryJpaRepository
-			.findByCategoryTypeAndSubType(type, subCategoryType)
-			.orElseThrow(() ->
-				new RuntimeException("Category not found with type: " + type
-					+ " and subType: " + subCategoryType)
-			);
-		return categoryMapper.toDomain(categoryEntity);
+	public Category findByParentIdAndType(Long parentCategoryId, CategoryType categoryType) {
+		CategoryEntity entity = categoryJpaRepository
+			.findByParentCategory_IdAndCategoryType(parentCategoryId, categoryType)
+			.orElseThrow(() -> new RuntimeException(
+				"Sub-category not found for parentId=" + parentCategoryId + " and type=" + categoryType));
+		return categoryMapper.toDomain(entity);
 	}
 
 	@Override
